@@ -2,7 +2,7 @@
 
 namespace ConnectFour.Repositories
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepository<User>
     {
         void ChangePassword(string oldPassword, string newPassword);
     }

@@ -1,14 +1,16 @@
 ﻿namespace ConnectFour.Controllers
 {
+    using ConnectFour.Api.User;
+    using ConnectFour.Repositories;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/customers")]
+    [Route("api/Users")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly ICustomerRepository _repository;
+        private readonly IUserRepository _repository;
 
-        public UserController(ICustomerRepository repository)
+        public UserController(IUserRepository repository)
         {
             ArgumentNullException.ThrowIfNull(repository);
 
@@ -17,29 +19,29 @@
 
         // GET: api/<UserController>
         [HttpGet]
-        public IEnumerable<CustomerResponse> Get()
+        public IEnumerable<UserResponse> Get()
         {
-            var customers = _repository.GetAll();
-            return customers.Select(x => new CustomerResponse(x.Id, x.CustomerNr, x.Name, null));
+            var Users = _repository.GetAll();
+            return Users.Select(x => new UserResponse(x.Id,x.Name,x.Email,x.Password,x.Authenticated));
         }
 
         // GET api/<UserController>/5
         [HttpGet("{id}")]
-        public CustomerResponse Get(Guid id)
+        public UserResponse Get(Guid id)
         {
             return null;
         }
 
         // POST api/<UserController>
         [HttpPost]
-        public CustomerResponse Post([FromBody] CustomerRequest value)
+        public UserResponse Post([FromBody] UserRequest value)
         {
             return null;
         }
 
         // PUT api/<UserController>/5
         [HttpPut("{id}")]
-        public CustomerResponse Put(Guid id, [FromBody] CustomerRequest value)
+        public UserResponse Put(Guid id, [FromBody] UserRequest value)
         {
             return null;
         }

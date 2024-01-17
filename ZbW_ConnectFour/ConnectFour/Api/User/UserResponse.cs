@@ -1,10 +1,10 @@
 ﻿namespace ConnectFour.Api.User
 {
     public record UserResponse(
-       Guid Id,
+       string Id,
         string Name,
         string Email,
         string Password,
-        bool Authenticated
+        bool Authenticatedasdads
     );
 }
