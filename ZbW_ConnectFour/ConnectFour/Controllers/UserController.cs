@@ -19,7 +19,7 @@
 
         // GET: api/<UserController>
         [HttpGet]
-        public IEnumerable<UserResponse> Get()
+        public IEnumerable<UserResponse> GetAll()
         {
             var Users = _repository.GetAll();
             return Users.Select(x => new UserResponse(x.Id,x.Name,x.Email,x.Password,x.Authenticated));

@@ -8,6 +8,9 @@
             Completed,
             Abandoned
         }
-                
+
+        public enum State { Active, Inactive }
+
+        public enum ConnectFourColor { red, green, blue,yellow }
     }
 }

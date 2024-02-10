@@ -1,13 +1,14 @@
-﻿namespace ConnectFour.Models
+﻿using ConnectFour.Interfaces;
+
+namespace ConnectFour.Models
 {
-    public class Player
+    public class Player : Entity
     {
         public string Name { get; set; }
-        public string Id { get; set; }
         public User User { get; set; }
-        public bool IsIngame { get; set; }
-        public bool IsOnTurn { get; set; }
-        public bool Points { get; set; }
+        public string UserId { get; set; }
+         
 
+        public Game? CurrentGame { get; set; }
     }
 }

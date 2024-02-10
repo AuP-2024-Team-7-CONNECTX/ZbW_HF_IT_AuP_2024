@@ -1,7 +1,7 @@
 ﻿namespace ConnectFour.Api.User
 {
     public record UserRequest(
-        Guid Id,
+        string Id,
         string Name,
         string Email,
         string Password,
