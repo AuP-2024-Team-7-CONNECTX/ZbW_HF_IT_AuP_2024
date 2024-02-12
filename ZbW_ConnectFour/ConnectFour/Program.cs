@@ -23,24 +23,38 @@ namespace ConnectFour
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<GameDbContext>(options =>
-                    options.UseSqlServer(configuration.GetConnectionString("LOCAL")));
+                    options.UseSqlServer(configuration.GetConnectionString("LocalNick")));
 
 
             var app = builder.Build();
-
             // Datenbankprüfung und -erstellung
             using (var scope = app.Services.CreateScope())
             {
+
                 var services = scope.ServiceProvider;
+
+                var logger = services.GetRequiredService<ILogger<Program>>();
                 try
                 {
                     var context = services.GetRequiredService<GameDbContext>();
-                    context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+
+                    var connected = context.Database.CanConnect();
+                    if (connected)
+                    {
+                        logger.LogInformation("Datenbank erfolgreich verbunden");
+
+                    }
+                    else
+                    {
+                        logger.LogInformation("Es wurde keine Datenbank gefunden. Neue Datenbank wird erstellt...");
+                        context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+                        logger.LogInformation("Datenbank wurde erfolgreich angelegt!");
+                    }
+
                 }
                 catch (Exception ex)
                 {
-                    // Fehlerbehandlung, z.B. Logging
-                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    
                     logger.LogError(ex, "Ein Fehler ist aufgetreten beim Erstellen der Datenbank.");
                 }
             }
