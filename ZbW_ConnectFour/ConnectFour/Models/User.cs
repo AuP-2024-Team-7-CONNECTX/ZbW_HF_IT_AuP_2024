@@ -1,4 +1,5 @@
 ﻿using ConnectFour.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ConnectFour.Models
 {
@@ -8,7 +9,5 @@ namespace ConnectFour.Models
         public string Email { get; set; }
         public string Password { get; set; }
         public bool Authenticated { get; set; }
-
-        public Player? Player { get; set; }
     }
 }

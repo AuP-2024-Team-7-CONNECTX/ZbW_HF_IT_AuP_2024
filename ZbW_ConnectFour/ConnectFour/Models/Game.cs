@@ -6,19 +6,27 @@ namespace ConnectFour.Models
 {
     public class Game : Entity
     {
-        public Player PlayerOne { get; set; }
-        public Player PlayerTwo { get; set; }
-        public Robot RobotOne { get; set; }
-        public Robot RobotTwo { get; set; }
+        public List<Player> Players { get; set; }
+
+        public List<Robot> Robots { get; set; }
+
+
+        [NotMapped]
         public Move? CurrentMove { get; set; }
         public string? CurrentMoveId { get; set; }
 
         [NotMapped]
-        public Player? Winner { get; set; }
+
+        public Player? WinnerPlayer { get; set; }
+        public string? WinnerPlayerId { get; set; }
+
+        [NotMapped]
+        public Player? WinnerRobot { get; set; }
+        public string? WinnerRobotId { get; set; }
+
         public GameState State { get; set; }
 
         [NotMapped]
-        public List<Move>? MoveHistory { get; set; }
         public decimal? TotalPointsPlayerOne { get; set; }
         public decimal? TotalPointsPlayerTwo { get; set; }
 

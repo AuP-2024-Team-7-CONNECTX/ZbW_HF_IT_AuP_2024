@@ -1,5 +1,6 @@
 ﻿using ConnectFour.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 public class GameDbContext : DbContext
 {
@@ -17,52 +18,78 @@ public class GameDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // User zu Player (1-zu-1)
+        #region Player
+
         modelBuilder.Entity<Player>()
-            .HasOne(p => p.User)
-            .WithOne(u => u.Player)
-            .HasForeignKey<Player>(p => p.UserId);
+           .HasOne(p => p.User)
+           .WithOne()
+           .HasForeignKey<Player>(p => p.UserId);
 
-        // Konfiguriere Game-Entity
-            modelBuilder.Entity<Game>()
-            .HasOne(g => g.PlayerOne)
-            .WithMany() // Ohne Navigationseigenschaft in Player
-            .HasForeignKey("PlayerOneId");
+        #endregion
+
+        #region Game
 
         modelBuilder.Entity<Game>()
-            .HasOne(g => g.PlayerTwo)
-            .WithMany() // Ohne Navigationseigenschaft in Player
-            .HasForeignKey("PlayerTwoId");
+        .HasMany(e => e.Players)
+        .WithMany(e => e.Games);
+
 
         modelBuilder.Entity<Game>()
-            .HasOne(g => g.RobotOne)
-            .WithMany() // Ohne Navigationseigenschaft in Robot
-            .HasForeignKey("RobotOneId");
+         .HasMany(e => e.Robots)
+         .WithMany(e => e.Games);
 
         modelBuilder.Entity<Game>()
-            .HasOne(g => g.RobotTwo)
-            .WithMany() // Ohne Navigationseigenschaft in Robot
-            .HasForeignKey("RobotTwoId");
+          .HasOne(g => g.WinnerPlayer)
+          .WithMany()
+          .HasForeignKey(g => g.WinnerPlayerId)
+          .IsRequired(false);
 
-        // Game zu Move (1-zu-m)
+        modelBuilder.Entity<Game>()
+           .HasOne(g => g.WinnerRobot)
+           .WithMany()
+           .HasForeignKey(g => g.WinnerRobotId)
+           .IsRequired(false);
+
         modelBuilder.Entity<Game>()
             .HasOne(g => g.CurrentMove)
-            .WithOne(m => m.Game)
-            .HasForeignKey<Game>(m => m.CurrentMoveId);
-
-        // Move zu Player (1-zu-1, optional, da ein Move auch von einem Robot stammen kann)
-        modelBuilder.Entity<Move>()
-            .HasOne(m => m.Player)
-            .WithMany()
-            .HasForeignKey(m => m.PlayerId)
+            .WithOne()
+            .HasForeignKey<Game>(m => m.CurrentMoveId)
             .IsRequired(false);
 
-        // Move zu Robot (1-zu-1, optional, da ein Move auch von einem Player stammen kann)
+        // Konfigurieren Sie den Speichertyp für TotalPointsPlayerOne und TotalPointsPlayerTwo
+        modelBuilder.Entity<Game>()
+            .Property(g => g.TotalPointsPlayerOne)
+            .HasColumnType("decimal(18, 2)");
+
+        modelBuilder.Entity<Game>()
+            .Property(g => g.TotalPointsPlayerTwo)
+            .HasColumnType("decimal(18, 2)");
+
+        #endregion
+
+
+        #region Move
+
         modelBuilder.Entity<Move>()
-            .HasOne(m => m.Robot)
-            .WithMany()
-            .HasForeignKey(m => m.RobotId)
-            .IsRequired(false);
+        .HasOne(e => e.Game)
+        .WithMany()
+        .HasForeignKey(e => e.GameId);
+
+        modelBuilder.Entity<Move>()
+        .HasOne(m => m.Player)
+        .WithMany()
+        .HasForeignKey(m => m.PlayerId)
+        .IsRequired(false);
+
+        modelBuilder.Entity<Move>()
+        .HasOne(m => m.Robot)
+        .WithMany()
+        .HasForeignKey(m => m.RobotId)
+        .IsRequired(false);
+
+        #endregion
+
+
     }
 
 }
