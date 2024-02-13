@@ -2,12 +2,13 @@
 
 namespace ConnectFour.Repositories
 {
-    public interface IRepository<T>
+    public interface IRepository<T> where T : class
     {
-        T GetById(int id);
-        IEnumerable<T> GetAll();
-        void CreateOrUpdate(T entity);
-        //void Delete(T entity);
+        Task<T> GetByIdAsync(string id);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task CreateOrUpdateAsync(T entity);
+
+        Task DeleteAsync<T>(string id);
     }
 
 }

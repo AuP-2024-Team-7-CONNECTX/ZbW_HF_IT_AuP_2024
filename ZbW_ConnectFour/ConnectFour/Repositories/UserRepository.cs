@@ -1,28 +1,44 @@
-﻿namespace ConnectFour.Repositories
+﻿using ConnectFour.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace ConnectFour.Repositories
 {
-    using ConnectFour.Models;
-    using System;
-    using System.Collections.Generic;
     public class UserRepository : IUserRepository
     {
-        private readonly List<User> _Users;
+        private readonly IGenericRepository _genericRepository;
 
-        public void ChangePassword(string oldPassword, string newPassword)
+        public UserRepository(IGenericRepository genericRepository)
         {
+            _genericRepository = genericRepository;
+        }
+
+
+        public async Task ChangePasswordAsync(string userId, string oldPassword, string newPassword)
+        {
+            // Die Implementierung dieser Methode würde von deiner Anwendungslogik abhängen.
+            // Beispiel:
+            // 1. Überprüfe, ob das alte Passwort korrekt ist.
+            // 2. Wenn ja, aktualisiere das Passwort mit dem neuen Passwort.
             throw new NotImplementedException();
         }
 
-        public void CreateOrUpdate(User entity)
+        public async Task CreateOrUpdateAsync(User entity)
         {
-            throw new NotImplementedException();
+            await _genericRepository.CreateOrUpdateAsync(entity);
         }
 
-        public IEnumerable<User> GetAll()
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _genericRepository.GetAllAsync<User>();
         }
 
-        public User GetById(int id)
+        public async Task<User> GetByIdAsync(string id)
+        {
+            return await _genericRepository.GetByIdAsync<User>(id);
+        }
+
+        public async Task DeleteAsync<User>(string id)
         {
             throw new NotImplementedException();
         }
