@@ -1,8 +1,9 @@
 ﻿using ConnectFour.Models;
+using ConnectFour.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ConnectFour.Repositories
+namespace ConnectFour.Repositories.Implementations
 {
     public class UserRepository : IUserRepository
     {
@@ -38,9 +39,10 @@ namespace ConnectFour.Repositories
             return await _genericRepository.GetByIdAsync<User>(id);
         }
 
-        public async Task DeleteAsync<User>(string id)
+        public async Task DeleteAsync<T>(string id)
         {
-            throw new NotImplementedException();
+            await _genericRepository.DeleteAsync<Player>(id);
+
         }
     }
 }

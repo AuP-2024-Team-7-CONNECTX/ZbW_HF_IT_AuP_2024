@@ -1,6 +1,6 @@
 ﻿using ConnectFour.Models;
 
-namespace ConnectFour.Repositories
+namespace ConnectFour.Repositories.Interfaces
 {
     public interface IUserRepository : IRepository<User>
     {

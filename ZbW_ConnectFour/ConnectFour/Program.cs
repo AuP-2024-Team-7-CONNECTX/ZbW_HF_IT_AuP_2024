@@ -1,7 +1,9 @@
-
 using ConnectFour.Repositories;
+using ConnectFour.Repositories.Implementations;
+using ConnectFour.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Configuration;
 
 namespace ConnectFour
 {
@@ -28,7 +30,16 @@ namespace ConnectFour
 
             builder.Services.AddScoped<IGenericRepository, GenericRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+            builder.Services.AddScoped<IRobotRepository, RobotRepository>();
 
+
+            // Konfigurationswerte aus einer Konfigurationsdatei oder Umgebungsvariablen laden
+            var oauthConfig = configuration.GetSection("OAuth2").Get<OAuth2Configuration>();
+            builder.Services.AddSingleton(oauthConfig);
+
+            // Weitere benötigte Services registrieren, z.B. für die E-Mail-Verifizierung
+            builder.Services.AddTransient<EmailVerificationService>();
 
 
             var app = builder.Build();

@@ -7,6 +7,9 @@ public interface IGenericRepository
     Task<T> CreateOrUpdateAsync<T>(T entity) where T : class;
 
     Task<T> GetByIdAsync<T>(string id) where T : class;
+
+    Task DeleteAsync<T>(string id) where T : class;
+
 }
 
 public class GenericRepository : IGenericRepository
@@ -76,6 +79,28 @@ public class GenericRepository : IGenericRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in " + nameof(GetByIdAsync));
+            throw;
+        }
+    }
+
+     public async Task DeleteAsync<T>(string id) where T : class
+    {
+        try
+        {
+            var entity = await _context.Set<T>().FindAsync(id);
+            if (entity != null)
+            {
+                _context.Set<T>().Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                _logger.LogWarning("Entity to delete not found. Id: {Id}", id);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in " + nameof(DeleteAsync) + " with Id: {Id}", id);
             throw;
         }
     }

@@ -5,6 +5,6 @@
         string Name,
         string Email,
         string Password,
-        bool Authenticatedasdads
+        bool Authenticated
     );
 }

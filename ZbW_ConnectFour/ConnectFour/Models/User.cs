@@ -5,7 +5,7 @@ namespace ConnectFour.Models
 {
     public class User : Entity
     {
-        
+        public DateTime? DeletedOn { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }

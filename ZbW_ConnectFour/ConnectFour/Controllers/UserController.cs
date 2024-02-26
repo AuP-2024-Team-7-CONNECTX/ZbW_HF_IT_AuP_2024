@@ -1,11 +1,7 @@
 ﻿using ConnectFour.Api.User;
 using ConnectFour.Models;
-using ConnectFour.Repositories;
+using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ConnectFour.Controllers
 {
@@ -42,11 +38,11 @@ namespace ConnectFour.Controllers
 
         // GET api/Users/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserResponse>> Get(Guid id)
+        public async Task<ActionResult<UserResponse>> Get(string id)
         {
             try
             {
-                var user = await _repository.GetByIdAsync(id.ToString()); // Angenommen, GetByIdAsync ist nun asynchron
+                var user = await _repository.GetByIdAsync(id); // Angenommen, GetByIdAsync ist nun asynchron
                 if (user == null)
                 {
                     return NotFound("User not found.");
@@ -84,9 +80,9 @@ namespace ConnectFour.Controllers
 
         // PUT api/Users/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] UserRequest value)
+        public async Task<ActionResult> Put(string id, [FromBody] UserRequest value)
         {
-            if (id.ToString() != value.Id)
+            if (id != value.Id)
             {
                 return BadRequest("Mismatched user ID.");
             }
@@ -106,11 +102,11 @@ namespace ConnectFour.Controllers
 
         // DELETE api/Users/{id}
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(Guid id)
+        public async Task<ActionResult> Delete(string id)
         {
             try
             {
-                await _repository.DeleteAsync<User>(id.ToString());
+                await _repository.DeleteAsync<User>(id);
                 return NoContent();
             }
             catch (Exception ex)
