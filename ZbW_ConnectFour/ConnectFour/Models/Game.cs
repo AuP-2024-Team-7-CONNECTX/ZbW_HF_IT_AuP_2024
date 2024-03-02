@@ -21,7 +21,7 @@ namespace ConnectFour.Models
         public string? WinnerPlayerId { get; set; }
 
         [NotMapped]
-        public Player? WinnerRobot { get; set; }
+        public Robot? WinnerRobot { get; set; }
         public string? WinnerRobotId { get; set; }
 
         public GameState State { get; set; }

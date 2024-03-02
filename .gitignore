@@ -1,0 +1,55 @@
+# Ignoriere alle bin und obj Ordner
+**/bin/
+**/obj/
+
+# Ignoriere temporäre Dateien
+*.tmp
+*~
+*.log
+*.vscode
+*.vs/
+*.user
+*.userprefs
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignoriere Build-Ergebnisse
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Tooling
+_ReSharper*/
+*.resharper
+[Tt]est[Rr]esult*/
+*.VisualState.xml
+TestResults/
+
+# OS generated files
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Rider
+.idea/
+*.sln.iml
+
+# Benutzerdefinierte Dateien
+# Fügen Sie hier spezifische Dateien oder Ordner hinzu, die ignoriert werden sollen.

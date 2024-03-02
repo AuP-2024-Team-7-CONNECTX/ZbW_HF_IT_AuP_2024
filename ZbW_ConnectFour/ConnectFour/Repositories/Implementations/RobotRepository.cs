@@ -1,7 +1,4 @@
 ﻿using ConnectFour.Models;
-using ConnectFour.Interfaces; // Stelle sicher, dass das Interface IGenericRepository hier definiert ist
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using ConnectFour.Repositories.Interfaces;
 
 namespace ConnectFour.Repositories

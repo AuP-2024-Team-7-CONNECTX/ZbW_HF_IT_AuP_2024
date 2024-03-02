@@ -2,6 +2,7 @@
 using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
 
 namespace ConnectFour.Controllers
 {
@@ -28,7 +29,13 @@ namespace ConnectFour.Controllers
             try
             {
                 var players = await _repository.GetAllAsync();
-                var playerResponses = players.Select(player => new PlayerResponse(player.Id, player.Name, player.UserId, player.IsIngame, player.Games)).ToList();
+                var playerResponses = players.Select(player => new PlayerResponse(
+                player.Id,
+                player.Name,
+                player.UserId,
+                player.IsIngame,
+                player.Games?.Select(g => g.Id).ToList()
+                )).ToList();
                 return Ok(playerResponses);
             }
             catch (Exception ex)
@@ -50,7 +57,12 @@ namespace ConnectFour.Controllers
                     return NotFound("Player not found.");
                 }
 
-                var playerResponse = new PlayerResponse(player.Id, player.Name, player.UserId, player.IsIngame, player.Games);
+                var playerResponse = new PlayerResponse(
+                player.Id,
+                player.Name,
+                player.UserId,
+                player.IsIngame,
+                player.Games?.Select(g => g.Id).ToList());
                 return Ok(playerResponse);
             }
             catch (Exception ex)
@@ -85,7 +97,7 @@ namespace ConnectFour.Controllers
 
                 await _repository.CreateOrUpdateAsync(newPlayer);
 
-                var playerResponse = new PlayerResponse(newPlayer.Id, newPlayer.Name, newPlayer.UserId, newPlayer.IsIngame, newPlayer.Games);
+                var playerResponse = new PlayerResponse(newPlayer.Id, newPlayer.Name, newPlayer.UserId, newPlayer.IsIngame, newPlayer.Games.Select(g => g.Id).ToList());
                 return CreatedAtAction(nameof(Get), new { id = newPlayer.Id }, playerResponse);
             }
             catch (Exception ex)

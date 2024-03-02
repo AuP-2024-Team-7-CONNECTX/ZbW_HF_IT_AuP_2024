@@ -1,15 +1,16 @@
-﻿using ConnectFour.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace ConnectFour.Api.User
+namespace ConnectFour.Models
 {
-
-    public class PlayerRequest
+    public record PlayerRequest
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string UserId { get; set; }
-        public bool IsIngame { get; set; }
-        
-    }
+        public string Id { get; init; }
+        [Required]
+        public string Name { get; init; }
 
+        [Required]
+        public string UserId { get; init; }
+
+        public bool IsIngame { get; init; }
+    }
 }

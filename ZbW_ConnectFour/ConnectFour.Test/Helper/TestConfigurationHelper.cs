@@ -1,6 +1,5 @@
 ﻿using ConnectFour.Models;
 using Microsoft.Extensions.Configuration;
-using System;
 
 public class TestConfigurationHelper
 {
@@ -32,14 +31,18 @@ public class TestConfigurationHelper
     {
         var users = new List<User>
             {
-                new User ("User1","User 1","www.test.ch1","test1231",false),
-                 new User ("User2","User 2","www.test.ch2","test1232",false),
+                new User {Id = Guid.NewGuid().ToString(),Name = "User 1",Email="www.test.ch1",Authenticated=false,Password="Hash123" },
+                new User {Id = Guid.NewGuid().ToString(),Name = "User 2",Email="www.test.ch2",Authenticated=false,Password="Hash123",DeletedOn=DateTime.Now },
+                new User {Id = Guid.NewGuid().ToString(),Name = "User 3",Email="www.test.ch3",Authenticated=true,Password="Hash123" },
+
             };
 
         var players = new List<Player>
             {
                 new Player { Id = Guid.NewGuid().ToString(), Name = "Player 1", UserId = "User1", IsIngame = false },
-                new Player { Id = Guid.NewGuid().ToString(), Name = "Player 2", UserId = "User2", IsIngame = true }
+                new Player { Id = Guid.NewGuid().ToString(), Name = "Player 2", UserId = "User2", IsIngame = true },
+                new Player { Id = Guid.NewGuid().ToString(), Name = "Player 3", UserId = "User3", IsIngame = false,DeletedOn=DateTime.Now }
+
             };
 
         context.Users.AddRange(users);

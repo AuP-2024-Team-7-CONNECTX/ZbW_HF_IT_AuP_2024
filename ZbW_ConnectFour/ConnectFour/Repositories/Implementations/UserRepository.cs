@@ -41,7 +41,7 @@ namespace ConnectFour.Repositories.Implementations
 
         public async Task DeleteAsync<T>(string id)
         {
-            await _genericRepository.DeleteAsync<Player>(id);
+            await _genericRepository.DeleteAsync<User>(id);
 
         }
     }

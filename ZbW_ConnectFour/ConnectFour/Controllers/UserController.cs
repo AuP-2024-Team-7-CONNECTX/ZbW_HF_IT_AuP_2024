@@ -67,7 +67,14 @@ namespace ConnectFour.Controllers
         {
             try
             {
-                var user = new User(value.Id, value.Name, value.Email, value.Password, value.Authenticated);
+                var user = new User
+                {
+                    Id = value.Id,
+                    Name = value.Name,
+                    Email = value.Email,
+                    Password = value.Password,
+                    Authenticated = value.Authenticated
+                };
                 await _repository.CreateOrUpdateAsync(user);
                 return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
             }
@@ -89,7 +96,14 @@ namespace ConnectFour.Controllers
 
             try
             {
-                var user = new User(value.Id, value.Name, value.Email, value.Password, value.Authenticated);
+                var user = new User
+                {
+                    Id = value.Id,
+                    Name = value.Name,
+                    Email = value.Email,
+                    Password = value.Password,
+                    Authenticated = value.Authenticated
+                };
                 await _repository.CreateOrUpdateAsync(user);
                 return NoContent();
             }

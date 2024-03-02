@@ -1,6 +1,6 @@
-﻿using ConnectFour.Models;
+﻿using ConnectFour.Interfaces;
+using ConnectFour.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 public class GameDbContext : DbContext
 {
@@ -10,13 +10,37 @@ public class GameDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Robot> Robots { get; set; }
 
-    public GameDbContext(DbContextOptions<GameDbContext> options) : base(options)
+    public GameDbContext(DbContextOptions<GameDbContext> options) : base(options) { }
+
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
+        SetInsertedOnForAddedEntities();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default(CancellationToken))
+    {
+        SetInsertedOnForAddedEntities();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    private void SetInsertedOnForAddedEntities()
+    {
+        var addedEntities = ChangeTracker.Entries<Entity>()
+            .Where(entry => entry.State == EntityState.Added)
+            .Select(entry => entry.Entity);
+
+        foreach (var entity in addedEntities)
+        {
+            entity.InsertedOn = DateTime.UtcNow;
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         base.OnModelCreating(modelBuilder);
+
 
         #region Player
 

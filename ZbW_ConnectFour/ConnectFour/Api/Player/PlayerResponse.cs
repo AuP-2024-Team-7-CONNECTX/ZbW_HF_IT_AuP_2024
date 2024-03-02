@@ -1,21 +1,27 @@
-﻿using ConnectFour.Models;
-
-public class PlayerResponse
+﻿namespace ConnectFour.Models
 {
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public string UserId { get; set; }
-
-    public bool IsIngame { get; set; }
-
-    public List<Game>? Games { get; set; }
-
-    public PlayerResponse(string id, string name, string userId, bool isIngame, List<Game> games)
+    public record PlayerResponse
     {
-        Id = id;
-        Name = name;
-        UserId = userId;
-        IsIngame = isIngame;
-        Games = games;
+        public string Id { get; init; }
+
+        public string Name { get; init; }
+
+        public string UserId { get; init; }
+
+        public bool IsIngame { get; init; }
+
+        // Hier könnten Sie entscheiden, ob und wie Sie Spiele darstellen wollen.
+        // Zum Beispiel könnten Sie die IDs oder Namen der Spiele zurückgeben,
+        // anstatt vollständige Game-Objekte zu verwenden, um zyklische Abhängigkeiten zu vermeiden.
+        public List<string> GameIds { get; init; }
+
+        public PlayerResponse(string id, string name, string userId, bool isIngame, List<string> gameIds)
+        {
+            Id = id;
+            Name = name;
+            UserId = userId;
+            IsIngame = isIngame;
+            GameIds = gameIds ?? new List<string>();
+        }
     }
 }

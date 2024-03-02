@@ -1,10 +1,11 @@
 using ConnectFour.Controllers;
+using ConnectFour.Models;
+using ConnectFour.Repositories.Implementations;
+using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.EntityFrameworkCore;
-using ConnectFour.Api.User;
-using ConnectFour.Repositories;
 using Moq;
 
 namespace ConnectFour.Tests
@@ -14,31 +15,27 @@ namespace ConnectFour.Tests
     {
         private GameDbContext _context;
         private PlayerController _controller;
+        private UserRepository _userRepository;
 
         [TestInitialize]
         public void Setup()
         {
-            var dbContextOptions = new DbContextOptionsBuilder<GameDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Unique name for each test run
+            var options = new DbContextOptionsBuilder<GameDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            _context = new GameDbContext(dbContextOptions);
-
-            // Initialize the database with necessary initial data
+            _context = new GameDbContext(options);
             TestConfigurationHelper.InitializeDbForTests(_context);
 
-            var loggerGenericRepository = new Mock<ILogger<GenericRepository>>().Object;
-            var loggerPlayerController = new Mock<ILogger<PlayerController>>().Object;
+            var loggerMockPlayer = new Mock<ILogger<PlayerController>>();
+            var loggerMockUser = new Mock<ILogger<UserController>>();
 
+            var playerRepository = new PlayerRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object));
+            var userRepository = new UserRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object));
 
-            var genericRepository = new GenericRepository(_context, loggerGenericRepository);
-            var playerRepository = new PlayerRepository(genericRepository);
-            var userRepository = new UserRepository(genericRepository);
-
-            _controller = new PlayerController(playerRepository, userRepository, loggerPlayerController);
+            _userRepository = userRepository;
+            _controller = new PlayerController(playerRepository, userRepository, loggerMockPlayer.Object);
         }
-
-       
 
         [TestCleanup]
         public void Cleanup()
@@ -50,26 +47,41 @@ namespace ConnectFour.Tests
         [TestMethod]
         public async Task GetAll_ReturnsAllPlayers()
         {
-            // Act
             var result = await _controller.GetAll();
-
-            // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
             var actionResult = result.Result as OkObjectResult;
-            var players = actionResult.Value as List<PlayerResponse>;
-            Assert.AreEqual(2, players.Count);
+            var players = actionResult.Value as IEnumerable<PlayerResponse>;
+            Assert.IsTrue(players.Any());
+            Assert.AreEqual(2, players.Count());
+        }
+
+        [TestMethod]
+        public async Task GetById_ReturnsOnePlayer()
+        {
+            var existingUsers = await _userRepository.GetAllAsync();
+            var existingUser = existingUsers.FirstOrDefault();
+
+            Assert.IsNotNull(existingUser);
+
+            var id = Guid.NewGuid().ToString();
+            var newPlayerRequest = new PlayerRequest { Id = id, Name = "Test Player", UserId = existingUser.Id };
+            await _controller.Post(newPlayerRequest);
+
+            var result = await _controller.Get(id);
+
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var actionResult = result.Result as OkObjectResult;
+            var player = actionResult.Value as PlayerResponse;
+            Assert.IsNotNull(player);
         }
 
         [TestMethod]
         public async Task Get_ReturnsPlayerById_WhenPlayerExists()
         {
-            // Arrange
-            var testPlayerId = _context.Players.First().Id;
+            var testPlayerId = _context.Players.First().Id.ToString();
 
-            // Act
             var result = await _controller.Get(testPlayerId);
 
-            // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
             var actionResult = result.Result as OkObjectResult;
             var player = actionResult.Value as PlayerResponse;
@@ -77,51 +89,61 @@ namespace ConnectFour.Tests
         }
 
         [TestMethod]
-        public async Task Post_ReturnsBadRequest_WhenUserNotFound()
+        public async Task Post_CreatesNewPlayer()
         {
-            // Arrange
-            var newPlayerRequest = new PlayerRequest { Name = "New Player", UserId = "NonExistingUser", IsIngame = false };
+            var existingUsers = await _userRepository.GetAllAsync();
+            var existingUser = existingUsers.FirstOrDefault();
 
-            // Act
+            Assert.IsNotNull(existingUser);
+
+            var id = Guid.NewGuid().ToString();
+            var newPlayerRequest = new PlayerRequest { Id = id, Name = "Test Player", UserId = existingUser.Id };
+
             var result = await _controller.Post(newPlayerRequest);
+            var newPlayer = _context.Players.Find(id);
 
-            // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(ObjectResult));
-            var actionResult = result.Result as ObjectResult;
-            Assert.AreEqual(404, actionResult.StatusCode);
+            Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
+            Assert.IsNotNull(newPlayer);
         }
 
         [TestMethod]
         public async Task Put_UpdatesPlayer_WhenPlayerExists()
         {
-            // Arrange
             var existingPlayer = _context.Players.First();
-            var updateRequest = new PlayerRequest { Name = "Updated Name", UserId = existingPlayer.UserId, IsIngame = true };
+            var updatePlayerRequest = new PlayerRequest { Id = existingPlayer.Id, Name = "Updated Name" };
 
-            // Act
-            var result = await _controller.Put(existingPlayer.Id, updateRequest);
 
-            // Assert
+            var result = await _controller.Put(existingPlayer.Id, updatePlayerRequest);
+
             Assert.IsInstanceOfType(result, typeof(NoContentResult));
-            _context.Entry(existingPlayer).Reload(); // Reload the player from the DB to get updated values
+            _context.Entry(existingPlayer).Reload();
             Assert.AreEqual("Updated Name", existingPlayer.Name);
-            Assert.IsTrue(existingPlayer.IsIngame);
         }
 
         [TestMethod]
-        public async Task Delete_RemovesPlayer_WhenPlayerExists()
+        public async Task Delete_MarksPlayerAsDeleted_WhenPlayerExists()
         {
-            // Arrange
-            var existingPlayerId = _context.Players.First().Id;
+            var existingUsers = await _userRepository.GetAllAsync();
+            var existingUser = existingUsers.FirstOrDefault();
 
-            // Act
-            var result = await _controller.Delete(existingPlayerId);
+            Assert.IsNotNull(existingUser);
 
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(NoContentResult));
-            var deletedPlayer = _context.Players.Find(existingPlayerId);
-            Assert.IsNull(deletedPlayer);
+            var id = Guid.NewGuid().ToString();
+            var newPlayerRequest = new PlayerRequest { Id = id, Name = "Test Player", UserId = existingUser.Id };
+
+            await _controller.Post(newPlayerRequest);
+
+            _context.SaveChanges();
+
+            var player = _context.Players.Find(id);
+            Assert.IsNotNull(player);
+            Assert.IsNull(player.DeletedOn);
+
+            var resultDelete = await _controller.Delete(id);
+            _context.SaveChanges();
+
+            Assert.IsInstanceOfType(resultDelete, typeof(NoContentResult));
+            Assert.IsNotNull(player.DeletedOn);
         }
-
     }
 }

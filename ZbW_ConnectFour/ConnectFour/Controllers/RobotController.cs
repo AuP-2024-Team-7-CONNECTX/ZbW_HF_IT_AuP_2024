@@ -2,6 +2,9 @@
 using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
+using System.Numerics;
+using static ConnectFour.Enums.Enum;
 
 namespace ConnectFour.Controllers
 {
@@ -26,7 +29,16 @@ namespace ConnectFour.Controllers
             try
             {
                 var robots = await _repository.GetAllAsync();
-                var robotResponses = robots.Select(robot => new RobotResponse(robot.Id, robot.CurrentPlayerId, robot.IsConnected, robot.Color, robot.IsIngame)).ToList();
+                var robotResponses = robots.Select(robot => new RobotResponse()                               
+                {
+                    Id = robot.Id,
+                    CurrentPlayerId = robot.CurrentPlayerId,
+                    IsConnected = robot.IsConnected,
+                    Color = robot.Color,
+                    IsIngame = robot.IsIngame,
+                    GameIds = robot.Games.Select(g => g.Id).ToList()
+                });
+
                 return Ok(robotResponses);
             }
             catch (Exception ex)

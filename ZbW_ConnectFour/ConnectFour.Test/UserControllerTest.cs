@@ -1,13 +1,11 @@
 ﻿using ConnectFour.Api.User;
 using ConnectFour.Controllers;
-using ConnectFour.Models;
-using ConnectFour.Repositories;
+using ConnectFour.Repositories.Implementations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ConnectFour.Tests
 {
@@ -50,7 +48,29 @@ namespace ConnectFour.Tests
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
             var actionResult = result.Result as OkObjectResult;
             var users = actionResult.Value as IEnumerable<UserResponse>;
-            Assert.IsTrue(users.Any()); // Assuming there are seeded users
+            Assert.IsTrue(users.Any());
+            Assert.AreEqual(2, users.Count()); // Gelöschte werden nicht geholt
+
+        }
+
+        [TestMethod]
+        public async Task GetById_ReturnsOneUser()
+        {
+            var id = Guid.NewGuid().ToString();
+
+            // Arrange
+            var newUserRequest = new UserRequest(id, "Test User", "test@example.com", "password", false);
+
+            // Act
+            await _controller.Post(newUserRequest);
+
+            var result = await _controller.Get(id);
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var actionResult = result.Result as OkObjectResult;
+            var user = actionResult.Value as UserResponse;
+            Assert.IsNotNull(user);
         }
 
         [TestMethod]
@@ -99,38 +119,39 @@ namespace ConnectFour.Tests
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(NoContentResult));
-            _context.Entry(existingUser).Reload(); // Reload the user from the DB to get updated values
+            _context.Entry(existingUser).Reload();
             Assert.AreEqual("Updated Name", existingUser.Name);
             Assert.AreEqual("updated@example.com", existingUser.Email);
-            Assert.AreEqual("newpassword", existingUser.Password); // Assuming we are comparing hashed passwords or this is a simplified example
+            Assert.AreEqual("newpassword", existingUser.Password);
             Assert.IsTrue(existingUser.Authenticated);
         }
 
 
-        //[TestMethod]
-        //public async Task Delete_MarksUserAsDeleted_WhenUserExists()
-        //{
-        //    // Arrange
-        //    var id = Guid.NewGuid().ToString();
-        //    var newUserRequest = new UserRequest(id, "Test User", "test@example.com", "password", false);
+        [TestMethod]
+        public async Task Delete_MarksUserAsDeleted_WhenUserExists()
+        {
+            // Arrange
+            var id = Guid.NewGuid().ToString();
+            var newUserRequest = new UserRequest(id, "Test User", "test@example.com", "password", false);
 
-        //    // Erstellen eines neuen Benutzers
-        //    var createResult = await _controller.Post(newUserRequest);
+            // Erstellen eines neuen Benutzers
+            await _controller.Post(newUserRequest);
+
+            _context.SaveChanges();
+
+            var user = _context.Users.Find(id);
+            Assert.IsNotNull(user);
+            Assert.IsNull(user.DeletedOn);
+
+            // Act
+            var resultDelete = await _controller.Delete(id);
+            _context.SaveChanges();
+
             
-        //    _context.SaveChanges();
-
-        //    var user = _context.Users.Find(id);
-        //    Assert.IsNotNull(user); // Stellen Sie sicher, dass der Benutzer tatsächlich erstellt wurde
-        //    Assert.IsNull(user.DeletedOn); // Überprüfen, dass der Benutzer noch nicht als gelöscht markiert ist
-
-        //    // Act
-        //    var resultDelete = await _controller.Delete(id);
-        //    _context.Entry(user).Reload(); // Laden Sie die neuesten Daten aus der Datenbank
-
-        //    // Assert
-        //    Assert.IsInstanceOfType(resultDelete, typeof(NoContentResult)); // Überprüfen, ob der Löschvorgang erfolgreich war
-        //    Assert.IsNotNull(user.DeletedOn); // Stellen Sie sicher, dass der Benutzer jetzt als gelöscht markiert ist
-        //}
+            // Assert
+            Assert.IsInstanceOfType(resultDelete, typeof(NoContentResult));
+            Assert.IsNotNull(user.DeletedOn);
+        }
 
 
     }

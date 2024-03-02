@@ -1,14 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ConnectFour.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 public interface IGenericRepository
 {
-    Task<List<T>> GetAllAsync<T>() where T : class;
+    Task<List<T>> GetAllAsync<T>() where T : class, IDeletable;
 
     Task<T> CreateOrUpdateAsync<T>(T entity) where T : class;
 
     Task<T> GetByIdAsync<T>(string id) where T : class;
 
-    Task DeleteAsync<T>(string id) where T : class;
+    Task DeleteAsync<T>(string id) where T : class,IDeletable;
 
 }
 
@@ -23,11 +24,11 @@ public class GenericRepository : IGenericRepository
         _logger = logger;
     }
 
-    public async Task<List<T>> GetAllAsync<T>() where T : class
+    public async Task<List<T>> GetAllAsync<T>() where T : class, IDeletable
     {
         try
         {
-            return await _context.Set<T>().ToListAsync();
+            return await _context.Set<T>().Where(entity => entity.DeletedOn == null).ToListAsync();
 
         }
         catch (Exception ex)
@@ -48,7 +49,7 @@ public class GenericRepository : IGenericRepository
                 throw new InvalidOperationException("Entity must have an Id property");
             }
             
-            var entityId = (string)idProperty.GetValue(entity);
+            var entityId = idProperty.GetValue(entity);
             var dbEntity = await _context.Set<T>().FindAsync(entityId);
 
             if (dbEntity == null)
@@ -74,7 +75,8 @@ public class GenericRepository : IGenericRepository
     {
         try
         {
-            return await _context.Set<T>().FindAsync(id);
+            return await _context.Set<T>()
+                .FindAsync(id);
         }
         catch (Exception ex)
         {
@@ -83,19 +85,19 @@ public class GenericRepository : IGenericRepository
         }
     }
 
-     public async Task DeleteAsync<T>(string id) where T : class
+     public async Task DeleteAsync<T>(string id) where T : class, IDeletable
     {
         try
         {
-            var entity = await _context.Set<T>().FindAsync(id);
-            if (entity != null)
+            var entity = await GetByIdAsync<T>(id);
+            if (entity != null && entity.DeletedOn == null)
             {
-                _context.Set<T>().Remove(entity);
+                entity.DeletedOn = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
             }
             else
             {
-                _logger.LogWarning("Entity to delete not found. Id: {Id}", id);
+                _logger.LogWarning("Entity to delete not found or is already deleted. Id: {Id}", id);
             }
         }
         catch (Exception ex)
