@@ -2,9 +2,7 @@
 
 public record GameRequest
 {
-    public string Id { get; init; }
-
-    public List<string> PlayerIds { get; init; } = new List<string>();
+     public List<string> PlayerIds { get; init; } = new List<string>();
     public List<string> RobotIds { get; init; } = new List<string>();
     public string? CurrentMoveId { get; init; }
     public string? WinnerPlayerId { get; init; }

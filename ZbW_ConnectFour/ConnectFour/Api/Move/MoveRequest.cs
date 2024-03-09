@@ -1,6 +1,5 @@
 ﻿public record MoveRequest
-{
-    public string Id { get; init; }
+{   
     public string PlayerId { get; init; }
     public string RobotId { get; init; }
     public string MoveDetails { get; init; }

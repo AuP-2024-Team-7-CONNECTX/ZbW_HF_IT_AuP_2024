@@ -42,7 +42,7 @@ namespace ConnectFour.Controllers
         {
             try
             {
-                var user = await _repository.GetByIdAsync(id); // Angenommen, GetByIdAsync ist nun asynchron
+                var user = await _repository.GetByIdAsync(id);
                 if (user == null)
                 {
                     return NotFound("User not found.");
@@ -63,16 +63,15 @@ namespace ConnectFour.Controllers
 
         // POST api/Users
         [HttpPost]
-        public async Task<ActionResult<UserResponse>> Post([FromBody] UserRequest value)
+        public async Task<ActionResult<UserResponse>> Post(UserRequest value)
         {
             try
             {
                 var user = new User
                 {
-                    Id = value.Id,
+                    Id = Guid.NewGuid().ToString(),
                     Name = value.Name,
                     Email = value.Email,
-                    Password = value.Password,
                     Authenticated = value.Authenticated
                 };
                 await _repository.CreateOrUpdateAsync(user);
@@ -87,30 +86,34 @@ namespace ConnectFour.Controllers
 
         // PUT api/Users/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(string id, [FromBody] UserRequest value)
+        public async Task<ActionResult> Put(string id, UserRequest value)
         {
-            if (id != value.Id)
-            {
-                return BadRequest("Mismatched user ID.");
-            }
+            var existingUser = await _repository.GetByIdAsync(id);
 
-            try
+            if (existingUser != null)
             {
-                var user = new User
+
+                try
                 {
-                    Id = value.Id,
-                    Name = value.Name,
-                    Email = value.Email,
-                    Password = value.Password,
-                    Authenticated = value.Authenticated
-                };
-                await _repository.CreateOrUpdateAsync(user);
-                return NoContent();
+
+                    existingUser.Name = value.Name;
+                    existingUser.Email = value.Email;
+                    existingUser.Authenticated = value.Authenticated;
+
+                    await _repository.CreateOrUpdateAsync(existingUser);
+                    return NoContent();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "An error occurred while updating the user with ID {UserId}.", id);
+                    return StatusCode(500, "An error occurred while processing your request.");
+                }
+
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex, "An error occurred while updating the user with ID {UserId}.", id);
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, "No User found with this id");
+
             }
         }
 

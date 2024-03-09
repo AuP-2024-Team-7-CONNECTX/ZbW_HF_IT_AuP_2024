@@ -6,11 +6,12 @@
         {
             Active,
             Completed,
-            Abandoned
+            Abandoned,
+            InProgress
         }
 
         public enum State { Active, Inactive }
 
-        public enum ConnectFourColor { red, green, blue,yellow }
+        public enum ConnectFourColor { Red, Blue }
     }
 }

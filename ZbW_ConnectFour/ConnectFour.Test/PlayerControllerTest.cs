@@ -5,6 +5,7 @@ using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -63,16 +64,20 @@ namespace ConnectFour.Tests
 
             Assert.IsNotNull(existingUser);
 
-            var id = Guid.NewGuid().ToString();
-            var newPlayerRequest = new PlayerRequest { Id = id, Name = "Test Player", UserId = existingUser.Id };
-            await _controller.Post(newPlayerRequest);
+            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
+            var postResult = await _controller.Post(newPlayerRequest);
+
+            var actionPostResult = postResult.Result as CreatedAtActionResult;
+            
+            var newPlayer = actionPostResult.Value as PlayerResponse;
+            var id = newPlayer.Id;
 
             var result = await _controller.Get(id);
-
-            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            
             var actionResult = result.Result as OkObjectResult;
             var player = actionResult.Value as PlayerResponse;
             Assert.IsNotNull(player);
+            Assert.AreEqual(id, player.Id);
         }
 
         [TestMethod]
@@ -96,13 +101,17 @@ namespace ConnectFour.Tests
 
             Assert.IsNotNull(existingUser);
 
-            var id = Guid.NewGuid().ToString();
-            var newPlayerRequest = new PlayerRequest { Id = id, Name = "Test Player", UserId = existingUser.Id };
+            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
 
-            var result = await _controller.Post(newPlayerRequest);
-            var newPlayer = _context.Players.Find(id);
+            var postResult = await _controller.Post(newPlayerRequest);
+            Assert.IsInstanceOfType(postResult.Result, typeof(CreatedAtActionResult));
 
-            Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
+            var actionPostResult = postResult.Result as CreatedAtActionResult;
+            var newPlayer = actionPostResult.Value as PlayerResponse;
+            var id = newPlayer.Id;
+
+            var newPlayer2 = _context.Players.Find(id);
+
             Assert.IsNotNull(newPlayer);
         }
 
@@ -110,8 +119,7 @@ namespace ConnectFour.Tests
         public async Task Put_UpdatesPlayer_WhenPlayerExists()
         {
             var existingPlayer = _context.Players.First();
-            var updatePlayerRequest = new PlayerRequest { Id = existingPlayer.Id, Name = "Updated Name" };
-
+            var updatePlayerRequest = new PlayerRequest { Name = "Updated Name" };
 
             var result = await _controller.Put(existingPlayer.Id, updatePlayerRequest);
 
@@ -128,10 +136,14 @@ namespace ConnectFour.Tests
 
             Assert.IsNotNull(existingUser);
 
-            var id = Guid.NewGuid().ToString();
-            var newPlayerRequest = new PlayerRequest { Id = id, Name = "Test Player", UserId = existingUser.Id };
 
-            await _controller.Post(newPlayerRequest);
+            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
+
+            var postResult = await _controller.Post(newPlayerRequest);
+
+            var actionPostResult = postResult.Result as CreatedAtActionResult;
+            var newPlayer = actionPostResult.Value as PlayerResponse;
+            var id = newPlayer.Id;
 
             _context.SaveChanges();
 

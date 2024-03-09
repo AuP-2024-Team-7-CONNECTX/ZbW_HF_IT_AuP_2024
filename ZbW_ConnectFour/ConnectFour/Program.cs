@@ -2,8 +2,8 @@ using ConnectFour.Repositories;
 using ConnectFour.Repositories.Implementations;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Configuration;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace ConnectFour
 {
@@ -41,6 +41,14 @@ namespace ConnectFour
             // Weitere benötigte Services registrieren, z.B. für die E-Mail-Verifizierung
             builder.Services.AddTransient<EmailVerificationService>();
 
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                c.ExampleFilters();
+            });
+
+            builder.Services.AddSwaggerExamplesFromAssemblyOf<UserRequestExample>();
+
 
             var app = builder.Build();
             // Datenbankprüfung und -erstellung
@@ -74,6 +82,7 @@ namespace ConnectFour
                     logger.LogError(ex, "Ein Fehler ist aufgetreten beim Erstellen der Datenbank.");
                 }
             }
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static ConnectFour.Enums.Enum;
 
 namespace ConnectFour.Tests
 {
@@ -27,13 +28,35 @@ namespace ConnectFour.Tests
                 .Options;
 
             _context = new GameDbContext(options);
-            // Initialisieren Sie Ihre Testdatenbank mit Testdaten
+
+            // Hinzufügen von Testdaten
+            var testGame = new Game
+            {
+                Players = new List<Player>
+                {
+            new Player { /* Initialisieren Sie das Player-Objekt entsprechend */ },
+            new Player { /* Initialisieren Sie ein weiteres Player-Objekt entsprechend */ }
+                    },
+                Robots = new List<Robot>
+                {
+            new Robot { /* Initialisieren Sie das Robot-Objekt entsprechend */ }
+                },
+                State = GameState.Active,
+                CurrentMove = null, // oder ein gültiger Move, wenn definiert
+                WinnerPlayer = null, // Kann gesetzt werden, wenn ein Gewinner existiert
+                TotalPointsPlayerOne = 100, // Beispielwert
+                TotalPointsPlayerTwo = 95 // Beispielwert
+            };
+
+            _context.Games.Add(testGame);
+            _context.SaveChanges();
 
             var loggerMock = new Mock<ILogger<GameController>>();
             var gameRepository = new GameRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object));
 
             _controller = new GameController(gameRepository, loggerMock.Object);
         }
+
 
         [TestCleanup]
         public void Cleanup()

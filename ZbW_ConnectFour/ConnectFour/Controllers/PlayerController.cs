@@ -80,7 +80,7 @@ namespace ConnectFour.Controllers
             {
                 var newPlayer = new Player
                 {
-                    Id = request.Id,
+                    Id = Guid.NewGuid().ToString(),
                     Name = request.Name,
                     UserId = request.UserId,
                     IsIngame = request.IsIngame,
@@ -97,7 +97,7 @@ namespace ConnectFour.Controllers
 
                 await _repository.CreateOrUpdateAsync(newPlayer);
 
-                var playerResponse = new PlayerResponse(newPlayer.Id, newPlayer.Name, newPlayer.UserId, newPlayer.IsIngame, newPlayer.Games.Select(g => g.Id).ToList());
+                var playerResponse = new PlayerResponse(newPlayer.Id, newPlayer.Name, newPlayer.UserId, newPlayer.IsIngame, newPlayer.Games?.Select(g => g.Id).ToList());
                 return CreatedAtAction(nameof(Get), new { id = newPlayer.Id }, playerResponse);
             }
             catch (Exception ex)

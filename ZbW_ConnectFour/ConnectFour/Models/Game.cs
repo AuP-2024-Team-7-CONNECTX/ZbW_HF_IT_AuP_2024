@@ -6,9 +6,9 @@ namespace ConnectFour.Models
 {
     public class Game : Entity
     {
-        public List<Player> Players { get; set; }
+        public List<Player>? Players { get; set; }
 
-        public List<Robot> Robots { get; set; }
+        public List<Robot>? Robots { get; set; }
 
 
         [NotMapped]

@@ -1,5 +1,6 @@
 ﻿using ConnectFour.Api.User;
 using ConnectFour.Controllers;
+using ConnectFour.Models;
 using ConnectFour.Repositories.Implementations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -56,15 +57,15 @@ namespace ConnectFour.Tests
         [TestMethod]
         public async Task GetById_ReturnsOneUser()
         {
-            var id = Guid.NewGuid().ToString();
-
             // Arrange
-            var newUserRequest = new UserRequest(id, "Test User", "test@example.com", "password", false);
+            var newUserRequest = new UserRequest("Test User", "test@example.com", false);
 
             // Act
-            await _controller.Post(newUserRequest);
+            var postResult = await _controller.Post(newUserRequest);
+            var actionPostResult = postResult.Result as CreatedAtActionResult;
+            var newUser = actionPostResult.Value as User;
 
-            var result = await _controller.Get(id);
+            var result = await _controller.Get(newUser.Id);
 
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -92,17 +93,19 @@ namespace ConnectFour.Tests
         [TestMethod]
         public async Task Post_CreatesNewUser()
         {
-            var id = Guid.NewGuid().ToString();
-
             // Arrange
-            var newUserRequest = new UserRequest(id, "Test User", "test@example.com", "password", false);
+            var newUserRequest = new UserRequest("Test User", "test@example.com", false);
 
             // Act
-            var result = await _controller.Post(newUserRequest);
-            var newUser = _context.Users.Find(id);
+            var postResult = await _controller.Post(newUserRequest);
+            Assert.IsInstanceOfType(postResult.Result, typeof(CreatedAtActionResult));
+
+            var actionPostResult = postResult.Result as CreatedAtActionResult;
+            var newUser = actionPostResult.Value as User;
+
+            newUser = _context.Users.Find(newUser.Id);
 
             // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
             Assert.IsNotNull(newUser);
 
         }
@@ -112,7 +115,7 @@ namespace ConnectFour.Tests
         {
             // Arrange
             var existingUser = _context.Users.First();
-            var updateUserRequest = new UserRequest(existingUser.Id, "Updated Name", "updated@example.com", "newpassword", true);
+            var updateUserRequest = new UserRequest("Updated Name", "updated@example.com", true);
 
             // Act
             var result = await _controller.Put(existingUser.Id, updateUserRequest);
@@ -122,7 +125,6 @@ namespace ConnectFour.Tests
             _context.Entry(existingUser).Reload();
             Assert.AreEqual("Updated Name", existingUser.Name);
             Assert.AreEqual("updated@example.com", existingUser.Email);
-            Assert.AreEqual("newpassword", existingUser.Password);
             Assert.IsTrue(existingUser.Authenticated);
         }
 
@@ -131,12 +133,13 @@ namespace ConnectFour.Tests
         public async Task Delete_MarksUserAsDeleted_WhenUserExists()
         {
             // Arrange
-            var id = Guid.NewGuid().ToString();
-            var newUserRequest = new UserRequest(id, "Test User", "test@example.com", "password", false);
+            var newUserRequest = new UserRequest("Test User", "test@example.com", false);
 
             // Erstellen eines neuen Benutzers
-            await _controller.Post(newUserRequest);
-
+            var postResult = await _controller.Post(newUserRequest);
+            var actionPostResult = postResult.Result as CreatedAtActionResult;
+            var newUser = actionPostResult.Value as User;
+            var id = newUser.Id;
             _context.SaveChanges();
 
             var user = _context.Users.Find(id);
@@ -147,7 +150,7 @@ namespace ConnectFour.Tests
             var resultDelete = await _controller.Delete(id);
             _context.SaveChanges();
 
-            
+
             // Assert
             Assert.IsInstanceOfType(resultDelete, typeof(NoContentResult));
             Assert.IsNotNull(user.DeletedOn);

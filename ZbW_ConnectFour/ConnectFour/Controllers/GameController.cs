@@ -27,18 +27,18 @@ namespace ConnectFour.Controllers
                 var gameResponses = games.Select(game => new GameResponse
                 {
                     Id = game.Id,
-                    Players = game.Players.Select(p => new PlayerResponse(p.Id, p.Name, p.UserId, p.IsIngame, p.Games.Select(g => g.Id).ToList())).ToList(),
-                    Robots = game.Robots.Select(r => new RobotResponse
+                    Players = game.Players?.Select(p => new PlayerResponse(p.Id, p.Name, p.UserId, p.IsIngame, p.Games?.Select(g => g.Id).ToList())).ToList(),
+                    Robots = game.Robots?.Select(r => new RobotResponse
                     {
                         Id = r.Id,
                         CurrentPlayerId = r.CurrentPlayerId,
                         IsConnected = r.IsConnected,
                         Color = r.Color,
                         IsIngame = r.IsIngame,
-                        GameIds = r.Games.Select(g => g.Id).ToList()
+                        GameIds = r.Games?.Select(g => g.Id).ToList()
                     }).ToList(),
                     CurrentMoveId = game.CurrentMoveId,
-                    WinnerPlayer = game.WinnerPlayer != null ? new PlayerResponse(game.WinnerPlayer.Id, game.WinnerPlayer.Name, game.WinnerPlayer.UserId, game.WinnerPlayer.IsIngame, game.WinnerPlayer.Games.Select(g => g.Id).ToList()) : null,
+                    WinnerPlayer = game.WinnerPlayer != null ? new PlayerResponse(game.WinnerPlayer.Id, game.WinnerPlayer.Name, game.WinnerPlayer.UserId, game.WinnerPlayer.IsIngame, game.WinnerPlayer.Games?.Select(g => g.Id).ToList()) : null,
                     WinnerRobot = game.WinnerRobot != null ? new RobotResponse
                     {
                         Id = game.WinnerRobot.Id,
@@ -46,7 +46,7 @@ namespace ConnectFour.Controllers
                         IsConnected = game.WinnerRobot.IsConnected,
                         Color = game.WinnerRobot.Color,
                         IsIngame = game.WinnerRobot.IsIngame,
-                        GameIds = game.WinnerRobot.Games.Select(g => g.Id).ToList()
+                        GameIds = game.WinnerRobot.Games?.Select(g => g.Id).ToList()
                     } : null,
                     State = game.State,
                     TotalPointsPlayerOne = game.TotalPointsPlayerOne,
@@ -78,7 +78,7 @@ namespace ConnectFour.Controllers
                 var gameResponse = new GameResponse
                 {
                     Id = game.Id,
-                    Players = game.Players.Select(p => new PlayerResponse(p.Id, p.Name, p.UserId, p.IsIngame, p.Games.Select(g => g.Id).ToList())).ToList(),
+                    Players = game.Players.Select(p => new PlayerResponse(p.Id, p.Name, p.UserId, p.IsIngame, p.Games?.Select(g => g.Id).ToList())).ToList(),
                     Robots = game.Robots.Select(r => new RobotResponse
                     {
                         Id = r.Id,
@@ -86,10 +86,10 @@ namespace ConnectFour.Controllers
                         IsConnected = r.IsConnected,
                         Color = r.Color,
                         IsIngame = r.IsIngame,
-                        GameIds = r.Games.Select(g => g.Id)
+                        GameIds = r.Games?.Select(g => g.Id)
                     }).ToList(),
                     CurrentMoveId = game.CurrentMoveId,
-                    WinnerPlayer = game.WinnerPlayer != null ? new PlayerResponse(game.WinnerPlayer.Id, game.WinnerPlayer.Name, game.WinnerPlayer.UserId, game.WinnerPlayer.IsIngame, game.WinnerPlayer.Games.Select(g => g.Id).ToList()) : null,
+                    WinnerPlayer = game.WinnerPlayer != null ? new PlayerResponse(game.WinnerPlayer.Id, game.WinnerPlayer.Name, game.WinnerPlayer.UserId, game.WinnerPlayer.IsIngame, game.WinnerPlayer.Games?.Select(g => g.Id).ToList()) : null,
                     WinnerRobot = game.WinnerRobot != null ? new RobotResponse
                     {
                         Id = game.WinnerRobot.Id,
@@ -97,7 +97,7 @@ namespace ConnectFour.Controllers
                         IsConnected = game.WinnerRobot.IsConnected,
                         Color = game.WinnerRobot.Color,
                         IsIngame = game.WinnerRobot.IsIngame,
-                        GameIds = game.WinnerRobot.Games.Select(g => g.Id)
+                        GameIds = game.WinnerRobot.Games?.Select(g => g.Id)
                     } : null,
                     State = game.State,
                     TotalPointsPlayerOne = game.TotalPointsPlayerOne,

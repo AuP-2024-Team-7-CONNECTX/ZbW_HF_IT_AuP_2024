@@ -45,8 +45,14 @@ public class TestConfigurationHelper
 
             };
 
+        var robots = new List<Robot>
+            {
+                new Robot{ Id = Guid.NewGuid().ToString(),CurrentPlayerId = null,Color=ConnectFour.Enums.Enum.ConnectFourColor.Red,IsConnected=false,IsIngame=false,CurrentPlayer=null},
+            };
+
         context.Users.AddRange(users);
         context.Players.AddRange(players);
+        context.Robots.AddRange(robots);
         context.SaveChanges();
     }
 }
