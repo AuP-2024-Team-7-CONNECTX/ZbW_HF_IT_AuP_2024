@@ -25,13 +25,16 @@ namespace ConnectFour
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<GameDbContext>(options =>
-                    options.UseSqlServer(configuration.GetConnectionString("LocalNick")));
+                    options.UseSqlServer(configuration.GetConnectionString("LocalNick")).UseLazyLoadingProxies());
 
 
             builder.Services.AddScoped<IGenericRepository, GenericRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
             builder.Services.AddScoped<IRobotRepository, RobotRepository>();
+            builder.Services.AddScoped<IMoveRepository, MoveRepository>();
+            builder.Services.AddScoped<IGameRepository, GameRepository>();
+
 
 
             // Konfigurationswerte aus einer Konfigurationsdatei oder Umgebungsvariablen laden

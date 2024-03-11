@@ -30,9 +30,9 @@ namespace ConnectFour.Tests
 
             var loggerMockPlayer = new Mock<ILogger<PlayerController>>();
             var loggerMockUser = new Mock<ILogger<UserController>>();
-
-            var playerRepository = new PlayerRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object));
             var userRepository = new UserRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object));
+
+            var playerRepository = new PlayerRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object), userRepository, new Mock<ILogger<PlayerRepository>>().Object);
 
             _userRepository = userRepository;
             _controller = new PlayerController(playerRepository, userRepository, loggerMockPlayer.Object);

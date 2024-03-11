@@ -8,11 +8,8 @@ public class GameRequestExample : IExamplesProvider<GameRequest>
     {
         return new GameRequest
         {
-            PlayerIds = new List<string> { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() },
-            RobotIds = new List<string> { Guid.NewGuid().ToString() },
             CurrentMoveId = Guid.NewGuid().ToString(),
-            WinnerPlayerId = Guid.NewGuid().ToString(),
-            State = GameState.InProgress
+            State = "Active"
         };
     }
 }

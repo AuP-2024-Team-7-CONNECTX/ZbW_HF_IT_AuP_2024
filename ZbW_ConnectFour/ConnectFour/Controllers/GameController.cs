@@ -1,10 +1,17 @@
 ﻿using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
+using static ConnectFour.Enums.Enum;
 
 namespace ConnectFour.Controllers
 {
-    [Route("api/Games")]
+    [Route("api/games")]
     [ApiController]
     public class GameController : ControllerBase
     {
@@ -17,55 +24,25 @@ namespace ConnectFour.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        // GET api/Games
+        // GET: api/games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll()
+        public async Task<ActionResult<IEnumerable<Game>>> GetAll()
         {
             try
             {
                 var games = await _gameRepository.GetAllAsync();
-                var gameResponses = games.Select(game => new GameResponse
-                {
-                    Id = game.Id,
-                    Players = game.Players?.Select(p => new PlayerResponse(p.Id, p.Name, p.UserId, p.IsIngame, p.Games?.Select(g => g.Id).ToList())).ToList(),
-                    Robots = game.Robots?.Select(r => new RobotResponse
-                    {
-                        Id = r.Id,
-                        CurrentPlayerId = r.CurrentPlayerId,
-                        IsConnected = r.IsConnected,
-                        Color = r.Color,
-                        IsIngame = r.IsIngame,
-                        GameIds = r.Games?.Select(g => g.Id).ToList()
-                    }).ToList(),
-                    CurrentMoveId = game.CurrentMoveId,
-                    WinnerPlayer = game.WinnerPlayer != null ? new PlayerResponse(game.WinnerPlayer.Id, game.WinnerPlayer.Name, game.WinnerPlayer.UserId, game.WinnerPlayer.IsIngame, game.WinnerPlayer.Games?.Select(g => g.Id).ToList()) : null,
-                    WinnerRobot = game.WinnerRobot != null ? new RobotResponse
-                    {
-                        Id = game.WinnerRobot.Id,
-                        CurrentPlayerId = game.WinnerRobot.CurrentPlayerId,
-                        IsConnected = game.WinnerRobot.IsConnected,
-                        Color = game.WinnerRobot.Color,
-                        IsIngame = game.WinnerRobot.IsIngame,
-                        GameIds = game.WinnerRobot.Games?.Select(g => g.Id).ToList()
-                    } : null,
-                    State = game.State,
-                    TotalPointsPlayerOne = game.TotalPointsPlayerOne,
-                    TotalPointsPlayerTwo = game.TotalPointsPlayerTwo
-                }).ToList();
-
-                return Ok(gameResponses);
+                return Ok(games);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while fetching all games.");
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, "An internal server error has occurred.");
             }
         }
 
-
-        // GET api/Games/{id}
+        // GET: api/games/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<GameResponse>> Get(string id)
+        public async Task<ActionResult<Game>> Get(string id)
         {
             try
             {
@@ -74,65 +51,41 @@ namespace ConnectFour.Controllers
                 {
                     return NotFound("Game not found.");
                 }
-
-                var gameResponse = new GameResponse
-                {
-                    Id = game.Id,
-                    Players = game.Players.Select(p => new PlayerResponse(p.Id, p.Name, p.UserId, p.IsIngame, p.Games?.Select(g => g.Id).ToList())).ToList(),
-                    Robots = game.Robots.Select(r => new RobotResponse
-                    {
-                        Id = r.Id,
-                        CurrentPlayerId = r.CurrentPlayerId,
-                        IsConnected = r.IsConnected,
-                        Color = r.Color,
-                        IsIngame = r.IsIngame,
-                        GameIds = r.Games?.Select(g => g.Id)
-                    }).ToList(),
-                    CurrentMoveId = game.CurrentMoveId,
-                    WinnerPlayer = game.WinnerPlayer != null ? new PlayerResponse(game.WinnerPlayer.Id, game.WinnerPlayer.Name, game.WinnerPlayer.UserId, game.WinnerPlayer.IsIngame, game.WinnerPlayer.Games?.Select(g => g.Id).ToList()) : null,
-                    WinnerRobot = game.WinnerRobot != null ? new RobotResponse
-                    {
-                        Id = game.WinnerRobot.Id,
-                        CurrentPlayerId = game.WinnerRobot.CurrentPlayerId,
-                        IsConnected = game.WinnerRobot.IsConnected,
-                        Color = game.WinnerRobot.Color,
-                        IsIngame = game.WinnerRobot.IsIngame,
-                        GameIds = game.WinnerRobot.Games?.Select(g => g.Id)
-                    } : null,
-                    State = game.State,
-                    TotalPointsPlayerOne = game.TotalPointsPlayerOne,
-                    TotalPointsPlayerTwo = game.TotalPointsPlayerTwo
-                };
-                return Ok(gameResponse);
+                return Ok(game);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while fetching the game with ID {id}.");
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, "An internal server error has occurred.");
             }
         }
 
-        // POST api/Games
+        // POST: api/games
         [HttpPost]
-        public async Task<ActionResult<GameResponse>> Post([FromBody] Game game)
+        public async Task<ActionResult<Game>> Post([FromBody] GameRequest request)
         {
             try
             {
-                // Hier sollte die Validierung der Eingabedaten erfolgen
+                var game = new Game
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    CurrentMoveId = request.CurrentMoveId,
+                    State = GameState.Active
+                };
+
                 await _gameRepository.CreateOrUpdateAsync(game);
-                // Hier sollte die GameResponse basierend auf dem neu erstellten Spiel erstellt werden
-                return CreatedAtAction(nameof(Get), new { id = game.Id }, game); // Rückgabe der Basis Game-Daten ohne Umwandlung in GameResponse für das Beispiel
+                return CreatedAtAction(nameof(Get), new { id = game.Id }, game);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating a new game.");
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, "An internal server error has occurred.");
             }
         }
 
-        // PUT api/Games/{id}
+        // PUT: api/games/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(string id, [FromBody] Game gameUpdate)
+        public async Task<IActionResult> Put(string id, [FromBody] GameRequest request)
         {
             try
             {
@@ -142,21 +95,28 @@ namespace ConnectFour.Controllers
                     return NotFound("Game not found.");
                 }
 
-                // Aktualisieren des Spiels mit den neuen Daten
-                await _gameRepository.CreateOrUpdateAsync(gameUpdate); // Annahme: Die Methode aktualisiert das Spiel, wenn es existiert
+                if (!Enum.TryParse<GameState>(request.State, out var state))
+                {
+                    return StatusCode(500, "Invalid value for Color");
+                }
+
+                game.State = state;
+                game.CurrentMoveId = request.CurrentMoveId;
+               
+                await _gameRepository.CreateOrUpdateAsync(game);
 
                 return NoContent();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while updating the game with ID {id}.");
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, "An internal server error has occurred.");
             }
         }
 
-        // DELETE api/Games/{id}
+        // DELETE: api/games/{id}
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             try
             {
@@ -172,7 +132,7 @@ namespace ConnectFour.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while deleting the game with ID {id}.");
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, "An internal server error has occurred.");
             }
         }
     }

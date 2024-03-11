@@ -3,20 +3,35 @@ using ConnectFour.Interfaces; // Stelle sicher, dass das Interface IGenericRepos
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ConnectFour.Repositories.Interfaces;
+using Azure.Core;
+using System.Data.Entity.Core;
 
 namespace ConnectFour.Repositories.Implementations
 {
     public class PlayerRepository : IPlayerRepository // Stelle sicher, dass IPlayerRepository definiert ist
     {
         private readonly IGenericRepository _genericRepository;
+        private readonly IUserRepository _userRepository;
 
-        public PlayerRepository(IGenericRepository genericRepository)
+        private readonly ILogger<PlayerRepository> _logger;
+        public PlayerRepository(IGenericRepository genericRepository, IUserRepository userRepository, ILogger<PlayerRepository> logger)
         {
             _genericRepository = genericRepository;
+            _userRepository = userRepository;
+            _logger = logger;
         }
 
         public async Task CreateOrUpdateAsync(Player entity)
         {
+            var user = await _userRepository.GetByIdAsync(entity.UserId);
+
+            if (user == null)
+            {
+                _logger.LogError("No User found with Id {0}", entity.UserId);
+                throw new ObjectNotFoundException($"User mit id {entity.UserId} konnte nicht gefunden werden");
+
+            }
+
             await _genericRepository.CreateOrUpdateAsync(entity);
         }
 

@@ -1,8 +1,6 @@
-﻿using ConnectFour.Api.User;
-using ConnectFour.Models;
+﻿using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Numerics;
 
 namespace ConnectFour.Controllers
 {
@@ -86,15 +84,7 @@ namespace ConnectFour.Controllers
                     IsIngame = request.IsIngame,
                     Games = new List<Game>()
                 };
-
-                var user = await _UserRepository.GetByIdAsync(request.UserId);
-
-                if (user == null)
-                {
-                    _logger.LogError($"No User found with Id {0}",request.UserId);
-                    return StatusCode(404, $"No User found with Id {request.UserId}");
-                }
-
+                             
                 await _repository.CreateOrUpdateAsync(newPlayer);
 
                 var playerResponse = new PlayerResponse(newPlayer.Id, newPlayer.Name, newPlayer.UserId, newPlayer.IsIngame, newPlayer.Games?.Select(g => g.Id).ToList());

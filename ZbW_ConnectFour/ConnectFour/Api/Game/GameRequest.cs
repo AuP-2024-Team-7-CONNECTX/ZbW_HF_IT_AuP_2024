@@ -2,12 +2,9 @@
 
 public record GameRequest
 {
-     public List<string> PlayerIds { get; init; } = new List<string>();
-    public List<string> RobotIds { get; init; } = new List<string>();
     public string? CurrentMoveId { get; init; }
-    public string? WinnerPlayerId { get; init; }
-    public string? WinnerRobotId { get; init; }
-    public GameState State { get; init; }
+    // Active, Completed, Abandoned, InProgress
+    public string State { get; init; }
 
     public GameRequest() { }
 }

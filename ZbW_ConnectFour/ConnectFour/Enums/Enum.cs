@@ -10,8 +10,6 @@
             InProgress
         }
 
-        public enum State { Active, Inactive }
-
         public enum ConnectFourColor { Red, Blue }
     }
 }

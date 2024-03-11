@@ -2,6 +2,7 @@
 using ConnectFour.Controllers;
 using ConnectFour.Models;
 using ConnectFour.Repositories;
+using ConnectFour.Repositories.Implementations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,7 @@ using static ConnectFour.Enums.Enum;
 namespace ConnectFour.Tests
 {
     [TestClass]
-    public class RobotControllerTests
+    public class RobotControllerTest
     {
         private GameDbContext _context;
         private RobotController _controller;
@@ -28,7 +29,9 @@ namespace ConnectFour.Tests
             TestConfigurationHelper.InitializeDbForTests(_context); // Stellen Sie sicher, dass Sie eine Methode haben, die Ihre Testdaten initialisiert
 
             var loggerMock = new Mock<ILogger<RobotController>>();
-            var robotRepository = new RobotRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object));
+            var userRepository = new UserRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object));
+
+            var robotRepository = new RobotRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object), userRepository, new Mock<ILogger<RobotRepository>>().Object);
 
             _controller = new RobotController(robotRepository, loggerMock.Object);
         }
@@ -61,6 +64,7 @@ namespace ConnectFour.Tests
             var newRobotRequest = new RobotRequest
             {
                 CurrentPlayerId = Guid.NewGuid().ToString(),
+                Name ="Röbby",
                 Color = "Red",
             };
 
@@ -87,7 +91,10 @@ namespace ConnectFour.Tests
             var newRobotRequest = new RobotRequest
             {
                 CurrentPlayerId = Guid.NewGuid().ToString(),
+                Name = "Robot1",
                 Color = "Red",
+                IsConnected = false,
+                IsIngame = false
             };
 
             // Act
@@ -108,14 +115,17 @@ namespace ConnectFour.Tests
             var newRobotRequest = new RobotRequest
             {
                 CurrentPlayerId = Guid.NewGuid().ToString(),
+                Name = "röbby",
                 Color = "Red",
+                IsIngame = false,
+                IsConnected = false
             };
 
             // Act
             var postresult = await _controller.Post(newRobotRequest);
             var actionPostResult = postresult.Result as CreatedAtActionResult;
             var createdRobot = actionPostResult.Value as RobotResponse;
-            
+
             var getByIdResult = await _controller.GetById(createdRobot.Id);
             var actionGetResult = getByIdResult.Result as OkObjectResult;
             var existingRobot = actionGetResult.Value as RobotResponse;
@@ -126,19 +136,24 @@ namespace ConnectFour.Tests
             {
                 CurrentPlayerId = playerId,
                 Color = "Blue",
-                IsConnected = true,
+                Name = "foo",
+                IsIngame = true,
+                IsConnected = true
             };
-            var result = await _controller.Put(existingRobot.Id, updatedRobotRequest);
-            _context.Entry(existingRobot).Reload();
 
+            _context.SaveChanges();
+            var result = await _controller.Put(existingRobot.Id, updatedRobotRequest);
+            _context.SaveChanges();
+            var updatedRobot = _context.Robots.Find(existingRobot.Id);
             // Assert
             Assert.IsInstanceOfType(result, typeof(NoContentResult));
-            _context.Entry(createdRobot).Reload();
-            
-            Assert.IsNotNull(existingRobot);
-            Assert.AreEqual(playerId, existingRobot.CurrentPlayerId);
-            Assert.AreEqual(ConnectFourColor.Blue, existingRobot.Color);
-            Assert.AreEqual(true, existingRobot.IsConnected);
+                        
+            Assert.IsNotNull(updatedRobot);
+            Assert.AreEqual(playerId, updatedRobot.CurrentPlayerId);
+            Assert.AreEqual(ConnectFourColor.Blue, updatedRobot.Color);
+            Assert.AreEqual(true, updatedRobot.IsConnected);
+            Assert.AreEqual(true, updatedRobot.IsIngame);
+            Assert.AreEqual("foo", updatedRobot.Name);
 
         }
 
@@ -149,15 +164,16 @@ namespace ConnectFour.Tests
             // Arrange
             var newRobotRequest = new RobotRequest
             {
-                CurrentPlayerId = Guid.NewGuid().ToString(),
+                CurrentPlayerId = null,
                 Color = "Red",
+                Name ="Röbby"
             };
 
             // Erstellen eines neuen Benutzers
             var postResult = await _controller.Post(newRobotRequest);
-            var actionPostResult = postResult.Result as CreatedAtActionResult;
-            var newRobot = actionPostResult.Value as User;
-            var id = newRobot.Id;
+            var actionResult = postResult.Result as CreatedAtActionResult;
+            var createdRobot = actionResult.Value as RobotResponse;
+            var id = createdRobot.Id;
             _context.SaveChanges();
 
             var robot = _context.Robots.Find(id);

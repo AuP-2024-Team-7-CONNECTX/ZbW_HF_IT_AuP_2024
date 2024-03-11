@@ -5,11 +5,11 @@ namespace ConnectFour.Models
 {
     public class Move : Entity
     {
-        [NotMapped]
-        public Player Player { get; set; }
+        
+        public virtual Player Player { get; set; }
         public string PlayerId { get; set; }
-        [NotMapped]
-        public Robot Robot { get; set; }
+       
+        public virtual Robot Robot { get; set; }
         public string RobotId { get; set; }
 
         public string MoveDetails { get; set; }
@@ -19,9 +19,9 @@ namespace ConnectFour.Models
 
         // Duration in seconds
         public float? Duration { get; set; }
-        [NotMapped]
+     
 
-        public Game Game { get; set; }
+        public virtual Game Game { get; set; }
         public string GameId { get; set; }
 
 

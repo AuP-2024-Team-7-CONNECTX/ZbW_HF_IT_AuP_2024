@@ -30,6 +30,7 @@ namespace ConnectFour.Controllers
                 {
                     Id = robot.Id,
                     CurrentPlayerId = robot.CurrentPlayerId,
+                    Name = robot.Name,
                     IsConnected = robot.IsConnected,
                     Color = robot.Color,
                     IsIngame = robot.IsIngame,
@@ -62,6 +63,7 @@ namespace ConnectFour.Controllers
                     Id = robot.Id,
                     CurrentPlayerId = robot.CurrentPlayerId,
                     IsConnected = robot.IsConnected,
+                    Name = robot.Name,
                     Color = robot.Color,
                     IsIngame = robot.IsIngame,
                     GameIds = robot.Games.Select(g => g.Id).ToList()
@@ -91,6 +93,7 @@ namespace ConnectFour.Controllers
                 {
                     Id = Guid.NewGuid().ToString(),
                     CurrentPlayerId = robotRequest.CurrentPlayerId,
+                    Name = robotRequest.Name,
                     IsConnected = robotRequest.IsConnected,
                     Color = color,
                     IsIngame = false, // Initial false, robots wont be ingame upon creation
@@ -102,6 +105,7 @@ namespace ConnectFour.Controllers
                 return CreatedAtAction(nameof(GetById), new { id = newRobot.Id }, new RobotResponse
                 {
                     Id = newRobot.Id,
+                    Name = newRobot.Name,
                     CurrentPlayerId = newRobot.CurrentPlayerId,
                     IsConnected = newRobot.IsConnected,
                     Color = newRobot.Color,
@@ -112,7 +116,7 @@ namespace ConnectFour.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating a new robot.");
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, $"An error occurred while processing your request. {ex.Message}");
             }
         }
 
@@ -130,9 +134,16 @@ namespace ConnectFour.Controllers
 
                 robotToUpdate.CurrentPlayerId = robotRequest.CurrentPlayerId;
                 robotToUpdate.IsConnected = robotRequest.IsConnected;
-                robotToUpdate.Color = Enum.Parse<ConnectFourColor>(robotRequest.Color);
-                // Assuming IsIngame is managed internally and not directly updated
+                robotToUpdate.IsIngame = robotRequest.IsIngame;
 
+                if (!Enum.TryParse<ConnectFourColor>(robotRequest.Color, out var color))
+                {
+                    return StatusCode(500, "Invalid value for Color");
+                }
+
+                robotToUpdate.Color = color;
+                robotToUpdate.Name = robotRequest.Name;
+               
                 await _repository.CreateOrUpdateAsync(robotToUpdate);
 
                 return NoContent();

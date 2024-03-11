@@ -7,9 +7,11 @@ public class RobotRequestExample : IExamplesProvider<RobotRequest>
     {
         return new RobotRequest
         {
-            CurrentPlayerId = Guid.NewGuid().ToString(),
+            CurrentPlayerId = null,
             IsConnected = true,
-            Color = "Red"
+            IsIngame = false,
+            Color = "Red",
+            Name ="Röbby"
         };
     }
 }

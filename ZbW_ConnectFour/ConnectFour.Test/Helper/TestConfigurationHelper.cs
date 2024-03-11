@@ -47,7 +47,7 @@ public class TestConfigurationHelper
 
         var robots = new List<Robot>
             {
-                new Robot{ Id = Guid.NewGuid().ToString(),CurrentPlayerId = null,Color=ConnectFour.Enums.Enum.ConnectFourColor.Red,IsConnected=false,IsIngame=false,CurrentPlayer=null},
+                new Robot{ Id = Guid.NewGuid().ToString(),CurrentPlayerId = null,Color=ConnectFour.Enums.Enum.ConnectFourColor.Red,IsConnected=false,IsIngame=false,CurrentPlayer=null,Name="Robot1"},
             };
 
         context.Users.AddRange(users);
