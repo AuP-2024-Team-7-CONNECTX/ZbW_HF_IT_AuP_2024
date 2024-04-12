@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const redSound = new Audio('../Sounds/red.m4a');
+    const blueSound = new Audio('../Sounds/blue.m4a');
+
     let currentPlayer = Math.random() < 0.5 ? 'rot' : 'blau';
     let redTotalTime = 0, blueTotalTime = 0;
     let redRemaining = 21, blueRemaining = 21;
@@ -52,9 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentPlayer === 'rot') {
             redTotalTime += timeElapsed;
             redRemaining--;
+            redSound.play();
         } else {
             blueTotalTime += timeElapsed;
             blueRemaining--;
+            blueSound.play();
         }
         updateTimeDisplay();
     }
@@ -97,13 +102,16 @@ document.addEventListener('DOMContentLoaded', () => {
             column.appendChild(cell);
         }
     }
-
+    
     function endGame(message) {
-        alert(message);
-        showRestartButton();
-        showNewOpponentButton();
-        columns.forEach(column => column.removeEventListener('click', handleColumnClick));
+        setTimeout(() => {
+            alert(message);
+            showRestartButton();
+            showNewOpponentButton();
+            columns.forEach(column => column.removeEventListener('click', handleColumnClick));
+        }, 100); // Kurze Verzögerung, um das DOM zu aktualisieren
     }
+    
 
     function showRestartButton() {
         restartButton.style.display = 'inline-block';
@@ -123,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleColumnClick(event) {
-        // Diese Funktion wird als Event-Handler für Klickereignisse verwendet.
         if (!gameStarted) {
             startGameTimer();
             gameStarted = true;
@@ -146,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameStarted = false;
                 return;
             }
-            
+
             if (checkDraw()) {
                 endGame("Unentschieden!");
                 gameStarted = false;
