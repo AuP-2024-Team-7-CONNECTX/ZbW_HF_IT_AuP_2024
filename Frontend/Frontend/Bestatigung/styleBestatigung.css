@@ -1,0 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    background: url('../Bilder/hintergrund.jpg') no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.confirmation-box {
+    position: relative;
+    width: 600px; /* Vergrößert */
+    padding: 40px; /* Vergrößert */
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, .5);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(15px);
+    margin-bottom: 20px; /* Abstand zwischen Box und Link */
+}
+
+.confirmation-box h2 {
+    font-size: 2.5em; /* Vergrößerte Schrift */
+    color: #fff;
+    text-align: center;
+}
+
+.confirmation-link p a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.2em; /* Vergrößerte Schrift für den Link */
+}
+
+.confirmation-link p a:hover {
+    text-decoration: underline;
+}
