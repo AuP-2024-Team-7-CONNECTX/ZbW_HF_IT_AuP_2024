@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 100);
     }
 
-    // Stoppt den Timer nach Beendigung eines Zuges
     function stopGameTimer() {
         clearInterval(gameTimer);
         const timeElapsed = parseFloat(currentPlayer === 'rot' ? redInfoTimeMove.textContent : blueInfoTimeMove.textContent);
@@ -72,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updateTimeDisplay();
     }
+    
 
     // Überprüft, ob alle Felder besetzt sind, und damit ein Unentschieden vorliegt
     function checkDraw() {
