@@ -39,15 +39,15 @@ public class TestConfigurationHelper
 
         var players = new List<Player>
             {
-                new Player { Id = Guid.NewGuid().ToString(), Name = "Player 1", UserId = "User1", IsIngame = false },
-                new Player { Id = Guid.NewGuid().ToString(), Name = "Player 2", UserId = "User2", IsIngame = true },
-                new Player { Id = Guid.NewGuid().ToString(), Name = "Player 3", UserId = "User3", IsIngame = false,DeletedOn=DateTime.Now }
+                new Player { Id = Guid.NewGuid().ToString(),User = users.FirstOrDefault(d => d.Name=="User 1"), Name = "Player 1", UserId = "User1", IsIngame = false },
+                new Player { Id = Guid.NewGuid().ToString(), User = users.FirstOrDefault(d => d.Name=="User 2"), Name = "Player 2", UserId = "User2", IsIngame = true },
+                new Player { Id = Guid.NewGuid().ToString(), User = users.FirstOrDefault(d => d.Name=="User 3"),  Name = "Player 3", UserId = "User3", IsIngame = false,DeletedOn=DateTime.Now }
 
             };
 
         var robots = new List<Robot>
             {
-                new Robot{ Id = Guid.NewGuid().ToString(),CurrentPlayerId = null,Color=ConnectFour.Enums.Enum.ConnectFourColor.Red,IsConnected=false,IsIngame=false,CurrentPlayer=null,Name="Robot1"},
+                new Robot{ Id = Guid.NewGuid().ToString(),CurrentPlayerId = players.FirstOrDefault(d => d.Name=="Player 1").Id,Color=ConnectFour.Enums.Enum.ConnectFourColor.Red,IsConnected=false,IsIngame=false,CurrentPlayer=null,Name="Robot1"},
             };
 
         context.Users.AddRange(users);

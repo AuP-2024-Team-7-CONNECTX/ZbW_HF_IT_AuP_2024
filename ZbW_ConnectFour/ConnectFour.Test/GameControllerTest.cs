@@ -1,11 +1,14 @@
 ﻿using ConnectFour.Controllers;
 using ConnectFour.Models;
+using ConnectFour.Repositories;
 using ConnectFour.Repositories.Implementations;
+using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Drawing;
 using static ConnectFour.Enums.Enum;
 
 namespace ConnectFour.Tests
@@ -15,6 +18,9 @@ namespace ConnectFour.Tests
     {
         private GameDbContext _context;
         private GameController _controller;
+        private UserRepository _userRepository;
+        private PlayerRepository _playerRepository;
+        private RobotRepository _robotRepository;
 
         [TestInitialize]
         public void Setup()
@@ -52,9 +58,17 @@ namespace ConnectFour.Tests
             _context.SaveChanges();
 
             var loggerMock = new Mock<ILogger<GameController>>();
-            var gameRepository = new GameRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object));
+            var genericRepository = new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object);
+            var moveRepository = new MoveRepository(genericRepository);
+            var gameRepository = new GameRepository(genericRepository, moveRepository);
+            var userRepository = new UserRepository(genericRepository);
+            var playerRepository = new PlayerRepository(genericRepository,userRepository, new Mock<ILogger<PlayerRepository>>().Object);
+            var robotRepository = new RobotRepository(genericRepository, playerRepository, new Mock<ILogger<RobotRepository>>().Object);
 
-            _controller = new GameController(gameRepository, loggerMock.Object);
+            _userRepository = userRepository;
+            _playerRepository = playerRepository;
+            _controller = new GameController(gameRepository,playerRepository,robotRepository, loggerMock.Object);
+            _robotRepository = robotRepository;
         }
 
         [TestCleanup]
@@ -89,55 +103,79 @@ namespace ConnectFour.Tests
             Assert.AreEqual(gameId, gameResponse.Id);
         }
 
-        //[TestMethod]
-        //public async Task CreateGame_CreatesNewGame()
-        //{
-        //    var gameId = "";
+        [TestMethod]
+        public async Task CreateGame_CreatesNewGame()
+        {
+            var gameId = "";
 
-        //    var user = new User { Id = Guid.NewGuid().ToString(), Name = "TestUser", Authenticated = true, Email = "test" };
-        //    var user2 = new User { Id = Guid.NewGuid().ToString(), Name = "TestUser", Authenticated = true, Email = "test" };
+            var players = await _playerRepository.GetAllAsync();
 
-        //    var newGame = new Game
-        //    {
-        //        Id = Guid.NewGuid().ToString(),
+            var count = 0;
+            var name = "";
+            foreach (var player in players)
+            {
+                name += "Robot " + count;
+                var newRobotRequest = new Robot
+                {
+                    CurrentPlayerId = player.Id,
+                    Name = name,
+                    Color = ConnectFourColor.Red,
+                    IsConnected = false,
+                    IsIngame = false
+                };
+                count++;
 
-        //        Players = new List<Player>
-        //        {
-        //            new Player { Id = Guid.NewGuid().ToString(), Name = "Player 1" ,User = user},
-        //            new Player { Id = Guid.NewGuid().ToString(), Name = "Player 2" ,User = user2}
-        //        },
-        //        Robots = new List<Robot>
-        //        {
-        //            new Robot { Id = Guid.NewGuid().ToString(), Name = "Robot 1" }
-        //        },
-        //        State = GameState.Active,
-        //        CurrentMove = null, // Assuming CurrentMove is a defined class
-        //        WinnerPlayer = null,
-        //        TotalPointsPlayerOne = 100,
-        //        TotalPointsPlayerTwo = 95
-        //    };
-        //    gameId = newGame.Id;
-        //    var result = await _controller.Post(newGame);
-            
-        //    Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
-        //    var actionResult = result.Result as CreatedAtActionResult;
-        //    var createdGame = actionResult.Value as Game;
-        //    Assert.IsNotNull(createdGame);
-        //    Assert.IsTrue(_context.Games.Any(g => g.Id == createdGame.Id));
-        //}
+                await _robotRepository.CreateOrUpdateAsync(newRobotRequest);
+            }
+            // Arrange
+           
 
-        //[TestMethod]
-        //public async Task UpdateGame_UpdatesExistingGame()
-        //{
-        //    var existingGame = _context.Games.First();
-        //    existingGame.State = GameState.Completed; // Example of an update
+            var newGame = new Game
+            {
+                Id = Guid.NewGuid().ToString(),
 
-        //    var result = await _controller.Put(existingGame.Id, existingGame);
+                Players = new List<Player>
+                {
+                    //new Player { Id = Guid.NewGuid().ToString(), Name = "Player 1" ,User = user},
+                    //new Player { Id = Guid.NewGuid().ToString(), Name = "Player 2" ,User = user2}
+                },
+                Robots = new List<Robot>
+                {
+                    new Robot { Id = Guid.NewGuid().ToString(), Name = "Robot 1" }
+                },
+                State = GameState.Active,
+                CurrentMove = null, // Assuming CurrentMove is a defined class
+                WinnerPlayer = null,
+                TotalPointsPlayerOne = 100,
+                TotalPointsPlayerTwo = 95
+            };
 
-        //    Assert.IsInstanceOfType(result, typeof(NoContentResult));
-        //    var dbGame = await _context.Games.FindAsync(existingGame.Id);
-        //    Assert.AreEqual(GameState.Completed, dbGame.State);
-        //}
+            var gameRequest = new GameRequest() { State = "Abandoned" };
+
+            gameId = newGame.Id;
+            var result = await _controller.Post(gameRequest);
+
+            Assert.IsInstanceOfType(result.Result, typeof(CreatedAtActionResult));
+            var actionResult = result.Result as CreatedAtActionResult;
+            var createdGame = actionResult.Value as Game;
+            Assert.IsNotNull(createdGame);
+            Assert.IsTrue(_context.Games.Any(g => g.Id == createdGame.Id));
+        }
+
+        [TestMethod]
+        public async Task UpdateGame_UpdatesExistingGame()
+        {
+            var existingGame = _context.Games.First();
+            existingGame.State = GameState.Completed; // Example of an update
+
+            var gameRequest = new GameRequest() { State = "Abandoned" };
+
+            var result = await _controller.Put(existingGame.Id, gameRequest);
+
+            Assert.IsInstanceOfType(result, typeof(NoContentResult));
+            var dbGame = await _context.Games.FindAsync(existingGame.Id);
+            Assert.AreEqual(GameState.Completed, dbGame.State);
+        }
 
         [TestMethod]
         public async Task DeleteGame_DeletesExistingGame()

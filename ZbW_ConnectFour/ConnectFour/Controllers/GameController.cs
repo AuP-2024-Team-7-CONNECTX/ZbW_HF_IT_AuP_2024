@@ -1,12 +1,6 @@
 ﻿using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
 using static ConnectFour.Enums.Enum;
 
 namespace ConnectFour.Controllers
@@ -16,12 +10,22 @@ namespace ConnectFour.Controllers
     public class GameController : ControllerBase
     {
         private readonly IGameRepository _gameRepository;
+        private readonly IPlayerRepository _playerRepository;
+
+        public GameController(IPlayerRepository playerRepository)
+        {
+            _playerRepository = playerRepository;
+        }
+
+        private readonly IRobotRepository _robotRepository;
         private readonly ILogger<GameController> _logger;
 
-        public GameController(IGameRepository gameRepository, ILogger<GameController> logger)
+        public GameController(IGameRepository gameRepository, IPlayerRepository playerRepository, IRobotRepository robotRepository, ILogger<GameController> logger)
         {
             _gameRepository = gameRepository ?? throw new ArgumentNullException(nameof(gameRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _playerRepository = playerRepository;
+            _robotRepository = robotRepository;
         }
 
         // GET: api/games
@@ -66,9 +70,29 @@ namespace ConnectFour.Controllers
         {
             try
             {
+                //var players = await _playerRepository.GetAllAsync();
+                //var playersGame = (List<Player>)players.Where(p => request.PlayerIds.Contains(p.Id));
+
+                var allRobots = await _robotRepository.GetAllAsync();
+                var robots = (List<Robot>)allRobots.Where(r => request.RobotIds.Contains(r.Id));
+
+                if (robots.Count() != 2)
+                {
+                    throw new Exception("Too many/few Robots in List. Couldnt create game");
+                }
+
+                var players = robots.Select(r => r.CurrentPlayer).ToList();
+
+                if (players.Count() != 2)
+                {
+                    throw new Exception("Too many/few Players in List. Couldnt create game");
+                }
+
                 var game = new Game
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Players = players,
+                    Robots = robots,
                     CurrentMoveId = request.CurrentMoveId,
                     State = GameState.Active
                 };

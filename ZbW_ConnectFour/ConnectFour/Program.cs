@@ -1,7 +1,9 @@
 using ConnectFour.Repositories;
 using ConnectFour.Repositories.Implementations;
 using ConnectFour.Repositories.Interfaces;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -17,16 +19,19 @@ namespace ConnectFour
             var configuration = builder.Configuration;
 
             // Add services to the container.
-           
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<GameDbContext>(options =>
                     options.UseSqlServer(configuration.GetConnectionString("LocalNick")).UseLazyLoadingProxies());
 
+            // Füge das Health Check Paket für SQL Server hinzu
+            builder.Services.AddHealthChecks()
+                .AddSqlServer(configuration.GetConnectionString("LocalNick"),
+                    name: "Database", // Name des Health Checks
+                    failureStatus: HealthStatus.Unhealthy, // Status bei Fehlschlagen
+                    tags: new[] { "db", "sql", "database" });
 
             builder.Services.AddScoped<IGenericRepository, GenericRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -36,12 +41,7 @@ namespace ConnectFour
             builder.Services.AddScoped<IGameRepository, GameRepository>();
 
 
-
-            // Konfigurationswerte aus einer Konfigurationsdatei oder Umgebungsvariablen laden
-            var oauthConfig = configuration.GetSection("OAuth2").Get<OAuth2Configuration>();
-            builder.Services.AddSingleton(oauthConfig);
-
-            // Weitere benötigte Services registrieren, z.B. für die E-Mail-Verifizierung
+                        // Weitere benötigte Services registrieren, z.B. für die E-Mail-Verifizierung
             builder.Services.AddTransient<EmailVerificationService>();
 
             builder.Services.AddSwaggerGen(c =>
@@ -51,6 +51,7 @@ namespace ConnectFour
             });
 
             builder.Services.AddSwaggerExamplesFromAssemblyOf<UserRequestExample>();
+
 
 
             var app = builder.Build();
@@ -81,11 +82,34 @@ namespace ConnectFour
                 }
                 catch (Exception ex)
                 {
-                    
+
                     logger.LogError(ex, "Ein Fehler ist aufgetreten beim Erstellen der Datenbank.");
                 }
             }
 
+          
+
+            // Konfiguriere Health Checks Route und die Ausgabe
+            app.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = async (context, report) =>
+                {
+                    context.Response.ContentType = "application/json";
+                    var results = report.Entries.Select(e => new
+                    {
+                        name = e.Key,
+                        status = e.Value.Status == HealthStatus.Healthy
+                    }).ToList();
+
+                    var response = new
+                    {
+                        checks = results,
+                        overallStatus = report.Status == HealthStatus.Healthy
+                    };
+
+                    await context.Response.WriteAsJsonAsync(response);
+                }
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -102,6 +126,24 @@ namespace ConnectFour
             app.MapControllers();
 
             app.Run();
+
+            //string brokerAddress = "broker.hivemq.com";
+            //var mqttClientService = new MqttClientService(brokerAddress);
+
+            //mqttClientService.Connect("testClientId");
+
+            //// Abonniere Topics
+            //string[] topics = { "test/topic" };
+            //byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
+            //mqttClientService.Subscribe(topics, qosLevels);
+
+            //// Sende eine Nachricht
+            //mqttClientService.Publish("test/topic", "Hello MQTT from M2MqttDotnetCore!");
+
+            //Console.WriteLine("Press any key to exit...");
+            //Console.ReadKey();
+
+            //mqttClientService.Disconnect();
         }
     }
 }

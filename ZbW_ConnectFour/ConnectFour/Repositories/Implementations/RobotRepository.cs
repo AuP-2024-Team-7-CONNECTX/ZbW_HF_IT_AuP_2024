@@ -8,14 +8,14 @@ namespace ConnectFour.Repositories
     public class RobotRepository : IRobotRepository // Stelle sicher, dass IRobotRepository definiert ist
     {
         private readonly IGenericRepository _genericRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IPlayerRepository _playerRepository;
 
         private readonly ILogger<RobotRepository> _logger;
 
-        public RobotRepository(IGenericRepository genericRepository, IUserRepository userRepository, ILogger<RobotRepository> logger)
+        public RobotRepository(IGenericRepository genericRepository, IPlayerRepository playerRepository, ILogger<RobotRepository> logger)
         {
             _genericRepository = genericRepository;
-            _userRepository = userRepository;
+            _playerRepository = playerRepository;
             _logger = logger;
         }
 
@@ -23,9 +23,9 @@ namespace ConnectFour.Repositories
         {
             if (entity.CurrentPlayerId != null)
             {
-                var user = await _userRepository.GetByIdAsync(entity.CurrentPlayerId);
+                var player = await _playerRepository.GetByIdAsync(entity.CurrentPlayerId);
 
-                if (user == null)
+                if (player == null)
                 {
                     _logger.LogError("No Player found with Id {0}", entity.CurrentPlayerId);
                     throw new ObjectNotFoundException($"Player mit id {entity.CurrentPlayerId} konnte nicht gefunden werden");
