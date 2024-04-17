@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("LocalNick");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -50,6 +50,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 });
 
+
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -60,6 +62,38 @@ else
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
+}
+
+// Datenbankprüfung und -erstellung
+using (var scope = app.Services.CreateScope())
+{
+
+	var services = scope.ServiceProvider;
+
+	var logger = services.GetRequiredService<ILogger<Program>>();
+	try
+	{
+		var context = services.GetRequiredService<ApplicationDbContext>();
+
+		var connected = context.Database.CanConnect();
+		if (connected)
+		{
+			logger.LogInformation("Datenbank Authentication erfolgreich verbunden");
+
+		}
+		else
+		{
+			logger.LogInformation("Es wurde keine Datenbank für Authentication gefunden. Neue Datenbank wird erstellt...");
+			context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+			logger.LogInformation("Datenbank Authentication wurde erfolgreich angelegt!");
+		}
+
+	}
+	catch (Exception ex)
+	{
+
+		logger.LogError(ex, "Ein Fehler ist aufgetreten beim Erstellen der Datenbank.");
+	}
 }
 
 app.UseHttpsRedirection();
