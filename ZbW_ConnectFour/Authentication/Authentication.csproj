@@ -29,4 +29,8 @@
     <PackageReference Include="Postmark" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectFour\ConnectFour.csproj" />
+  </ItemGroup>
+
 </Project>

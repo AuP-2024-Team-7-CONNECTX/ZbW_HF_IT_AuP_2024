@@ -1,22 +1,34 @@
 using Authentication.Data;
 using Authentication.Services;
+using ConnectFour.Repositories.Implementations;
+using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("LocalNick");
+var connectionString = builder.Configuration.GetConnectionString("ConnectFourAuthentication");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddDbContext<GameDbContext>(options =>
+					options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectFour")).UseLazyLoadingProxies());
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddRazorPages();
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
+
+
+builder.Services.AddScoped<IGenericRepository, GenericRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -64,7 +76,7 @@ else
     app.UseHsts();
 }
 
-// Datenbankprüfung und -erstellung
+// Datenbankprï¿½fung und -erstellung
 using (var scope = app.Services.CreateScope())
 {
 
@@ -83,8 +95,8 @@ using (var scope = app.Services.CreateScope())
 		}
 		else
 		{
-			logger.LogInformation("Es wurde keine Datenbank für Authentication gefunden. Neue Datenbank wird erstellt...");
-			context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+			logger.LogInformation("Es wurde keine Datenbank fï¿½r Authentication gefunden. Neue Datenbank wird erstellt...");
+			context.Database.EnsureCreated(); // Prï¿½ft, ob die DB existiert, und erstellt sie, falls nicht
 			logger.LogInformation("Datenbank Authentication wurde erfolgreich angelegt!");
 		}
 

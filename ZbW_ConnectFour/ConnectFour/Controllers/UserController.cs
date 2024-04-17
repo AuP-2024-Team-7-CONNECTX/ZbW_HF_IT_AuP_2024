@@ -19,6 +19,7 @@ namespace ConnectFour.Controllers
             _logger = logger;
         }
 
+
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserResponse>>> GetAll()
