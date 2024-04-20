@@ -7,9 +7,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using ConnectFour.Repositories.Interfaces;
-using ConnectFour.Models;
-using ConnectFour.Api.User;
 
 namespace Authentication.Areas.Identity.Pages.Account
 {
@@ -17,11 +14,13 @@ namespace Authentication.Areas.Identity.Pages.Account
 	{
 		private readonly SignInManager<IdentityUser> _signInManager;
 		private readonly ILogger<LoginModel> _logger;
+		private readonly IConfiguration _configuration;
 
-		public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+		public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, IConfiguration configuration)
 		{
 			_signInManager = signInManager;
 			_logger = logger;
+			_configuration = configuration;
 		}
 
 		/// <summary>
@@ -111,22 +110,6 @@ namespace Authentication.Areas.Identity.Pages.Account
 				if (result.Succeeded)
 				{
 					_logger.LogInformation("User logged in.");
-
-					//var newUser = new User() { Id = Guid.NewGuid().ToString(), Name = "TestUser", Authenticated = true, Email = Input.Email, Password = Input.Password };
-					//var userRepo = ServiceLocator.GetService<IUserRepository>();
-					//userRepo.CreateOrUpdateAsync(newUser);
-					// Erstellen Sie einen HttpClient
-					using var httpClient = new HttpClient();
-
-					// Definieren Sie die Daten, die Sie senden möchten (falls erforderlich)
-					var postData = new UserRequest("TestUser", Input.Email, true);
-
-					// Definieren Sie die URL des Controllers im Projekt 2
-					var apiUrl = "";
-
-					// Senden Sie den POST-Request
-					var response = await httpClient.PostAsJsonAsync(apiUrl, postData);
-
 					return LocalRedirect(returnUrl);
 
 				}

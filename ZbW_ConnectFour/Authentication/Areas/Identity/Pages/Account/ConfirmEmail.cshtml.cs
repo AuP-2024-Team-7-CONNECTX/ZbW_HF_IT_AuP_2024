@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ConnectFour.Api.User;
 using ConnectFour.Repositories.Implementations;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -13,18 +14,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace Authentication.Areas.Identity.Pages.Account
 {
     public class ConfirmEmailModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        //private readonly IUserRepository _userRepository;
+        
+        private readonly IConfiguration _configuration;
 
-		public ConfirmEmailModel(UserManager<IdentityUser> userManager)
+		public ConfirmEmailModel(UserManager<IdentityUser> userManager, IConfiguration configuration)
 		{
 			_userManager = userManager;
-			
+			_configuration = configuration;
 		}
 
 		/// <summary>
@@ -50,10 +53,14 @@ namespace Authentication.Areas.Identity.Pages.Account
             var result = await _userManager.ConfirmEmailAsync(user, code);
             StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
 
-            //if (result.Succeeded)
-            //{
-            //    User.
-            //}
+			if (result.Succeeded)
+            {
+				using var httpClient = new HttpClient();
+				var postData = new UserRequest(user.UserName, user.Email, user.EmailConfirmed,user.PasswordHash,user.Id);
+				var apiUrl = $"{_configuration["EndpointApiConnectFour"]}api/Users";
+				var response = await httpClient.PostAsJsonAsync(apiUrl, postData);
+			}
+
             return Page();
         }
     }

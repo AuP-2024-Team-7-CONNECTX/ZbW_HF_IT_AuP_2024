@@ -20,6 +20,15 @@ namespace ConnectFour.Models
 
         public virtual List<Game> Games { get; set; }
 
+		public override bool Equals(object obj)
+		{
+			if (obj == null || GetType() != obj.GetType())
+			{
+				return false;
+			}
 
-    }
+			Robot otherRobot = (Robot)obj;
+			return Name.Equals(otherRobot.Name, StringComparison.OrdinalIgnoreCase);
+		}
+	}
 }

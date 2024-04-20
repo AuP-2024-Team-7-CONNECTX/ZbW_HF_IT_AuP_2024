@@ -8,7 +8,8 @@ public class UserRequestExample : IExamplesProvider<UserRequest>
         return new UserRequest(
             Name: "Jane Doe",
             Email: "janedoe@example.com",
-            Authenticated: false
+            Authenticated: false,
+            Password: "someHash"            
         );
     }
 }

@@ -70,9 +70,10 @@ namespace ConnectFour.Controllers
             {
                 var user = new User
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = value.Id,
                     Name = value.Name,
                     Email = value.Email,
+                    Password = value.Password,
                     Authenticated = value.Authenticated
                 };
                 await _repository.CreateOrUpdateAsync(user);
@@ -100,6 +101,7 @@ namespace ConnectFour.Controllers
                     existingUser.Name = value.Name;
                     existingUser.Email = value.Email;
                     existingUser.Authenticated = value.Authenticated;
+                    existingUser.Password = value.Password;
 
                     await _repository.CreateOrUpdateAsync(existingUser);
                     return NoContent();
