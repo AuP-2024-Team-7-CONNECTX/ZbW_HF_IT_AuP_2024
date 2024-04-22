@@ -4,7 +4,6 @@
     {
         public enum GameState
         {
-            Active,
             Completed,
             Abandoned,
             InProgress

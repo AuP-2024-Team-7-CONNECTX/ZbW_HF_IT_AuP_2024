@@ -31,12 +31,12 @@ namespace ConnectFour.Repositories
 					throw new ObjectNotFoundException($"Player mit id {entity.CurrentPlayerId} konnte nicht gefunden werden");
 				}
 			}
-			if (_genericRepository.GetAllAsync<Robot>().Result.Where(r => r.Name == entity.Name).Count() > 0)
-			{
-				_logger.LogError($"A robot with the name '{entity.Name}' already exists.");
-				throw new InvalidOperationException($"A robot with the name '{entity.Name}' already exists.");
+			//if (_genericRepository.GetAllAsync<Robot>().Result.Where(r => r.Name == entity.Name).Count() > 0)
+			//{
+			//	_logger.LogError($"A robot with the name '{entity.Name}' already exists.");
+			//	throw new InvalidOperationException($"A robot with the name '{entity.Name}' already exists.");
 
-			}
+			//}
 
 			await _genericRepository.CreateOrUpdateAsync(entity);
 		}
