@@ -54,15 +54,12 @@ public class GameDbContext : DbContext
         #region Game
 
         modelBuilder.Entity<Game>()
-        .HasMany(e => e.Players)
-        .WithMany(e => e.Games);
+         .HasMany(e => e.Robots);
 
+		modelBuilder.Entity<Game>()
+	   .HasMany(e => e.Players);
 
-        modelBuilder.Entity<Game>()
-         .HasMany(e => e.Robots)
-         .WithMany(e => e.Games);
-
-        modelBuilder.Entity<Game>()
+		modelBuilder.Entity<Game>()
           .HasOne(g => g.WinnerPlayer)
           .WithMany()
           .HasForeignKey(g => g.WinnerPlayerId)

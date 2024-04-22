@@ -26,8 +26,13 @@ namespace ConnectFour.Repositories.Implementations
                     throw new ObjectNotFoundException($"Move mit id {entity.CurrentMoveId} konnte nicht gefunden werden");
                 }
             }
+            entity.Robot1Id = entity.Robots[0].Id;
+			entity.Robot2Id = entity.Robots[1].Id;
 
-            await _genericRepository.CreateOrUpdateAsync(entity);
+			entity.Player1Id = entity.Robots[0].CurrentPlayerId;
+			entity.Player2Id = entity.Robots[1].CurrentPlayerId;
+
+			await _genericRepository.CreateOrUpdateAsync(entity);
         }
 
         public async Task<IEnumerable<Game>> GetAllAsync()

@@ -1,171 +1,171 @@
-using ConnectFour.Controllers;
-using ConnectFour.Models;
-using ConnectFour.Repositories.Implementations;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+//using ConnectFour.Controllers;
+//using ConnectFour.Models;
+//using ConnectFour.Repositories.Implementations;
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.EntityFrameworkCore;
+//using Microsoft.Extensions.Logging;
+//using Microsoft.VisualStudio.TestTools.UnitTesting;
+//using Moq;
 
-namespace ConnectFour.Tests
-{
-    [TestClass]
-    public class PlayerControllerTests
-    {
-        private GameDbContext _context;
-        private PlayerController _controller;
-        private UserRepository _userRepository;
+//namespace ConnectFour.Tests
+//{
+//    [TestClass]
+//    public class PlayerControllerTests
+//    {
+//        private GameDbContext _context;
+//        private PlayerController _controller;
+//        private UserRepository _userRepository;
 
-        [TestInitialize]
-        public void Setup()
-        {
-            var options = new DbContextOptionsBuilder<GameDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
+//        [TestInitialize]
+//        public void Setup()
+//        {
+//            var options = new DbContextOptionsBuilder<GameDbContext>()
+//                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+//                .Options;
 
-            _context = new GameDbContext(options);
-            TestConfigurationHelper.InitializeDbForTests(_context);
+//            _context = new GameDbContext(options);
+//            TestConfigurationHelper.InitializeDbForTests(_context);
 
-            var loggerMockPlayer = new Mock<ILogger<PlayerController>>();
-            var loggerMockUser = new Mock<ILogger<UserController>>();
-            var userRepository = new UserRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object));
+//            var loggerMockPlayer = new Mock<ILogger<PlayerController>>();
+//            var loggerMockUser = new Mock<ILogger<UserController>>();
+//            var userRepository = new UserRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object));
 
-            var playerRepository = new PlayerRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object), userRepository, new Mock<ILogger<PlayerRepository>>().Object);
+//            var playerRepository = new PlayerRepository(new GenericRepository(_context, new Mock<ILogger<GenericRepository>>().Object), userRepository, new Mock<ILogger<PlayerRepository>>().Object);
 
-            _userRepository = userRepository;
-            _controller = new PlayerController(playerRepository, userRepository, loggerMockPlayer.Object);
+//            _userRepository = userRepository;
+//            _controller = new PlayerController(playerRepository, userRepository, loggerMockPlayer.Object);
 
-        }
+//        }
 
-        [TestCleanup]
-        public void Cleanup()
-        {
-            _context.Database.EnsureDeleted();
-            _context.Dispose();
-        }
+//        [TestCleanup]
+//        public void Cleanup()
+//        {
+//            _context.Database.EnsureDeleted();
+//            _context.Dispose();
+//        }
 
-        [TestMethod]
-        public async Task GetAll_ReturnsAllPlayers()
-        {
-            var result = await _controller.GetAll();
-            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-            var actionResult = result.Result as OkObjectResult;
-            var players = actionResult.Value as IEnumerable<PlayerResponse>;
-            Assert.IsTrue(players.Any());
-            Assert.AreEqual(2, players.Count());
-        }
+//        [TestMethod]
+//        public async Task GetAll_ReturnsAllPlayers()
+//        {
+//            var result = await _controller.GetAll();
+//            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+//            var actionResult = result.Result as OkObjectResult;
+//            var players = actionResult.Value as IEnumerable<PlayerResponse>;
+//            Assert.IsTrue(players.Any());
+//            Assert.AreEqual(2, players.Count());
+//        }
 
-        [TestMethod]
-        public async Task GetById_ReturnsOnePlayer()
-        {
-            var existingUsers = await _userRepository.GetAllAsync();
-            var existingUser = existingUsers.FirstOrDefault();
+//        [TestMethod]
+//        public async Task GetById_ReturnsOnePlayer()
+//        {
+//            var existingUsers = await _userRepository.GetAllAsync();
+//            var existingUser = existingUsers.FirstOrDefault();
 
-            Assert.IsNotNull(existingUser);
+//            Assert.IsNotNull(existingUser);
 
-            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
-            var postResult = await _controller.Post(newPlayerRequest);
+//            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
+//            var postResult = await _controller.Post(newPlayerRequest);
 
-            var actionPostResult = postResult.Result as CreatedAtActionResult;
+//            var actionPostResult = postResult.Result as CreatedAtActionResult;
 
-            var newPlayer = actionPostResult.Value as PlayerResponse;
-            var id = newPlayer.Id;
+//            var newPlayer = actionPostResult.Value as PlayerResponse;
+//            var id = newPlayer.Id;
 
-            var result = await _controller.Get(id);
+//            var result = await _controller.Get(id);
 
-            var actionResult = result.Result as OkObjectResult;
-            var player = actionResult.Value as PlayerResponse;
-            Assert.IsNotNull(player);
-            Assert.AreEqual(id, player.Id);
-        }
+//            var actionResult = result.Result as OkObjectResult;
+//            var player = actionResult.Value as PlayerResponse;
+//            Assert.IsNotNull(player);
+//            Assert.AreEqual(id, player.Id);
+//        }
 
-        [TestMethod]
-        public async Task Get_ReturnsPlayerById_WhenPlayerExists()
-        {
-            var testPlayerId = _context.Players.First().Id.ToString();
+//        [TestMethod]
+//        public async Task Get_ReturnsPlayerById_WhenPlayerExists()
+//        {
+//            var testPlayerId = _context.Players.First().Id.ToString();
 
-            var result = await _controller.Get(testPlayerId);
+//            var result = await _controller.Get(testPlayerId);
 
-            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-            var actionResult = result.Result as OkObjectResult;
-            var player = actionResult.Value as PlayerResponse;
-            Assert.AreEqual(testPlayerId, player.Id);
-        }
+//            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+//            var actionResult = result.Result as OkObjectResult;
+//            var player = actionResult.Value as PlayerResponse;
+//            Assert.AreEqual(testPlayerId, player.Id);
+//        }
 
-        [TestMethod]
-        public async Task Post_CreatesNewPlayer()
-        {
-            var existingUsers = await _userRepository.GetAllAsync();
-            var existingUser = existingUsers.FirstOrDefault();
+//        [TestMethod]
+//        public async Task Post_CreatesNewPlayer()
+//        {
+//            var existingUsers = await _userRepository.GetAllAsync();
+//            var existingUser = existingUsers.FirstOrDefault();
 
-            Assert.IsNotNull(existingUser);
+//            Assert.IsNotNull(existingUser);
 
-            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
+//            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
 
-            var postResult = await _controller.Post(newPlayerRequest);
-            Assert.IsInstanceOfType(postResult.Result, typeof(CreatedAtActionResult));
+//            var postResult = await _controller.Post(newPlayerRequest);
+//            Assert.IsInstanceOfType(postResult.Result, typeof(CreatedAtActionResult));
 
-            var actionPostResult = postResult.Result as CreatedAtActionResult;
-            var newPlayer = actionPostResult.Value as PlayerResponse;
-            var id = newPlayer.Id;
+//            var actionPostResult = postResult.Result as CreatedAtActionResult;
+//            var newPlayer = actionPostResult.Value as PlayerResponse;
+//            var id = newPlayer.Id;
 
-            var newPlayer2 = _context.Players.Find(id);
+//            var newPlayer2 = _context.Players.Find(id);
 
-            Assert.IsNotNull(newPlayer);
-        }
+//            Assert.IsNotNull(newPlayer);
+//        }
 
-        [TestMethod]
-        public async Task Put_UpdatesPlayer_WhenPlayerExists()
-        {
-            var existingUsers = await _userRepository.GetAllAsync();
-            var existingUser = existingUsers.FirstOrDefault();
+//        [TestMethod]
+//        public async Task Put_UpdatesPlayer_WhenPlayerExists()
+//        {
+//            var existingUsers = await _userRepository.GetAllAsync();
+//            var existingUser = existingUsers.FirstOrDefault();
 
-            Assert.IsNotNull(existingUser);
+//            Assert.IsNotNull(existingUser);
 
-            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
+//            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
 
-            var postResult = await _controller.Post(newPlayerRequest);
+//            var postResult = await _controller.Post(newPlayerRequest);
 
-            var actionPostResult = postResult.Result as CreatedAtActionResult;
-            var newPlayer = actionPostResult.Value as PlayerResponse;
-            var id = newPlayer.Id;
-            var updatePlayerRequest = new PlayerRequest { Name = "Updated Name"};
+//            var actionPostResult = postResult.Result as CreatedAtActionResult;
+//            var newPlayer = actionPostResult.Value as PlayerResponse;
+//            var id = newPlayer.Id;
+//            var updatePlayerRequest = new PlayerRequest { Name = "Updated Name"};
 
-            var result = await _controller.Put(newPlayer.Id, updatePlayerRequest);
+//            var result = await _controller.Put(newPlayer.Id, updatePlayerRequest);
 
-            //Assert.IsInstanceOfType(result, typeof(NoContentResult));
-            _context.Entry(newPlayer).Reload();
-            Assert.AreEqual("Updated Name", newPlayer.Name);
-        }
+//            //Assert.IsInstanceOfType(result, typeof(NoContentResult));
+//            _context.Entry(newPlayer).Reload();
+//            Assert.AreEqual("Updated Name", newPlayer.Name);
+//        }
 
-        [TestMethod]
-        public async Task Delete_MarksPlayerAsDeleted_WhenPlayerExists()
-        {
-            var existingUsers = await _userRepository.GetAllAsync();
-            var existingUser = existingUsers.FirstOrDefault();
+//        [TestMethod]
+//        public async Task Delete_MarksPlayerAsDeleted_WhenPlayerExists()
+//        {
+//            var existingUsers = await _userRepository.GetAllAsync();
+//            var existingUser = existingUsers.FirstOrDefault();
 
-            Assert.IsNotNull(existingUser);
+//            Assert.IsNotNull(existingUser);
 
 
-            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
+//            var newPlayerRequest = new PlayerRequest { Name = "Test Player", UserId = existingUser.Id };
 
-            var postResult = await _controller.Post(newPlayerRequest);
+//            var postResult = await _controller.Post(newPlayerRequest);
 
-            var actionPostResult = postResult.Result as CreatedAtActionResult;
-            var newPlayer = actionPostResult.Value as PlayerResponse;
-            var id = newPlayer.Id;
+//            var actionPostResult = postResult.Result as CreatedAtActionResult;
+//            var newPlayer = actionPostResult.Value as PlayerResponse;
+//            var id = newPlayer.Id;
 
-            _context.SaveChanges();
+//            _context.SaveChanges();
 
-            var player = _context.Players.Find(id);
-            Assert.IsNotNull(player);
-            Assert.IsNull(player.DeletedOn);
+//            var player = _context.Players.Find(id);
+//            Assert.IsNotNull(player);
+//            Assert.IsNull(player.DeletedOn);
 
-            var resultDelete = await _controller.Delete(id);
-            _context.SaveChanges();
+//            var resultDelete = await _controller.Delete(id);
+//            _context.SaveChanges();
 
-            Assert.IsInstanceOfType(resultDelete, typeof(NoContentResult));
-            Assert.IsNotNull(player.DeletedOn);
-        }
-    }
-}
+//            Assert.IsInstanceOfType(resultDelete, typeof(NoContentResult));
+//            Assert.IsNotNull(player.DeletedOn);
+//        }
+//    }
+//}

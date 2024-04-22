@@ -9,5 +9,7 @@ public record RobotRequest
     public string Color { get; init; }
        
     public string Name { get; init; }
+
+    public required string Endpoint { get; init; }
     public RobotRequest() { }
 }

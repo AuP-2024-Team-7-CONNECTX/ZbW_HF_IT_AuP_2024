@@ -16,7 +16,8 @@ namespace ConnectFour.Models
 
 		public bool IsIngame { get; set; }
 
-		public virtual List<Game> Games { get; set; }
+		
+		public required string Endpoint { get; set; }
 
 	}
 }

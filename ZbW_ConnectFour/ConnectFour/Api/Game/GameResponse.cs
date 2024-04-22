@@ -13,5 +13,7 @@ public record GameResponse
     public decimal? TotalPointsPlayerOne { get; init; }
     public decimal? TotalPointsPlayerTwo { get; init; }
 
-    public GameResponse() { }
+	public string GameFieldJson { get; init; }
+
+	public GameResponse() { }
 }
