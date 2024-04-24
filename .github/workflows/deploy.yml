@@ -1,4 +1,4 @@
-ame: Deploy Swagger Web Service
+name: Deploy Swagger Web Service
 
 on:
   push:
