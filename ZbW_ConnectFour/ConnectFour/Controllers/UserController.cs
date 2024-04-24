@@ -19,6 +19,7 @@ namespace ConnectFour.Controllers
             _logger = logger;
         }
 
+
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserResponse>>> GetAll()
@@ -69,9 +70,10 @@ namespace ConnectFour.Controllers
             {
                 var user = new User
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = value.Id,
                     Name = value.Name,
                     Email = value.Email,
+                    Password = value.Password,
                     Authenticated = value.Authenticated
                 };
                 await _repository.CreateOrUpdateAsync(user);
@@ -80,7 +82,7 @@ namespace ConnectFour.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating a new user.");
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, $"An error occurred while processing your request. {ex.Message}");
             }
         }
 
@@ -99,6 +101,7 @@ namespace ConnectFour.Controllers
                     existingUser.Name = value.Name;
                     existingUser.Email = value.Email;
                     existingUser.Authenticated = value.Authenticated;
+                    existingUser.Password = value.Password;
 
                     await _repository.CreateOrUpdateAsync(existingUser);
                     return NoContent();

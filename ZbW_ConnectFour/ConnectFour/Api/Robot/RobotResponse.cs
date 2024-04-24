@@ -9,5 +9,8 @@ public record RobotResponse
     public bool IsIngame { get; init; }
     public IEnumerable<string> GameIds { get; init; } // Vereinfachte Darstellung der Spiele
 
+    public string Name { get; init; }
+
+    public string Endpoint { get; init; }
     public RobotResponse() { }
 }

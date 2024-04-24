@@ -1,4 +1,5 @@
 ﻿using ConnectFour.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace ConnectFour.Models
 {
@@ -9,5 +10,6 @@ namespace ConnectFour.Models
         public string? Password { get; set; }
         public bool Authenticated { get; set; }
 
-    }
+	}
+      
 }

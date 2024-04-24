@@ -3,13 +3,17 @@ using static ConnectFour.Enums.Enum;
 
 public class RobotRequestExample : IExamplesProvider<RobotRequest>
 {
-    public RobotRequest GetExamples()
-    {
-        return new RobotRequest
-        {
-            CurrentPlayerId = Guid.NewGuid().ToString(),
-            IsConnected = true,
-            Color = "Red"
-        };
-    }
+	public RobotRequest GetExamples()
+	{
+		return new RobotRequest
+		{
+			CurrentPlayerId = null,
+			IsConnected = true,
+			IsIngame = false,
+			Color = "Red",
+			Name = "Röbby",
+			Endpoint = "www.roboCop.ch\\api"
+		};
+	}
+
 }
