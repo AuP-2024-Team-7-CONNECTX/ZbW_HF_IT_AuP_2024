@@ -39,4 +39,4 @@ jobs:
 
 env:
   Solution_Name: ZbW_ConnectFour
-  Web_Project_Path: ConnectFour.csproj
+  Web_Project_Path: ZbW_ConnectFour\ConnectFour
