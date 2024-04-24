@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main  # Setzen Sie den Branch, auf dem das Deployment ausgelöst werden soll.
+  workflow_dispatch:  # Dies ermöglicht das manuelle Auslösen des Workflows
+
 
 jobs:
   deploy:
