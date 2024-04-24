@@ -1,4 +1,4 @@
-name: Deploy Swagger Web Service
+ame: Deploy Swagger Web Service
 
 on:
   push:
@@ -39,4 +39,4 @@ jobs:
 
 env:
   Solution_Name: ZbW_ConnectFour
-  Web_Project_Path: ConnectFour\ConnectFour.csproj
+  Web_Project_Path: ConnectFour
