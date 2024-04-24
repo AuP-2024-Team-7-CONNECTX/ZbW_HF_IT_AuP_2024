@@ -1,0 +1,40 @@
+name: Deploy Swagger Web Service
+
+on:
+  push:
+    branches:
+      - main  # Setzen Sie den Branch, auf dem das Deployment ausgelöst werden soll.
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Stellen Sie sicher, dass dieser Wert auf 'self-hosted' gesetzt ist, um den selbst gehosteten Runner zu nutzen.
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' 
+
+    - name: Restore Dependencies
+      run: dotnet restore ${{ env.Solution_Name }}
+
+    - name: Build and Publish
+      run: |
+        dotnet build ${{ env.Solution_Name }} --configuration Release
+        dotnet publish ${{ env.Web_Project_Path }} -c Release -o ./publish --no-restore
+
+    - name: Deploy Service
+      run: |
+        # Fügen Sie hier Ihre Deployment-Skripte ein, z.B. Kopieren der Dateien zum Server, Neustart des Dienstes etc.
+        scp -r ./publish user@your-server-ip:/path/to/deploy/
+        ssh user@your-server-ip "systemctl restart your-web-service.service"
+
+    - name: Clean up
+      run: rm -rf ./publish
+
+env:
+  Solution_Name: ZbW_ConnectFour.sln
+  Web_Project_Path: ConnectFour\ConnectFour.csproj
