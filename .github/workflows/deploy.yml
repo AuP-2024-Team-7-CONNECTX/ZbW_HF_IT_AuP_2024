@@ -21,7 +21,7 @@ jobs:
         dotnet-version: '8.0.x' 
 
     - name: Restore Dependencies
-      run: dotnet restore ${{ env.Solution_Name }}
+      run: dotnet restore ZbW_ConnectFour
 
     - name: Build and Publish
       run: |
@@ -38,5 +38,5 @@ jobs:
       run: rm -rf ./publish
 
 env:
-  Solution_Name: ZbW_ConnectFour.sln
+  Solution_Name: ZbW_ConnectFour
   Web_Project_Path: ConnectFour\ConnectFour.csproj
