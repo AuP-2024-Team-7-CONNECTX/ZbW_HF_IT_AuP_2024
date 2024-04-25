@@ -31,8 +31,8 @@ jobs:
     - name: Deploy Service
       run: |
         # Fügen Sie hier Ihre Deployment-Skripte ein, z.B. Kopieren der Dateien zum Server, Neustart des Dienstes etc.
-        scp -r ./publish user@your-server-ip:/path/to/deploy/
-        ssh user@your-server-ip "systemctl restart your-web-service.service"
+        scp -r ./publish 127.0.0.1/ConnectFour/
+        ssh user@127.0.0.1 "systemctl restart ConnectFour.csproj"
 
     - name: Clean up
       run: rm -rf ./publish
