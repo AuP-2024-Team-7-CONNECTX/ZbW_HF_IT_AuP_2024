@@ -32,7 +32,7 @@ jobs:
       run: |
         # Fügen Sie hier Ihre Deployment-Skripte ein, z.B. Kopieren der Dateien zum Server, Neustart des Dienstes etc.
         cp -r ./publish /root/ConnectFour
-        ssh user@127.0.0.1 "systemctl restart ConnectFour.csproj"
+        # ssh "systemctl restart ConnectFour.csproj"
 
     - name: Clean up
       run: rm -rf ./publish
