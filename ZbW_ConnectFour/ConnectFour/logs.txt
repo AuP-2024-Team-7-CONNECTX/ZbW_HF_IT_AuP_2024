@@ -1,0 +1,132 @@
+2024-04-28 12:10:58.717 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 12:10:59.480 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 12:10:59.821 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 12:10:59.827 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 12:10:59.830 +02:00 [INF] Hosting environment: Development
+2024-04-28 12:10:59.832 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 12:11:28.852 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 12:11:48.064 +02:00 [ERR] No User found with Id 20ab9648-9438-4d37-abad-495439dd6370
+2024-04-28 12:11:48.140 +02:00 [ERR] An error occurred while creating a new player.User mit id 20ab9648-9438-4d37-abad-495439dd6370 konnte nicht gefunden werden
+System.Data.Entity.Core.ObjectNotFoundException: User mit id 20ab9648-9438-4d37-abad-495439dd6370 konnte nicht gefunden werden
+   at ConnectFour.Repositories.Implementations.PlayerRepository.CreateOrUpdateAsync(Player entity) in C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour\Repositories\Implementations\PlayerRepository.cs:line 31
+   at ConnectFour.Controllers.PlayerController.Post(PlayerRequest request) in C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour\Controllers\PlayerController.cs:line 87
+2024-04-28 13:40:13.667 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 13:40:14.013 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 13:40:14.274 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 13:40:14.278 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 13:40:14.280 +02:00 [INF] Hosting environment: Development
+2024-04-28 13:40:14.281 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 13:44:39.702 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 13:44:40.104 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 13:44:40.311 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 13:44:40.313 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 13:44:40.315 +02:00 [INF] Hosting environment: Development
+2024-04-28 13:44:40.316 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 13:44:48.805 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 13:45:25.961 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 13:45:26.365 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 13:45:26.551 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 13:45:26.554 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 13:45:26.555 +02:00 [INF] Hosting environment: Development
+2024-04-28 13:45:26.557 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 13:45:35.459 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 13:48:02.807 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 13:48:03.417 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 13:48:03.670 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 13:48:03.674 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 13:48:03.677 +02:00 [INF] Hosting environment: Development
+2024-04-28 13:48:03.679 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 13:48:38.557 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 13:49:00.417 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 13:49:01.040 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 13:49:01.278 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 13:49:01.281 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 13:49:01.284 +02:00 [INF] Hosting environment: Development
+2024-04-28 13:49:01.285 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 13:49:08.642 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 13:49:08.771 +02:00 [INF] Connected to MQTT broker successfully.
+2024-04-28 13:52:33.854 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 13:52:34.303 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 13:52:34.526 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 13:52:34.527 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 13:52:34.529 +02:00 [INF] Hosting environment: Development
+2024-04-28 13:52:34.531 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 13:52:42.153 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 13:52:42.183 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.Extensions.Logging.Logger`1[ConnectFour.Mqtt.MqttService]' while attempting to activate 'ConnectFour.Controllers.CommunicationController'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ThrowHelperUnableToResolveService(Type type, Type requiredBy)
+   at lambda_method15(Closure, IServiceProvider, Object[])
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass6_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2024-04-28 13:55:12.036 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 13:55:12.460 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 13:55:12.647 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 13:55:12.649 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 13:55:12.651 +02:00 [INF] Hosting environment: Development
+2024-04-28 13:55:12.652 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 13:55:18.389 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 13:55:18.410 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Unable to resolve service for type 'Microsoft.Extensions.Logging.Logger`1[ConnectFour.Mqtt.MqttService]' while attempting to activate 'ConnectFour.Controllers.CommunicationController'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ThrowHelperUnableToResolveService(Type type, Type requiredBy)
+   at lambda_method15(Closure, IServiceProvider, Object[])
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass6_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2024-04-28 13:55:35.811 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 13:55:36.261 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 13:55:36.492 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 13:55:36.495 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 13:55:36.497 +02:00 [INF] Hosting environment: Development
+2024-04-28 13:55:36.498 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 13:57:16.582 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 13:58:08.143 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 13:58:09.125 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 13:58:09.369 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 13:58:09.371 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 13:58:09.373 +02:00 [INF] Hosting environment: Development
+2024-04-28 13:58:09.375 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 13:58:18.772 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 14:05:59.047 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 14:05:59.554 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 14:05:59.803 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 14:05:59.807 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 14:05:59.810 +02:00 [INF] Hosting environment: Development
+2024-04-28 14:05:59.812 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 14:06:10.072 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 14:06:10.203 +02:00 [INF] Connected to MQTT broker successfully.
+2024-04-28 14:06:38.323 +02:00 [INF] Subscribed to topic: HelloWorld001
+2024-04-28 14:07:04.323 +02:00 [INF] Subscribed to topic: HelloWorld002
+2024-04-28 14:07:29.466 +02:00 [INF] Unsubscribed from topic: HelloWorld001
+2024-04-28 14:07:41.410 +02:00 [INF] Disconnected from MQTT broker.
+2024-04-28 14:12:35.499 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 14:12:36.147 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 14:12:36.622 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 14:12:36.626 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 14:12:36.630 +02:00 [INF] Hosting environment: Development
+2024-04-28 14:12:36.633 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-28 14:12:46.247 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-28 14:18:48.212 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-28 14:18:49.334 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-28 14:18:49.574 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-28 14:18:49.577 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-28 14:18:49.579 +02:00 [INF] Hosting environment: Development
+2024-04-28 14:18:49.581 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
