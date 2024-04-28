@@ -117,6 +117,13 @@ namespace ConnectFour.Controllers
 			return Ok();
 		}
 
+		[HttpGet("Spielsteinsetzen")]
+		public IActionResult Spielzug(int column, ConnectFourColor color)
+		{
+			// Implement logic for the Spielsteinsetzen command
+			return Ok();
+		}
+
 		[HttpPost("RecreateGameWhereConnectionLost")]
 		public IActionResult RecreateGameWhereConnectionLost(List<Move> spielzuege)
 		{

@@ -10,5 +10,6 @@
         }
 
         public enum ConnectFourColor { Red, Blue }
-    }
+
+	}
 }

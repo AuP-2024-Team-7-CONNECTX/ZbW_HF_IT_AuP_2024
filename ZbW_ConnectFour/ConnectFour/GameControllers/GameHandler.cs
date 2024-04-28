@@ -26,6 +26,7 @@ namespace ConnectFour.GameControllers
 
 		private static Random random = new Random();
 
+
 		// 7 Horizontal, 6 vertikal Maximal
 		private Dictionary<int, Dictionary<int, int>> _gameField;
 
@@ -46,32 +47,97 @@ namespace ConnectFour.GameControllers
 
 		}
 
-		
-		public void PlaceStone(int column)
+		// Wird von Put-API oder CommunicationController angestossen, wenn wir einen Zug erhalten vom Roboter oder Frontend.
+		// Falls kein Spieler steuert, wird der Zug automatisch ausgeführt
+
+		// Falls vom Frontend -> neuer Zug soll ausgeführt werden, Roboter wird informiert
+		// Falls vom Roboter -> Zug vom Roboter
+		public void ReceiveInput(int column, bool isAutomatic, bool IsFromFrontend)
 		{
-			var playerNumber = _currentMove.Player == _player1 ? 0 : 1;
+			_currentMove = _game.CurrentMove;
+			// _gameField = _game.gameField; -> muss noch abgeglichen werden, wie koordinaten aussehen.
+
+			// Algorithmus resp. methode, die berechnet wo der stein hin soll
+			if (isAutomatic)
+			{
+				 //PlaceStone(column);
+			}
+
+			if (IsFromFrontend)
+			{
+				// Falls Zug vom Frontend und nicht algo-gesteuert, ist gamefield bereits aktualisiert und keine Aktion ist mehr nötig
+				SendTurnToRobot();
+
+			}
+			else { SendTurnToFrontend(); }
+		}
+
+		public void SendTurnToRobot()
+		{
+			// API call zum Roboter, um ihm zug zu übermitteln
+			// Erwartet: Response. falls ok, gut, falls nicht Fehlerhandling
+
+
+		}
+		public void SendTurnToFrontend()
+		{
+			// API call zum Frontend, um ihm zug zu übermitteln
+			// Erwartet: Response. falls ok, gut, falls nicht Fehlerhandling
+
+			// Danach muss Zug vom Frontend erhalten werden, 
+
+
+		}
+
+		// Wird nur ausgeführt, wenn Algorithmus die Logik des nächsten Zugs übernehmen soll
+		// Ansonsten passiert aktualisierung des gameFields mit neuem zug direkt im Frontend
+		public void PlaceNewStoneFromAlgorithm(int column)
+		{
+			var playerNumber = _currentMove.Player == _player1 ? 1 : 2;
 			// Finde die erste leere Zeile in der angegebenen Spalte
-			for (int zeile = 5; zeile >= 0; zeile--)
+
+			// hier column zuweisen aufgrund errechneter Wert mit Algorithmus -> muss noch implementiert werden
+
+			for (int zeile = 0; zeile < _gameField[column].Count; zeile++)
 			{
 				if (_gameField[column][zeile] == 0)
 				{
 					// Setze den Stein des Spielers in das Feld
 					_gameField[column][zeile] = playerNumber;
-					// Hier kannst du weitere Logik für den Spielablauf implementieren
+
 					return;
 				}
 			}
-			// Wenn die Spalte voll ist, gibt es eine Fehlerbehandlung oder eine Benachrichtigung
+			throw new Exception($"Spalte {column} ist voll.");
 		}
-
 
 
 		private void SetUpPlayersAndRobots()
 		{
 			_robot1 = _game.Robots[0];
 			_robot2 = _game.Robots[1];
-			_player1 = _robot1.CurrentPlayer;
-			_player2 = _robot2.CurrentPlayer;
+			if (_robot1.CurrentPlayer != null)
+			{
+				_player1 = _robot1.CurrentPlayer;
+				_robot1.ControlledByHuman = true;
+			}
+			else
+			{
+				_player1 = null;
+				_robot1.ControlledByHuman = false;
+			}
+
+			if (_robot2.CurrentPlayer != null)
+			{
+				_player2 = _robot2.CurrentPlayer;
+				_robot2.ControlledByHuman = true;
+			}
+			else
+			{
+				_player2 = null;
+				_robot2.ControlledByHuman = false;
+			}
+
 
 		}
 
@@ -97,12 +163,14 @@ namespace ConnectFour.GameControllers
 				_currentMove.Robot = _robot2;
 				_currentMove.Player = _player2;
 			}
+			_moveRepository.CreateOrUpdateAsync(_currentMove);
 
 			return true;
 		}
 
 		private void ChangeTurn()
 		{
+			_lastMove.MoveFinished = DateTime.Now;
 			_lastMove = _currentMove;
 			_currentMove = _game.CurrentMove;
 			if (_currentMove.Player == _player1 && _currentMove.Robot == _robot1)
@@ -115,6 +183,7 @@ namespace ConnectFour.GameControllers
 				_currentMove.Robot = _robot1;
 				_currentMove.Player = _player1;
 			}
+			_moveRepository.CreateOrUpdateAsync(_lastMove);
 			_moveRepository.CreateOrUpdateAsync(_currentMove);
 			_gameRepository.CreateOrUpdateAsync(_game);
 		}
@@ -150,7 +219,7 @@ namespace ConnectFour.GameControllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation("");
+				_logger.LogInformation(ex.Message);
 			}
 
 		}

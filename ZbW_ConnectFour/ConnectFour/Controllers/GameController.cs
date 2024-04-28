@@ -34,8 +34,8 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occurred while fetching all games.");
-				return StatusCode(500, "An internal server error has occurred.");
+				_logger.LogError(ex, $"An error occurred while fetching all games.{ex.Message}");
+				return StatusCode(500, $"An internal server error has occurred.{ex.Message}");
 			}
 		}
 
@@ -54,8 +54,8 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while fetching the game with ID {id}.");
-				return StatusCode(500, "An internal server error has occurred.");
+				_logger.LogError(ex, $"An error occurred while fetching the game with ID {id}.{ex.Message}");
+				return StatusCode(500, $"An internal server error has occurred.{ex.Message}");
 			}
 		}
 
@@ -107,7 +107,7 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occurred while creating a new game.");
+				_logger.LogError(ex, $"An error occurred while creating a new game.{ex.Message}");
 				return StatusCode(500, $"An internal server error has occurred. {ex.Message}");
 			}
 		}
@@ -138,8 +138,8 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while updating the game with ID {id}.");
-				return StatusCode(500, "An internal server error has occurred.");
+				_logger.LogError(ex, $"An error occurred while updating the game with ID {id}.{ex.Message}");
+				return StatusCode(500, $"An internal server error has occurred.{ex.Message}");
 			}
 		}
 
@@ -160,8 +160,8 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while deleting the game with ID {id}.");
-				return StatusCode(500, "An internal server error has occurred.");
+				_logger.LogError(ex, $"An error occurred while deleting the game with ID {id}.{ex.Message}");
+				return StatusCode(500, $"An internal server error has occurred.{ex.Message}");
 			}
 		}
 	}

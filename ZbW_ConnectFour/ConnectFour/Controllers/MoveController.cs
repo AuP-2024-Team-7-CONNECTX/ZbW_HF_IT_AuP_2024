@@ -41,8 +41,8 @@ public class MoveController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while fetching all moves.");
-            return StatusCode(500, "An error occurred while processing your request.");
+            _logger.LogError(ex, $"An error occurred while fetching all moves.{ex.Message}");
+            return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
         }
     }
 
@@ -74,8 +74,8 @@ public class MoveController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"An error occurred while fetching the move with ID {id}.");
-            return StatusCode(500, "An error occurred while processing your request.");
+            _logger.LogError(ex, $"An error occurred while fetching the move with ID {id}.{ex.Message}");
+            return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
         }
     }
 
@@ -85,14 +85,15 @@ public class MoveController : ControllerBase
     {
         try
         {
+            move.MoveStarted = DateTime.Now;
             await _moveRepository.CreateOrUpdateAsync(move);
             // Assuming you want to return the created move as is
             return CreatedAtAction(nameof(Get), new { id = move.Id }, move);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while creating a new move.");
-            return StatusCode(500, "An error occurred while processing your request.");
+            _logger.LogError(ex, $"An error occurred while creating a new move.{ex.Message}");
+            return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
         }
     }
 
@@ -114,8 +115,8 @@ public class MoveController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"An error occurred while updating the move with ID {id}.");
-            return StatusCode(500, "An error occurred while processing your request.");
+            _logger.LogError(ex, $"An error occurred while updating the move with ID {id}.{ex.Message}");
+            return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
         }
     }
 
@@ -136,8 +137,8 @@ public class MoveController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"An error occurred while deleting the move with ID {id}.");
-            return StatusCode(500, "An error occurred while processing your request.");
+            _logger.LogError(ex, $"An error occurred while deleting the move with ID {id}.{ex.Message}");
+            return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
         }
     }
 }
