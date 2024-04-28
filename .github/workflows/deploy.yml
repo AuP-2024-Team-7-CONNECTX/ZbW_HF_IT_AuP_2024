@@ -31,7 +31,7 @@ jobs:
     - name: Deploy Service
       run: |
         # Fügen Sie hier Ihre Deployment-Skripte ein, z.B. Kopieren der Dateien zum Server, Neustart des Dienstes etc.
-        cp ./publish /root/ConnectFour
+        cp -r ./publish /root/ConnectFour
         ssh user@127.0.0.1 "systemctl restart ConnectFour.csproj"
 
     - name: Clean up
