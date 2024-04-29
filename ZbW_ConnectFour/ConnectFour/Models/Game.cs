@@ -27,7 +27,9 @@ namespace ConnectFour.Models
 		public GameState State { get; set; }
 		public decimal? TotalPointsPlayerOne { get; set; }
 		public decimal? TotalPointsPlayerTwo { get; set; }
-		
+
+		public bool ManualTurnIsAllowed { get; set; } = false;
+
 
 		// Spielfeld als JSON in der Datenbank speichern
 		public string GameFieldJson

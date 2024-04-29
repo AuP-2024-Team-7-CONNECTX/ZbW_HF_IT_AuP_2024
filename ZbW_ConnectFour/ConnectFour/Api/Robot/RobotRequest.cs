@@ -10,6 +10,6 @@ public record RobotRequest
        
     public string Name { get; init; }
 
-    public required string Endpoint { get; init; }
+    public string Topic { get; init; }
     public RobotRequest() { }
 }

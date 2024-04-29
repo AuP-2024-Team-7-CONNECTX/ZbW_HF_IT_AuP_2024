@@ -130,3 +130,108 @@ System.InvalidOperationException: Unable to resolve service for type 'Microsoft.
 2024-04-28 14:18:49.577 +02:00 [INF] Application started. Press Ctrl+C to shut down.
 2024-04-28 14:18:49.579 +02:00 [INF] Hosting environment: Development
 2024-04-28 14:18:49.581 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-29 17:59:02.344 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-29 17:59:03.084 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-29 17:59:03.573 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-29 17:59:03.577 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-29 17:59:03.579 +02:00 [INF] Hosting environment: Development
+2024-04-29 17:59:03.581 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-29 18:02:00.912 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-29 18:02:01.415 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-29 18:02:01.421 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-29 18:02:01.424 +02:00 [INF] Hosting environment: Development
+2024-04-29 18:02:01.427 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-29 18:02:41.969 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-29 18:02:42.194 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-29 18:02:42.721 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-29 18:02:42.727 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-29 18:02:42.732 +02:00 [INF] Hosting environment: Development
+2024-04-29 18:02:42.746 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-29 18:03:11.246 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-29 18:06:45.396 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-29 18:06:45.446 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-29 18:06:45.694 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-29 18:06:45.696 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-29 18:06:45.698 +02:00 [INF] Hosting environment: Development
+2024-04-29 18:06:45.700 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-29 18:07:10.630 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-29 18:10:06.656 +02:00 [ERR] An error occurred while creating a new game.The JSON value could not be converted to System.Int32. Path: $.1.A | LineNumber: 1 | BytePositionInLine: 22.
+System.Text.Json.JsonException: The JSON value could not be converted to System.Int32. Path: $.1.A | LineNumber: 1 | BytePositionInLine: 22.
+ ---> System.FormatException: Either the JSON value is not in a supported format, or is out of bounds for an Int32.
+   at System.Text.Json.ThrowHelper.ThrowFormatException(NumericType numericType)
+   at System.Text.Json.Utf8JsonReader.GetInt32WithQuotes()
+   at System.Text.Json.Serialization.JsonDictionaryConverter`3.<OnTryRead>g__ReadDictionaryKey|10_0(JsonConverter`1 keyConverter, Utf8JsonReader& reader, ReadStack& state, JsonSerializerOptions options)
+   at System.Text.Json.Serialization.JsonDictionaryConverter`3.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, TDictionary& value)
+   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)
+   at System.Text.Json.Serialization.JsonDictionaryConverter`3.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, TDictionary& value)
+   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, Utf8JsonReader& reader, Exception ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at System.Text.Json.JsonSerializer.Deserialize[TValue](String json, JsonSerializerOptions options)
+   at ConnectFour.Models.Game.set_GameFieldJson(String value) in C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour\Models\Game.cs:line 55
+   at ConnectFour.Controllers.GameController.Post(GameRequest request) in C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour\Controllers\GameController.cs:line 87
+2024-04-29 18:10:52.875 +02:00 [ERR] An error occurred while creating a new game.The JSON value could not be converted to System.Int32. Path: $.1.A | LineNumber: 1 | BytePositionInLine: 22.
+System.Text.Json.JsonException: The JSON value could not be converted to System.Int32. Path: $.1.A | LineNumber: 1 | BytePositionInLine: 22.
+ ---> System.FormatException: Either the JSON value is not in a supported format, or is out of bounds for an Int32.
+   at System.Text.Json.ThrowHelper.ThrowFormatException(NumericType numericType)
+   at System.Text.Json.Utf8JsonReader.GetInt32WithQuotes()
+   at System.Text.Json.Serialization.JsonDictionaryConverter`3.<OnTryRead>g__ReadDictionaryKey|10_0(JsonConverter`1 keyConverter, Utf8JsonReader& reader, ReadStack& state, JsonSerializerOptions options)
+   at System.Text.Json.Serialization.JsonDictionaryConverter`3.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, TDictionary& value)
+   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)
+   at System.Text.Json.Serialization.JsonDictionaryConverter`3.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, TDictionary& value)
+   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, Utf8JsonReader& reader, Exception ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at System.Text.Json.JsonSerializer.Deserialize[TValue](String json, JsonSerializerOptions options)
+   at ConnectFour.Models.Game.set_GameFieldJson(String value) in C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour\Models\Game.cs:line 55
+   at ConnectFour.Controllers.GameController.Post(GameRequest request) in C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour\Controllers\GameController.cs:line 87
+2024-04-29 18:11:18.757 +02:00 [ERR] An error occurred while creating a new game.The JSON value could not be converted to System.Int32. Path: $.1.A | LineNumber: 1 | BytePositionInLine: 22.
+System.Text.Json.JsonException: The JSON value could not be converted to System.Int32. Path: $.1.A | LineNumber: 1 | BytePositionInLine: 22.
+ ---> System.FormatException: Either the JSON value is not in a supported format, or is out of bounds for an Int32.
+   at System.Text.Json.ThrowHelper.ThrowFormatException(NumericType numericType)
+   at System.Text.Json.Utf8JsonReader.GetInt32WithQuotes()
+   at System.Text.Json.Serialization.JsonDictionaryConverter`3.<OnTryRead>g__ReadDictionaryKey|10_0(JsonConverter`1 keyConverter, Utf8JsonReader& reader, ReadStack& state, JsonSerializerOptions options)
+   at System.Text.Json.Serialization.JsonDictionaryConverter`3.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, TDictionary& value)
+   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)
+   at System.Text.Json.Serialization.JsonDictionaryConverter`3.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, TDictionary& value)
+   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, Utf8JsonReader& reader, Exception ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at System.Text.Json.JsonSerializer.Deserialize[TValue](String json, JsonSerializerOptions options)
+   at ConnectFour.Models.Game.set_GameFieldJson(String value) in C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour\Models\Game.cs:line 55
+   at ConnectFour.Controllers.GameController.Post(GameRequest request) in C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour\Controllers\GameController.cs:line 87
+2024-04-29 18:38:42.096 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-29 18:38:42.148 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-29 18:38:42.415 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-29 18:38:42.418 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-29 18:38:42.421 +02:00 [INF] Hosting environment: Development
+2024-04-29 18:38:42.423 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-29 18:39:18.951 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-29 18:41:17.210 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-29 18:41:17.263 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-29 18:41:17.565 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-29 18:41:17.567 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-29 18:41:17.570 +02:00 [INF] Hosting environment: Development
+2024-04-29 18:41:17.571 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-04-29 18:42:03.806 +02:00 [WRN] Failed to determine the https port for redirect.
+2024-04-29 18:42:03.979 +02:00 [INF] Connected to MQTT broker test.mosquitto.org successfully.
+2024-04-29 18:42:11.011 +02:00 [INF] Subscribed to topic: test
+2024-04-29 18:43:11.865 +02:00 [INF] Subscribed to topic: test123
+2024-04-29 18:47:22.766 +02:00 [INF] Datenbank erfolgreich gelöscht
+2024-04-29 18:47:22.889 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-04-29 18:47:23.411 +02:00 [INF] Now listening on: http://localhost:5260
+2024-04-29 18:47:23.415 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-04-29 18:47:23.419 +02:00 [INF] Hosting environment: Development
+2024-04-29 18:47:23.421 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour

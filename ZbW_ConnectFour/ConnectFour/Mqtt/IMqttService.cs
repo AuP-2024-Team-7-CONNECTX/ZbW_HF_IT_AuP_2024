@@ -1,4 +1,5 @@
-﻿using MQTTnet.Protocol;
+﻿using ConnectFour.GameControllers;
+using MQTTnet.Protocol;
 
 namespace ConnectFour.Mqtt
 {
@@ -9,5 +10,9 @@ namespace ConnectFour.Mqtt
 		Task PublishAsync(string topic, string message, MqttQualityOfServiceLevel qosLevel = MqttQualityOfServiceLevel.AtLeastOnce, bool retainFlag = false);
 		Task UnsubscribeAsync(string topic);
 		Task DisconnectAsync();
+		Task RegisterGameHandler(GameHandler gameHandler);
+
+		Task RegisterTestConsoleLog();
+
 	}
 }

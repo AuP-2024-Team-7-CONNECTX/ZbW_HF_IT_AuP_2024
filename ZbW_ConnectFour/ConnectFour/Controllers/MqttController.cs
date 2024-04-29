@@ -5,13 +5,13 @@ namespace ConnectFour.Controllers
 {
 	// This class is for testing only
 
-	[Route("api/communication")]
 	[ApiController]
-	public class CommunicationController : ControllerBase
+	[Route("[controller]")]
+	public class MqttTestController : ControllerBase
 	{
 		private readonly IMqttService _mqttService;
 
-		public CommunicationController(IMqttService mqttService)
+		public MqttTestController(IMqttService mqttService)
 		{
 			_mqttService = mqttService;
 		}
@@ -36,11 +36,27 @@ namespace ConnectFour.Controllers
 			try
 			{
 				await _mqttService.SubscribeAsync(topic);
+
 				return Ok($"Subscribed to MQTT topic '{topic}' successfully.");
 			}
 			catch (Exception ex)
 			{
 				return StatusCode(500, $"Failed to subscribe to MQTT topic '{topic}': {ex.Message}");
+			}
+		}
+
+		[HttpPost("MqttRegisterConsoleLogging")]
+		public async Task<IActionResult> TestConsoleLog()
+		{
+			try
+			{
+				await _mqttService.RegisterTestConsoleLog();
+
+				return Ok($"register console loggin was successful");
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Failed to register console logging");
 			}
 		}
 

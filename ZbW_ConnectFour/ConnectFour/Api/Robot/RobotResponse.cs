@@ -11,6 +11,6 @@ public record RobotResponse
 
     public string Name { get; init; }
 
-    public string Endpoint { get; init; }
+    public string Topic { get; init; }
     public RobotResponse() { }
 }

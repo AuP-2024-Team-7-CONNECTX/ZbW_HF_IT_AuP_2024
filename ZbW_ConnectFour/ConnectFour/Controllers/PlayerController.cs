@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectFour.Controllers
 {
-	[Route("api/Players")]
 	[ApiController]
+	[Route("[controller]")]
 	public class PlayerController : ControllerBase
 	{
 		private readonly IPlayerRepository _repository;

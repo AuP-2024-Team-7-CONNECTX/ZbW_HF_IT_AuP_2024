@@ -5,8 +5,8 @@ using static ConnectFour.Enums.Enum;
 
 namespace ConnectFour.Controllers
 {
-	[Route("api/Robots")]
 	[ApiController]
+	[Route("[controller]")]
 	public class RobotController : ControllerBase
 	{
 		private readonly IRobotRepository _repository;
@@ -95,7 +95,7 @@ namespace ConnectFour.Controllers
 					IsConnected = robotRequest.IsConnected,
 					Color = color,
 					IsIngame = false, // Initial false, robots wont be ingame upon creation
-					Endpoint = robotRequest.Endpoint,
+					Topic = robotRequest.Topic,
 				};
 
 				await _repository.CreateOrUpdateAsync(newRobot);
@@ -108,7 +108,7 @@ namespace ConnectFour.Controllers
 					IsConnected = newRobot.IsConnected,
 					Color = newRobot.Color,
 					IsIngame = newRobot.IsIngame,
-					Endpoint = newRobot.Endpoint,
+					Topic = newRobot.Topic,
 				});
 			}
 			catch (Exception ex)

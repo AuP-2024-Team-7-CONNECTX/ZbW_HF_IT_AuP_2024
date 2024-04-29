@@ -1,12 +1,13 @@
 ﻿using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
 using static ConnectFour.Enums.Enum;
 
 namespace ConnectFour.Controllers
 {
-	[Route("api/games")]
 	[ApiController]
+	[Route("[controller]")]
 	public class GameController : ControllerBase
 	{
 		private readonly IGameRepository _gameRepository;
@@ -14,6 +15,7 @@ namespace ConnectFour.Controllers
 
 		private readonly IRobotRepository _robotRepository;
 		private readonly ILogger<GameController> _logger;
+
 
 		public GameController(IGameRepository gameRepository, IPlayerRepository playerRepository, IRobotRepository robotRepository, ILogger<GameController> logger)
 		{
@@ -91,8 +93,7 @@ namespace ConnectFour.Controllers
 					State = GameState.InProgress,
 
 					// On creating a Game, the Field is empty
-					GameFieldJson = @"{
-            ""1"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
+					GameFieldJson = @"{ ""1"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
             ""2"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
             ""3"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
             ""4"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
@@ -131,6 +132,7 @@ namespace ConnectFour.Controllers
 
 				game.State = state;
 				game.CurrentMoveId = request.CurrentMoveId;
+				game.GameFieldJson = request.GameFieldJson;
 
 				await _gameRepository.CreateOrUpdateAsync(game);
 

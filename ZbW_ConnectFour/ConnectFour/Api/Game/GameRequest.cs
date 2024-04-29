@@ -7,4 +7,5 @@ public record GameRequest
     public string? CurrentMoveId { get; init; }
     public string State { get; init; }
     
+    public string GameFieldJson { get; init; }
 }

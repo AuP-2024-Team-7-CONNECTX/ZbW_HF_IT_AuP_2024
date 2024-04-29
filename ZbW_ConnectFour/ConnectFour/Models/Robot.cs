@@ -19,7 +19,7 @@ namespace ConnectFour.Models
 
 		[NotMapped]
 		public bool ControlledByHuman { get; set; }
-		public required string Endpoint { get; set; }
+		public required string Topic { get; set; }
 
 	}
 }

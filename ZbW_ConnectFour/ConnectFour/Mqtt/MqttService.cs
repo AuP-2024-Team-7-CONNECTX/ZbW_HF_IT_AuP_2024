@@ -1,4 +1,5 @@
-﻿using MQTTnet;
+﻿using ConnectFour.GameControllers;
+using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Protocol;
 using System.Text;
@@ -11,10 +12,37 @@ namespace ConnectFour.Mqtt
 		private IMqttClient _mqttClient;
 		public readonly IConfiguration _configuration;
 
+		public GameHandler CurrentGameHandler;
 		public MqttService(ILogger<MqttService> logger, IConfiguration configuration)
 		{
 			_logger = logger;
 			_configuration = configuration;
+			_mqttClient = new MqttFactory().CreateMqttClient();
+
+		}
+
+		public async Task ConnectToNewBrokerAsync(string brokerAddress, string brokerPort, string brokerUserName, string brokerPassword)
+		{
+			var clientId = Guid.NewGuid().ToString();
+
+			var options = new MqttClientOptionsBuilder()
+				.WithTcpServer(brokerAddress, int.Parse(brokerPort))
+				.WithClientId(clientId)
+				//.WithCredentials(username, password)
+				.WithCleanSession()
+				.Build();
+
+			var connectResult = await _mqttClient.ConnectAsync(options);
+
+			if (connectResult.ResultCode == MqttClientConnectResultCode.Success)
+			{
+				_logger.LogInformation($"Connected to MQTT broker {brokerAddress} successfully.");
+
+			}
+			else
+			{
+				_logger.LogError($"Failed to connect to MQTT broker {brokerAddress}: {connectResult.ResultCode}");
+			}
 		}
 
 		public async Task ConnectAsync()
@@ -38,20 +66,34 @@ namespace ConnectFour.Mqtt
 
 			if (connectResult.ResultCode == MqttClientConnectResultCode.Success)
 			{
-				_logger.LogInformation("Connected to MQTT broker successfully.");
+				_logger.LogInformation($"Connected to MQTT broker {brokerAddress} successfully.");
 
-				// Callback function when a message is received
-				_mqttClient.ApplicationMessageReceivedAsync += e =>
-				{
-					Console.WriteLine($"Received message: {Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment)}");
-					return Task.CompletedTask;
-				};
 			}
 			else
 			{
-				_logger.LogError($"Failed to connect to MQTT broker: {connectResult.ResultCode}");
+				_logger.LogError($"Failed to connect to MQTT broker {brokerAddress}: {connectResult.ResultCode}");
 			}
 		}
+
+		public async Task RegisterGameHandler(GameHandler gameHandler)
+		{
+			CurrentGameHandler = gameHandler;
+
+			if (CurrentGameHandler == null)
+			{
+				_logger.LogError("GameHandler is null. Couldnt register Method ApplicationMessageReceivedAsync for MqttClient");
+
+			}
+
+			// Callback function when a message is received
+			_mqttClient.ApplicationMessageReceivedAsync += e =>
+			{
+				var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
+				CurrentGameHandler.ReceiveInput(payload, false, false);
+				return Task.CompletedTask;
+			};
+		}
+
 
 		public async Task SubscribeAsync(string topic)
 		{
@@ -82,6 +124,17 @@ namespace ConnectFour.Mqtt
 		{
 			await _mqttClient.DisconnectAsync();
 			_logger.LogInformation("Disconnected from MQTT broker.");
+		}
+
+		// Method is test only to
+		public async Task RegisterTestConsoleLog()
+		{
+			_mqttClient.ApplicationMessageReceivedAsync += e =>
+			{
+				var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
+				Console.WriteLine(payload);
+				return Task.CompletedTask;
+			};
 		}
 	}
 }

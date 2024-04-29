@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectFour.Controllers
 {
-    [Route("api/Users")]
-    [ApiController]
-    public class UserController : ControllerBase
+	[ApiController]
+	[Route("[controller]")]
+	public class UserController : ControllerBase
     {
         private readonly IUserRepository _repository;
         private readonly ILogger<UserController> _logger;
