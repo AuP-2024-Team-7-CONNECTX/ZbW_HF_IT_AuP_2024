@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectFour.Controllers
 {
-	[Route("api/Players")]
 	[ApiController]
+	[Route("[controller]")]
 	public class PlayerController : ControllerBase
 	{
 		private readonly IPlayerRepository _repository;
@@ -37,8 +37,8 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occurred while fetching all players.");
-				return StatusCode(500, "An error occurred while processing your request.");
+				_logger.LogError(ex, $"An error occurred while fetching all players.{ex.Message}");
+				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
 			}
 		}
 
@@ -64,8 +64,8 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while fetching the player with ID {id}.");
-				return StatusCode(500, "An error occurred while processing your request.");
+				_logger.LogError(ex, $"An error occurred while fetching the player with ID {id}.{ex.Message}");
+				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
 			}
 		}
 
@@ -91,8 +91,8 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occurred while creating a new player.");
-				return StatusCode(500, "An error occurred while processing your request.");
+				_logger.LogError(ex, $"An error occurred while creating a new player.{ex.Message}");
+				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
 			}
 		}
 
@@ -119,8 +119,8 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while updating the player with ID {id}.");
-				return StatusCode(500, "An error occurred while processing your request.");
+				_logger.LogError(ex, $"An error occurred while updating the player with ID {id}.{ex.Message}");
+				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
 			}
 		}
 
@@ -136,8 +136,8 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while deleting the player with ID {id}.");
-				return StatusCode(500, "An error occurred while processing your request.");
+				_logger.LogError(ex, $"An error occurred while deleting the player with ID {id}.{ex.Message}");
+				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
 			}
 		}
 	}

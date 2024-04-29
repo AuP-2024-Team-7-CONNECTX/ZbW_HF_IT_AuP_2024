@@ -12,7 +12,7 @@ public class RobotRequestExample : IExamplesProvider<RobotRequest>
 			IsIngame = false,
 			Color = "Red",
 			Name = "Röbby",
-			Endpoint = "www.roboCop.ch\\api"
+			Topic = "RöbbysGame"
 		};
 	}
 

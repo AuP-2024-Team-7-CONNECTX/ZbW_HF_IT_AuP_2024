@@ -15,5 +15,7 @@ public record GameResponse
 
 	public string GameFieldJson { get; init; }
 
+    public bool ManualTurnIsAllowed { get; init; }
+
 	public GameResponse() { }
 }

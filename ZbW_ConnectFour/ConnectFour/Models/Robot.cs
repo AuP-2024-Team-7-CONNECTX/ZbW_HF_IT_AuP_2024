@@ -1,4 +1,5 @@
 ﻿using ConnectFour.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 using static ConnectFour.Enums.Enum;
 
 namespace ConnectFour.Models
@@ -16,8 +17,9 @@ namespace ConnectFour.Models
 
 		public bool IsIngame { get; set; }
 
-		
-		public required string Endpoint { get; set; }
+		[NotMapped]
+		public bool ControlledByHuman { get; set; }
+		public required string Topic { get; set; }
 
 	}
 }

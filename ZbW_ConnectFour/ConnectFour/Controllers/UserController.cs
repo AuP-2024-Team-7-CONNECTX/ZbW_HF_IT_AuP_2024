@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectFour.Controllers
 {
-    [Route("api/Users")]
-    [ApiController]
-    public class UserController : ControllerBase
+	[ApiController]
+	[Route("[controller]")]
+	public class UserController : ControllerBase
     {
         private readonly IUserRepository _repository;
         private readonly ILogger<UserController> _logger;
@@ -33,7 +33,7 @@ namespace ConnectFour.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while fetching all users.");
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
             }
         }
 
@@ -58,7 +58,7 @@ namespace ConnectFour.Controllers
                 _logger.LogError(ex, "An error occurred while fetching the user with ID {UserId}.", id);
 
                 // Return a generic error message to the client
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
             }
         }
 
@@ -109,7 +109,7 @@ namespace ConnectFour.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "An error occurred while updating the user with ID {UserId}.", id);
-                    return StatusCode(500, "An error occurred while processing your request.");
+                    return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
                 }
 
             }
@@ -132,7 +132,7 @@ namespace ConnectFour.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting the user with ID {UserId}.", id);
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
             }
         }
     }

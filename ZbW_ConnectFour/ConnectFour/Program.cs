@@ -1,11 +1,12 @@
+using ConnectFour.Mqtt;
 using ConnectFour.Repositories;
 using ConnectFour.Repositories.Implementations;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace ConnectFour
@@ -19,10 +20,22 @@ namespace ConnectFour
 			// Konfiguration laden
 			var configuration = builder.Configuration;
 
+			#region Logging
+
+			Log.Logger = new LoggerConfiguration()
+	.ReadFrom.Configuration(configuration)
+	.CreateLogger();
+
+			builder.Services.AddLogging(loggingBuilder =>
+				loggingBuilder.AddSerilog(dispose: true));
+
+
+			#endregion
+						
 			// Add services to the container.
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
-			builder.Services.AddSwaggerGen();
+			//builder.Services.AddSwaggerGen();
 
 			builder.Services.AddDbContext<GameDbContext>(options =>
 					options.UseSqlServer(configuration.GetConnectionString("ConnectFour")).UseLazyLoadingProxies());
@@ -41,6 +54,10 @@ namespace ConnectFour
 			builder.Services.AddScoped<IMoveRepository, MoveRepository>();
 			builder.Services.AddScoped<IGameRepository, GameRepository>();
 
+			// Mqtt
+			builder.Services.AddSingleton<IMqttService, MqttService>();
+
+
 			builder.Services.AddSwaggerGen(c =>
 {
 	c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -49,13 +66,10 @@ namespace ConnectFour
 
 			builder.Services.AddSwaggerExamplesFromAssemblyOf<UserRequestExample>();
 
-
-
 			var app = builder.Build();
 			// Datenbankprüfung und -erstellung
 			using (var scope = app.Services.CreateScope())
 			{
-
 				var services = scope.ServiceProvider;
 
 				var logger = services.GetRequiredService<ILogger<Program>>();
@@ -66,15 +80,14 @@ namespace ConnectFour
 					var connected = context.Database.CanConnect();
 					if (connected)
 					{
-						logger.LogInformation("Datenbank erfolgreich verbunden");
+						//context.Database.EnsureDeleted();
+						logger.LogInformation("Datenbank erfolgreich gelöscht");
 
 					}
-					else
-					{
-						logger.LogInformation("Es wurde keine Datenbank gefunden. Neue Datenbank wird erstellt...");
-						context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
-						logger.LogInformation("Datenbank wurde erfolgreich angelegt!");
-					}
+
+					// logger.LogInformation("Es wurde keine Datenbank gefunden. Neue Datenbank wird erstellt...");
+					context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+					logger.LogInformation("Datenbank wurde erfolgreich angelegt!");
 
 				}
 				catch (Exception ex)
@@ -83,7 +96,6 @@ namespace ConnectFour
 					logger.LogError(ex, "Ein Fehler ist aufgetreten beim Erstellen der Datenbank.");
 				}
 			}
-
 
 
 			// Konfiguriere Health Checks Route und die Ausgabe

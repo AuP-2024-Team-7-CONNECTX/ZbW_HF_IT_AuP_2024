@@ -28,13 +28,15 @@ namespace ConnectFour.Models
 		public decimal? TotalPointsPlayerOne { get; set; }
 		public decimal? TotalPointsPlayerTwo { get; set; }
 
-		
+		public bool ManualTurnIsAllowed { get; set; } = false;
+
 
 		// Spielfeld als JSON in der Datenbank speichern
 		public string GameFieldJson
 		{
 			get
 			{
+
 				JsonSerializerOptions options = new JsonSerializerOptions
 				{
 					ReferenceHandler = ReferenceHandler.Preserve,
@@ -50,33 +52,35 @@ namespace ConnectFour.Models
 					ReferenceHandler = ReferenceHandler.Preserve
 				};
 
-				_gameField = JsonSerializer.Deserialize<Dictionary<int, Dictionary<string, int>>>(value, options);
+				_gameField = JsonSerializer.Deserialize<Dictionary<int, Dictionary<int, int>>>(value, options);
 			}
 		}
 
 		// Privates Feld für das Spiel, wird aus Json deserialisiert
 		[NotMapped]
-		public Dictionary<int, Dictionary<string, int>> _gameField = new Dictionary<int, Dictionary<string, int>>();
+		public Dictionary<int, Dictionary<int, int>> _gameField = new Dictionary<int, Dictionary<int, int>>();
 
 		// Spielfeld:
 
+		// hier in der spielelogik wird statt koordination mit buchstaben mit int gearbeitet.
+		// beim request verschicken und receiven an / vom Roboter wird das entsprechend gemappt
 
 		//		{
 		//  "1": { // Spalte 1
-		//    "A": 1, // Feld A der Spalte 1, belegt von Spieler 1
-		//    "B": 1, // Feld B der Spalte 1, belegt von Spieler 1
-		//    "C": 2, // Feld C der Spalte 1, belegt von Spieler 2
-		//    "D": 2, // Feld D der Spalte 1, belegt von Spieler 2
-		//    "E": 0, // Feld E der Spalte 1, nicht belegt
-		//    "F": 0  // Feld F der Spalte 1, nicht belegt
+		//    "1": 1, // Feld A der Spalte 1, belegt von Spieler 1
+		//    "2": 1, // Feld B der Spalte 1, belegt von Spieler 1
+		//    "3": 2, // Feld C der Spalte 1, belegt von Spieler 2
+		//    "4": 2, // Feld D der Spalte 1, belegt von Spieler 2
+		//    "5": 0, // Feld E der Spalte 1, nicht belegt
+		//    "6": 0  // Feld F der Spalte 1, nicht belegt
 		//  },
 		//  "2": { // Spalte 2
-		//    "A": 1, // Feld A der Spalte 2, belegt von Spieler 1
-		//    "B": 1, // Feld B der Spalte 2, belegt von Spieler 1
-		//    "C": 2, // Feld C der Spalte 2, belegt von Spieler 2
-		//    "D": 1, // Feld D der Spalte 2, belegt von Spieler 1
-		//    "E": 0, // Feld E der Spalte 2, nicht belegt
-		//    "F": 0  // Feld F der Spalte 2, nicht belegt
+		//    "1": 1, // Feld A der Spalte 2, belegt von Spieler 1
+		//    "2": 1, // Feld B der Spalte 2, belegt von Spieler 1
+		//    "3": 2, // Feld C der Spalte 2, belegt von Spieler 2
+		//    "4": 1, // Feld D der Spalte 2, belegt von Spieler 1
+		//    "5": 0, // Feld E der Spalte 2, nicht belegt
+		//    "6": 0  // Feld F der Spalte 2, nicht belegt
 		//  },
 		//  "3": { // Spalte 3
 		//    "A": 1, // Feld A der Spalte 3, belegt von Spieler 1
