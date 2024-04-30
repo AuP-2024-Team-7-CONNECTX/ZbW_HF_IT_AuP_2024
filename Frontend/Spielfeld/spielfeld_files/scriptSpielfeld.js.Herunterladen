@@ -1,0 +1,42 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const columns = document.querySelectorAll('.column');
+    let currentPlayer = 'red'; // Starte mit Rot
+
+    // Audio-Elemente erstellen
+    const redSound = new Audio('../Sounds/red.m4a');
+    const blueSound = new Audio('../Sounds/blue.m4a');
+
+    columns.forEach(column => {
+        column.addEventListener('click', () => {
+            const cells = Array.from(column.children);
+            const emptyCell = cells.reverse().find(cell => !cell.classList.contains('red') && !cell.classList.contains('blue'));
+
+            if (emptyCell) {
+                emptyCell.classList.add(currentPlayer);
+
+                // Spiele den entsprechenden Ton ab
+                if (currentPlayer === 'red') {
+                    redSound.play();
+                } else {
+                    blueSound.play();
+                }
+
+                // Wechsle den Spieler
+                currentPlayer = currentPlayer === 'red' ? 'blue' : 'red';
+            }
+        });
+    });
+
+    // Initialisiere das Spielfeld
+    initializeGame(columns);
+});
+
+function initializeGame(columns) {
+    columns.forEach(column => {
+        for (let i = 0; i < 6; i++) { // 6 Zellen pro Spalte
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            column.appendChild(cell);
+        }
+    });
+}
