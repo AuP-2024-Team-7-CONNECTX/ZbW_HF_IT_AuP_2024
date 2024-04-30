@@ -4,14 +4,6 @@ document.getElementById('login-form').addEventListener('submit', function(event)
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value;
 
-    // Validierung der Eingaben
-    if (!validateEmail(email)) {
-        alert("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
-        return;
-    } else if (!validatePassword(password)) {
-        alert("Das Passwort muss mindestens 8 Zeichen lang sein und mindestens einen Grossbuchstaben, eine Zahl und ein Sonderzeichen enthalten.");
-        return;
-    }
 
     // Ladeindikator anzeigen
     displayLoadingIndicator(true);
