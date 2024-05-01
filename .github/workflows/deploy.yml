@@ -32,8 +32,7 @@ jobs:
       run: |
         # Fügen Sie hier Ihre Deployment-Skripte ein, z.B. Kopieren der Dateien zum Server, Neustart des Dienstes etc.
         cp -r ./publish /root/ConnectFour
-        # ssh -o StrictHostKeyChecking=no user@127.0.0.1 "systemctl restart ConnectFour.csproj"
-        systemctl restart ConnectFour.csproj
+        dotnet /root/ConnectFour/publicsh/ConnectFour.dll
 
     - name: Clean up
       run: rm -rf ./publish
