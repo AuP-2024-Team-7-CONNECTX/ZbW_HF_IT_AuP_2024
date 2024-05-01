@@ -15,9 +15,22 @@ namespace ConnectFour
 	{
 		public static void Main(string[] args)
 		{
-			var builder = WebApplication.CreateBuilder(args);
+			var options = new WebApplicationOptions
+			{
+				// Test nick - should be dynamic, but who tf cares...
+				EnvironmentName = Environments.Production
+			};
 
+			var builder = WebApplication.CreateBuilder(options);
+
+			
 			// Konfiguration laden
+			builder.Configuration
+	.SetBasePath(Directory.GetCurrentDirectory())
+	.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+	.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+	.AddEnvironmentVariables();
+
 			var configuration = builder.Configuration;
 
 			#region Logging
@@ -31,11 +44,13 @@ namespace ConnectFour
 
 
 			#endregion
-						
+
 			// Add services to the container.
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 			//builder.Services.AddSwaggerGen();
+			
+			var test = configuration.GetConnectionString("ConnectFour");
 
 			builder.Services.AddDbContext<GameDbContext>(options =>
 					options.UseSqlServer(configuration.GetConnectionString("ConnectFour")).UseLazyLoadingProxies());
