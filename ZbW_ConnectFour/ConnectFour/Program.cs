@@ -23,13 +23,26 @@ namespace ConnectFour
 
 			var builder = WebApplication.CreateBuilder(options);
 
-			
-			// Konfiguration laden
-			builder.Configuration
+			if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+			{
+				// Konfiguration laden
+				builder.Configuration
+	.SetBasePath("/root/ConnectFour/publish")
+	.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+	.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+	.AddEnvironmentVariables();
+			}
+			else
+			{
+				// Konfiguration laden
+				builder.Configuration
 	.SetBasePath(Directory.GetCurrentDirectory())
 	.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
 	.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
 	.AddEnvironmentVariables();
+			}
+
+
 
 			var configuration = builder.Configuration;
 
@@ -49,7 +62,7 @@ namespace ConnectFour
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 			//builder.Services.AddSwaggerGen();
-			
+
 			var test = configuration.GetConnectionString("ConnectFour");
 
 			builder.Services.AddDbContext<GameDbContext>(options =>
