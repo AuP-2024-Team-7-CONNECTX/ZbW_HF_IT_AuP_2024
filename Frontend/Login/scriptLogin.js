@@ -15,8 +15,8 @@ document.getElementById('login-form').addEventListener('submit', function(event)
     };
 
     // Konvertierung des JSON-Objekts in einen String und Senden der Daten
-    fetch('https://example.com/api/login', {
-        method: 'POST',
+    fetch('http://localhost:5260/User', {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },

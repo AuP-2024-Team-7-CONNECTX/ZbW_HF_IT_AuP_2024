@@ -16,13 +16,36 @@ namespace ConnectFour.Controllers
 			_mqttService = mqttService;
 		}
 
+		[HttpPost("MqttTestComplete")]
+		public async Task<IActionResult> MqttTestComplete()
+		{
+			try
+			{
+				string brokerAddress = "test.mosquitto.org";
+				string port = "1883";
+				string topic = "MS3Test";
+				await _mqttService.ConnectToNewBrokerAsync(brokerAddress, port, "foo", "foo");
+								await _mqttService.SubscribeAsync(topic);
+				await _mqttService.RegisterTestConsoleLog();
+
+
+				return Ok($"Connect / subscribe to broker {brokerAddress}:{port}/{topic} was successfull. Please publish something on your broker");
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Failed to connect to MQTT broker: {ex.Message}");
+			}
+		}
+
 		[HttpPost("MqttConnect")]
 		public async Task<IActionResult> MqttConnect()
 		{
 			try
 			{
-				await _mqttService.ConnectAsync();
-				return Ok("Connected to MQTT broker successfully.");
+				string brokerAddress = "test.mosquitto.org";
+				string port = "1883";
+				await _mqttService.ConnectToNewBrokerAsync(brokerAddress,port,"foo","foo");
+				return Ok($"Connected to MQTT broker {brokerAddress}:{port} successfully.");
 			}
 			catch (Exception ex)
 			{

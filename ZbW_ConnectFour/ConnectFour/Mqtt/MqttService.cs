@@ -133,6 +133,7 @@ namespace ConnectFour.Mqtt
 			{
 				var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
 				Console.WriteLine(payload);
+				_logger.LogInformation(payload);
 				return Task.CompletedTask;
 			};
 		}
