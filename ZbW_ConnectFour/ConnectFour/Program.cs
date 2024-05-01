@@ -15,32 +15,34 @@ namespace ConnectFour
 	{
 		public static void Main(string[] args)
 		{
+			var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
 			var options = new WebApplicationOptions
 			{
-				// Test nick - should be dynamic, but who tf cares...
-				EnvironmentName = Environments.Production
+				EnvironmentName = environment == "Development" ? Environments.Development : Environments.Production
 			};
 
 			var builder = WebApplication.CreateBuilder(options);
 
-			//if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
-			//{
-				// Konfiguration laden
+			if (!(environment == "Development"))
+			{
 				builder.Configuration
 	.SetBasePath("/root/ConnectFour/publish")
 	.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
 	.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
 	.AddEnvironmentVariables();
-			//}
-	//		else
-	//		{
-	//			// Konfiguration laden
-	//			builder.Configuration
-	//.SetBasePath(Directory.GetCurrentDirectory())
-	//.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-	//.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-	//.AddEnvironmentVariables();
-	//		}
+
+			}
+			else
+			{
+				// Konfiguration laden
+				builder.Configuration
+	.SetBasePath(Directory.GetCurrentDirectory())
+	.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+	.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+	.AddEnvironmentVariables();
+
+			}
 
 
 
