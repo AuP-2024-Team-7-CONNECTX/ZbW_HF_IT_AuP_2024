@@ -1,4 +1,5 @@
 ﻿using ConnectFour.Mqtt;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectFour.Controllers
@@ -17,6 +18,7 @@ namespace ConnectFour.Controllers
 		}
 
 		[HttpPost("MqttTestComplete")]
+		[EnableCors("AllowAll")] // Erlaubt den Zugriff für alle Herkunftsorte
 		public async Task<IActionResult> MqttTestComplete()
 		{
 			try
@@ -25,11 +27,15 @@ namespace ConnectFour.Controllers
 				string port = "1883";
 				string topic = "MS3Test";
 				await _mqttService.ConnectToNewBrokerAsync(brokerAddress, port, "foo", "foo");
-								await _mqttService.SubscribeAsync(topic);
+				await _mqttService.SubscribeAsync(topic);
 				await _mqttService.RegisterTestConsoleLog();
 
+				// Setze CORS-Header in der Antwort
+				Response.Headers.Add("Access-Control-Allow-Origin", "*"); // Erlaubt den Zugriff von allen Herkunftsorten
+				Response.Headers.Add("Access-Control-Allow-Methods", "POST"); // Erlaubt POST-Anfragen
+				Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type"); // Erlaubt bestimmte Header
 
-				return Ok($"Connect / subscribe to broker {brokerAddress}:{port}/{topic} was successfull. Please publish something on your broker");
+				return Ok($"Connect / subscribe to broker {brokerAddress}:{port}/{topic} was successful. Please publish something on your broker");
 			}
 			catch (Exception ex)
 			{

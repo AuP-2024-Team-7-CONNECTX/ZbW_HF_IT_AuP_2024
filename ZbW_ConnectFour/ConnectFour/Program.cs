@@ -163,6 +163,7 @@ namespace ConnectFour
 
 
 			app.MapControllers();
+			app.UseCors("AllowAll");
 
 			app.Run();
 
