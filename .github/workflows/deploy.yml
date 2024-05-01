@@ -34,8 +34,9 @@ jobs:
         cp -r ./publish /root/ConnectFour
         # dotnet /root/ConnectFour/publish/ConnectFour.dll
 
-    - name: Clean up
-      run: rm -rf ./publish
+   # - name: Clean up
+   #   run: rm -r /root/ConnectFour/publish/*
+
 
 env:
   Solution_Name: ZbW_ConnectFour
