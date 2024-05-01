@@ -32,10 +32,10 @@ jobs:
       run: |
         # Fügen Sie hier Ihre Deployment-Skripte ein, z.B. Kopieren der Dateien zum Server, Neustart des Dienstes etc.
         cp -r ./publish /root/ConnectFour
-        # dotnet /root/ConnectFour/publish/ConnectFour.dll
+        dotnet /root/ConnectFour/publish/ConnectFour.dll
 
-   # - name: Clean up
-   #   run: rm -r /root/ConnectFour/publish/*
+    - name: Clean up
+      run: rm -r /root/ConnectFour/publish/*
 
 
 env:
