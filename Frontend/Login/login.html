@@ -57,7 +57,7 @@
     <script>
       function testFunction() {
         var xhr = new XMLHttpRequest();
-        var url = "http://localhost:5260/MqttTest/MqttTestComplete"; // Hier die URL deines Endpunktes eintragen
+        var url = "http://localhost:5000/MqttTest/MqttTestComplete"; // Hier die URL deines Endpunktes eintragen
         xhr.open("POST", url, true);
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4) {

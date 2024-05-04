@@ -95,7 +95,7 @@ namespace ConnectFour
 });
 
 			builder.Services.AddSwaggerExamplesFromAssemblyOf<UserRequestExample>();
-
+			
 			var app = builder.Build();
 			// Datenbankprüfung und -erstellung
 			using (var scope = app.Services.CreateScope())
@@ -111,19 +111,19 @@ namespace ConnectFour
 					if (connected)
 					{
 						//context.Database.EnsureDeleted();
-						logger.LogInformation("Datenbank erfolgreich gelöscht");
-
+						logger.LogInformation("Datenbank erfolgreich geloescht");
+						
 					}
 
 					// logger.LogInformation("Es wurde keine Datenbank gefunden. Neue Datenbank wird erstellt...");
 					context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
 					logger.LogInformation("Datenbank wurde erfolgreich angelegt!");
+					
 
 				}
 				catch (Exception ex)
 				{
-
-					logger.LogError(ex, "Ein Fehler ist aufgetreten beim Erstellen der Datenbank.");
+					logger.LogError($"Ein Fehler ist aufgetreten beim Erstellen der Datenbank {ex.Message}");
 				}
 			}
 
