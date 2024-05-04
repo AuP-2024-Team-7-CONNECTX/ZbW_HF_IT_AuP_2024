@@ -4,11 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login-Seite</title>
-    <link
-      rel="stylesheet"
-      href="/var/www/public/Frontend/Login/styleLogin.css"
-    />
-    <script defer src="/var/www/public/Frontend/Login/scriptLogin.js"></script>
+    <link rel="stylesheet" href="styleLogin.css" />
+    <script defer src="scriptLogin.js"></script>
   </head>
   <body>
     <section>
@@ -27,21 +24,9 @@
             <input type="password" id="password" required />
             <label for="password">Passwort</label>
           </div>
-          <div class="remember-forgot">
-            <a href="../PasswortZurucksetzen/PasswortZurucksetzen.html"
-              >Passwort vergessen?</a
-            >
-          </div>
           <button type="submit">Login</button>
           <!-- Test-Button, um Kommunikation mit Backend zu testen-->
           <button type="button" onclick="testFunction()">Test</button>
-          <!-- Hier ist der neue Button -->
-          <div class="register-link">
-            <p>
-              Neu hier?
-              <a href="../Registrierung/registrieren.html">Registrieren</a>
-            </p>
-          </div>
         </form>
       </div>
     </section>
