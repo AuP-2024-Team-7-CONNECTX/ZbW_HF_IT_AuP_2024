@@ -11,10 +11,12 @@ namespace ConnectFour.Controllers
 	public class MqttTestController : ControllerBase
 	{
 		private readonly IMqttService _mqttService;
+		private readonly ILogger<MqttTestController> _mqttTestController;
 
-		public MqttTestController(IMqttService mqttService)
+		public MqttTestController(IMqttService mqttService, ILogger<MqttTestController> mqttTestController)
 		{
 			_mqttService = mqttService;
+			_mqttTestController = mqttTestController;
 		}
 
 		[HttpPost("MqttTestComplete")]
@@ -39,6 +41,8 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
+				_mqttTestController.LogInformation($"Failed to connect to MQTT broker: {ex.Message}");
+				_mqttTestController.LogError($"Failed to connect to MQTT broker: {ex.Message}");
 				return StatusCode(500, $"Failed to connect to MQTT broker: {ex.Message}");
 			}
 		}
