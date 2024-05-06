@@ -49,38 +49,45 @@
     <!-- JavaScript für den Test-Button... braucht es nur für MS3 -->
     <script>
       function testFunction() {
-        var xhr = new XMLHttpRequest();
-        var url = "http://localhost:5000/MqttTest/MqttTestComplete"; // Hier die URL deines Endpunktes eintragen
-        xhr.open("POST", url, true);
-        xhr.onreadystatechange = function () {
-          if (xhr.status === 200) {
-            console.log(xhr.responseText);
-
-            // Display a popup message
-            alert("Verbindung zu Mqtt hergestellt");
-          } else {
-            alert("Verbindung konnte nicht hergestellt werden");
-            console.error(xhr.responseText);
-          }
-        };
-        xhr.send();
+        fetch("http://localhost:5000/MqttTest/MqttTestComplete", {
+          method: "POST",
+        })
+          .then(function (response) {
+            if (response.ok) {
+              console.log("Verbindung zu MQTT hergestellt");
+              alert("Verbindung zu MQTT hergestellt");
+            } else {
+              console.error("Fehler beim Herstellen der Verbindung zu MQTT");
+              alert("Fehler beim Herstellen der Verbindung zu MQTT");
+            }
+          })
+          .catch(function (error) {
+            console.error(
+              "Fehler beim Herstellen der Verbindung zu MQTT:",
+              error
+            );
+            alert("Fehler beim Herstellen der Verbindung zu MQTT");
+          });
       }
+
       function testFunction2() {
-        var xhr = new XMLHttpRequest();
-        var url = "http://localhost:5000/HealthCheck"; // Hier die URL deines Endpunktes eintragen
-        xhr.open("GET", url, true);
-        xhr.onreadystatechange = function () {
-          if (xhr.status === 200) {
-            console.log(xhr.responseText);
-            // Display a popup message
-            alert("Verbindung zu Backend hergestellt");
-            document.body.appendChild(infoElement);
-          } else {
-            alert("Verbindung konnte nicht hergestellt werden");
-            console.error(xhr.responseText);
-          }
-        };
-        xhr.send();
+        fetch("http://localhost:5000/HealthCheck")
+          .then(function (response) {
+            if (response.ok) {
+              console.log("Verbindung zu Backend hergestellt");
+              alert("Verbindung zu Backend hergestellt");
+            } else {
+              console.error("Fehler beim Herstellen der Verbindung zu Backend");
+              alert("Fehler beim Herstellen der Verbindung zu Backend");
+            }
+          })
+          .catch(function (error) {
+            console.error(
+              "Fehler beim Herstellen der Verbindung zu Backend:",
+              error
+            );
+            alert("Fehler beim Herstellen der Verbindung zu Backend");
+          });
       }
     </script>
   </body>
