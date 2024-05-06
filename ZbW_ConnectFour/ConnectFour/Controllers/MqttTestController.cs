@@ -34,9 +34,9 @@ namespace ConnectFour.Controllers
 
 				// Setze CORS-Header in der Antwort
 				Response.Headers.Add("Access-Control-Allow-Origin", "*"); // Erlaubt den Zugriff von allen Herkunftsorten
-				Response.Headers.Add("Access-Control-Allow-Methods", "POST"); // Erlaubt POST-Anfragen
+				Response.Headers.Add("Access-Control-Allow-Methods", "GET"); // Erlaubt POST-Anfragen
 				Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type"); // Erlaubt bestimmte Header
-
+				
 				return Ok($"Connect / subscribe to broker {brokerAddress}:{port}/{topic} was successful. Please publish something on your broker");
 			}
 			catch (Exception ex)

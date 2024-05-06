@@ -3,39 +3,28 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ConnectFour.Controllers
+namespace ConnectFour.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class HealthCheckController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class HealthCheckController : ControllerBase
-    {
-        private readonly HealthCheckService _healthCheckService;
+	private readonly HealthCheckService _healthCheckService;
 
-        public HealthCheckController(HealthCheckService healthCheckService)
-        {
-            _healthCheckService = healthCheckService;
-        }
+	public HealthCheckController(HealthCheckService healthCheckService)
+	{
+		_healthCheckService = healthCheckService;
+	}
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            var report = await _healthCheckService.CheckHealthAsync();
+	[HttpGet]
+	public async Task<IActionResult> Get()
+	{
+		// Setze CORS-Header in der Antwort
+		Response.Headers.Add("Access-Control-Allow-Origin", "*"); // Erlaubt den Zugriff von allen Herkunftsorten
+		Response.Headers.Add("Access-Control-Allow-Methods", "POST"); // Erlaubt POST-Anfragen
+		Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type"); // Erlaubt bestimmte Header
 
-            // Erstelle ein Ergebnis basierend auf den Einträgen des Health Checks
-            var results = report.Entries.Select(e => new
-            {
-                name = e.Key,
-                status = e.Value.Status == HealthStatus.Healthy
-            }).ToList();
 
-            var response = new
-            {
-                checks = results,
-                overallStatus = report.Status == HealthStatus.Healthy
-            };
-
-            // Überprüfe den Gesamtstatus und setze den HTTP Status Code entsprechend
-            return report.Status == HealthStatus.Healthy ? Ok(response) : StatusCode(503, response);
-        }
-    }
+		return Ok();
+	}
 }

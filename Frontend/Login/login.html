@@ -26,7 +26,12 @@
           </div>
           <button type="submit">Login</button>
           <!-- Test-Button, um Kommunikation mit Backend zu testen-->
-          <button type="button" onclick="testFunction()">Test</button>
+          <button type="button" onclick="testFunction()">
+            Test MQTT Connect
+          </button>
+          <button type="button" onclick="testFunction2()">
+            Test Frontend and Backend Connect
+          </button>
         </form>
       </div>
     </section>
@@ -48,17 +53,31 @@
         var url = "http://localhost:5000/MqttTest/MqttTestComplete"; // Hier die URL deines Endpunktes eintragen
         xhr.open("POST", url, true);
         xhr.onreadystatechange = function () {
-          if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-              console.log(xhr.responseText);
-              // Check if response contains the success message
-              if (xhr.responseText.includes("successful")) {
-                // Display a popup message
-                alert("Verbindung hergestellt");
-              }
-            } else {
-              console.error(xhr.responseText);
-            }
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+
+            // Display a popup message
+            alert("Verbindung zu Mqtt hergestellt");
+          } else {
+            alert("Verbindung konnte nicht hergestellt werden");
+            console.error(xhr.responseText);
+          }
+        };
+        xhr.send();
+      }
+      function testFunction2() {
+        var xhr = new XMLHttpRequest();
+        var url = "http://localhost:5000/HealthCheck"; // Hier die URL deines Endpunktes eintragen
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = function () {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            // Display a popup message
+            alert("Verbindung zu Backend hergestellt");
+            document.body.appendChild(infoElement);
+          } else {
+            alert("Verbindung konnte nicht hergestellt werden");
+            console.error(xhr.responseText);
           }
         };
         xhr.send();
