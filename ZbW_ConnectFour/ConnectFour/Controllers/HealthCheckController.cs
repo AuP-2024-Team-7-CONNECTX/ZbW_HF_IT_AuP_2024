@@ -25,6 +25,6 @@ public class HealthCheckController : ControllerBase
 		Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type"); // Erlaubt bestimmte Header
 
 
-		return Ok();
+		return Ok("test Text 123");
 	}
 }

@@ -49,7 +49,7 @@
     <!-- JavaScript für den Test-Button... braucht es nur für MS3 -->
     <script>
       function testFunction() {
-        fetch("http://localhost:1434/MqttTest/MqttTestComplete", {
+        fetch("http://localhost:5000/MqttTest/MqttTestComplete", {
           method: "POST",
         })
           .then(function (response) {
@@ -71,7 +71,7 @@
       }
 
       function testFunction2() {
-        fetch("http://localhost:1434/HealthCheck")
+        fetch("http://localhost:5000/HealthCheck")
           .then(function (response) {
             if (response.ok) {
               console.log("Verbindung zu Backend hergestellt");
