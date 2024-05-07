@@ -123,7 +123,7 @@ namespace ConnectFour.Controllers
 			}
 		}
 
-		// DELETE api/Users/{id}
+		// DELETE /Users/{id}
 		[HttpDelete("{id}")]
 		public async Task<ActionResult> Delete(string id)
 		{
@@ -139,7 +139,7 @@ namespace ConnectFour.Controllers
 			}
 		}
 
-		// POST: /api/Users/registeremail
+		// POST: /Users/registeremail
 		[HttpPost("registeremail")]
 		public async Task<IActionResult> RegisterEmail(string email)
 		{
@@ -163,7 +163,7 @@ namespace ConnectFour.Controllers
 				var client = new PostmarkClient("8600a7c6-16a7-4c4f-938e-e144b29f51de");
 
 				string encodedUrl = HtmlEncoder.Default.Encode("https://connectx.tailf1dac2.ts.net/Bestatigung/bestatigung.html");
-				string emailParam = $"?email={Uri.EscapeDataString(email)}"; // Uri.EscapeDataString sorgt für eine korrekte URL-Codierung
+				string emailParam = $"?email={Uri.EscapeDataString(email)}";
 
 				var postmarkMessage = new PostmarkMessage()
 				{
@@ -197,7 +197,7 @@ namespace ConnectFour.Controllers
 			}
 		}
 
-		// POST: /api/Users/confirmEmail
+		// POST: /Users/confirmEmail
 		[HttpPost("confirmEmail")]
 		public async Task<IActionResult> ConfirmEmail(string email)
 		{
@@ -230,7 +230,7 @@ namespace ConnectFour.Controllers
 			}
 		}
 
-		// POST: /api/authentication/changepassword
+		// POST: /User/changepassword
 		[HttpPost("changepassword")]
 		public async Task<IActionResult> ChangePassword(string email, string newPassword)
 		{

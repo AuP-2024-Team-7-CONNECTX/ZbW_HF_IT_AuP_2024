@@ -1,71 +1,79 @@
-document.getElementById('login-form').addEventListener('submit', function(event) {
+document
+  .getElementById("login-form")
+  .addEventListener("submit", function (event) {
     event.preventDefault(); // Verhindert das Standardverhalten des Formulars
 
-    var email = document.getElementById('email').value;
-    var password = document.getElementById('password').value;
-
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
 
     // Ladeindikator anzeigen
     displayLoadingIndicator(true);
 
-    // Erstellung des JSON-Objekts mit den Anmeldeinformationen
-    var loginData = {
-        email: email,
-        password: password
-    };
+    // Der vollständige Endpoint, der die Basis-URL aus der Config-Datei verwendet
+    var apiUrl = `${endpoint}/User`;
 
-    // Konvertierung des JSON-Objekts in einen String und Senden der Daten
-    fetch('http://localhost:5260/User', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData),
+    // Abrufen aller Benutzerdaten vom Server
+    fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
+      .then((response) => response.json())
+      .then((users) => {
+        // Überprüfung der Anmeldedaten gegen die Benutzerliste
+        const user = users.find(
+          (user) => user.email === email && user.password === password
+        );
+        if (user && user.authenticated) {
+          console.log("Erfolg:", user);
+          window.location.href = "../Spielstart/spielstart.html"; // Anpassen an Ihre tatsächliche Zielseite
+        } else if (user && !user.authenticated) {
+          throw new Error(
+            "Login fehlgeschlagen: Benutzer nicht authentifiziert"
+          );
         } else {
-            response.json().then(data => {
-                throw new Error(data.message || 'Login fehlgeschlagen');
-            });
+          throw new Error(
+            "Login fehlgeschlagen: Benutzer nicht gefunden oder falsches Passwort"
+          );
         }
-    })
-    .then(data => {
-        console.log('Erfolg:', data);
-        // Weiterleitung oder Benachrichtigung des Benutzers nach erfolgreicher Authentifizierung
-        window.location.href = '../Spielstart/spielstart.html'; // Anpassen an deine tatsächliche Zielseite
-    })
-    .catch((error) => {
-        console.error('Fehler:', error);
-        alert('Login fehlgeschlagen: ' + error.message);  // Benutzern die Fehlermeldung zeigen
-    })
-    .finally(() => {
+      })
+      .catch((error) => {
+        console.error("Fehler:", error);
+        alert(error.message); // Benutzern die Fehlermeldung zeigen
+      })
+      .finally(() => {
         // Ladeindikator ausblenden
         displayLoadingIndicator(false);
-    });
-});
-
-function validateEmail(email) {
-    var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    return regex.test(email);
-}
-
-function validatePassword(password) {
-    var hasUpperCase = /[A-Z]/.test(password);
-    var hasNumber = /[0-9]/.test(password);
-    var hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    var isValidLength = password.length >= 8;
-    return hasUpperCase && hasNumber && hasSpecialChar && isValidLength;
-}
+      });
+  });
 
 function displayLoadingIndicator(show) {
-    const button = document.querySelector('button[type="submit"]');
-    if (show) {
-        button.innerText = 'Lädt...';
-        button.disabled = true;
-    } else {
-        button.innerText = 'Login';
-        button.disabled = false;
-    }
+  const button = document.querySelector('button[type="submit"]');
+  if (show) {
+    button.innerText = "Lädt...";
+    button.disabled = true;
+  } else {
+    button.innerText = "Login";
+    button.disabled = false;
+  }
 }
+
+.register-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: #007BFF; /* Blau */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.register-button:hover {
+    background-color: #0056b3;
+    cursor: pointer;
+}
+

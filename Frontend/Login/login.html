@@ -6,6 +6,7 @@
     <title>Login-Seite</title>
     <link rel="stylesheet" href="styleLogin.css" />
     <script defer src="scriptLogin.js"></script>
+    <script src="../config.js"></script>
   </head>
   <body>
     <section>
@@ -25,6 +26,9 @@
             <label for="password">Passwort</label>
           </div>
           <button type="submit">Login</button>
+          <a href="../Registrierung/registrieren.html" class="register-button"
+            >Zur Registrierung</a
+          >
           <!-- Test-Button, um Kommunikation mit Backend zu testen-->
           <button type="button" onclick="testFunction()">
             Test MQTT Connect
@@ -49,7 +53,7 @@
     <!-- JavaScript für den Test-Button... braucht es nur für MS3 -->
     <script>
       function testFunction() {
-        fetch("http://localhost:5000/MqttTest/MqttTestComplete", {
+        fetch(`${endpoint}/MqttTest/MqttTestComplete`, {
           method: "POST",
         })
           .then(function (response) {
@@ -71,7 +75,7 @@
       }
 
       function testFunction2() {
-        fetch("http://localhost:5000/HealthCheck")
+        fetch(`${endpoint}/HealthCheck`)
           .then(function (response) {
             if (response.ok) {
               console.log("Verbindung zu Backend hergestellt");
