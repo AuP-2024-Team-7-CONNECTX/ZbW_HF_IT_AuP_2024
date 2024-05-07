@@ -277,16 +277,16 @@ namespace ConnectFour.GameControllers
 		{
 			
 			await _mqttService.ConnectAsync();
-			await _mqttService.SubscribeAsync(_robot1.Topic);
-			await _mqttService.SubscribeAsync(_robot2.Topic);
+			await _mqttService.SubscribeAsync($"{_robot1.Topic}/feedback");
+			await _mqttService.SubscribeAsync($"{_robot2.Topic}/feedback");
 			await _mqttService.RegisterGameHandler(this);
 		}
 
 
 		private async void DisconnectFromMqtt()
 		{
-			await _mqttService.UnsubscribeAsync(_robot1.Topic);
-			await _mqttService.UnsubscribeAsync(_robot2.Topic);
+			await _mqttService.UnsubscribeAsync($"{_robot1.Topic}/feedback");
+			await _mqttService.UnsubscribeAsync($"{_robot2.Topic}/feedback");
 			await _mqttService.DisconnectAsync();
 		}
 

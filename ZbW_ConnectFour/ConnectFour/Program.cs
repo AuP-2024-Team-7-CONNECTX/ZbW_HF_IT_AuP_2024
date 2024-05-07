@@ -87,6 +87,16 @@ namespace ConnectFour
 			// Mqtt
 			builder.Services.AddSingleton<IMqttService, MqttService>();
 
+			builder.Services.AddCors(options =>
+			{
+				options.AddPolicy("AllowAll", builder =>
+				{
+					builder.AllowAnyOrigin()  // Erlaubt alle Ursprünge
+						   .AllowAnyMethod()  // Erlaubt alle Methoden
+						   .AllowAnyHeader(); // Erlaubt alle Header
+				});
+			});
+
 
 			builder.Services.AddSwaggerGen(c =>
 {

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-Mail Bestätigung</title>
+    <link rel="stylesheet" href="styleBestatigung.css" />
+    <script src="../config.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const emailInput = document.getElementById("emailInput");
+        const confirmButton = document.getElementById("confirmButton");
+
+        confirmButton.addEventListener("click", function () {
+          const userEmail = emailInput.value;
+          if (!userEmail) {
+            alert("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
+            return;
+          }
+
+          const fullEndpoint = `${endpoint}/User/confirmEmail?email=${userEmail}`;
+          fetch(fullEndpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.text(); // Verändert von .json() zu .text()
+              }
+              throw new Error("Netzwerk Antwort war nicht ok.");
+            })
+            .then((textResponse) => {
+              alert("Bestätigung akzeptiert: " + textResponse); // Zeigt den empfangenen Text an
+            })
+            .catch((error) => {
+              alert("Bestätigung fehlgeschlagen: " + error.message);
+            });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <section>
+      <div class="confirmation-box" style="cursor: pointer">
+        <h2>Bitte bestätigen sie ihre Email-Adresse</h2>
+        <input
+          type="email"
+          id="emailInput"
+          placeholder="Ihre E-Mail-Adresse"
+          required
+        />
+        <button id="confirmButton">E-Mail bestätigen</button>
+      </div>
+      <div class="confirmation-link">
+        <p><a href="#">Bestätigungsmail erneut senden?</a></p>
+      </div>
+    </section>
+  </body>
+</html>

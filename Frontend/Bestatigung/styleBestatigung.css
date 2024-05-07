@@ -1,0 +1,75 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background: url("../Bilder/hintergrund.jpg") no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.confirmation-box {
+  position: relative;
+  width: 600px;
+  padding: 40px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(15px);
+  margin-bottom: 20px;
+}
+
+.confirmation-box h2 {
+  font-size: 2em;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.confirmation-box input[type="email"],
+.confirmation-box button {
+  width: 80%;
+  padding: 15px;
+  font-size: 1.1em;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  margin-bottom: 10px;
+  outline: none;
+}
+
+.confirmation-box button {
+  cursor: pointer;
+  background-color: rgba(0, 123, 255, 0.8); /* Leichtes Blau für den Button */
+}
+
+.confirmation-box button:hover {
+  background-color: rgba(0, 123, 255, 1); /* Dunkleres Blau bei Hover */
+}
+
+.confirmation-link p a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.2em;
+}
+
+.confirmation-link p a:hover {
+  text-decoration: underline;
+}
