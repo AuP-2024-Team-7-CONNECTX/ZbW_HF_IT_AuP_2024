@@ -37,7 +37,7 @@ jobs:
         ssh dotnet /root/ConnectFour/publish/ConnectFour.dll
 
     - name: Clean up
-      run: rm -r /root/ConnectFour/publish/*
+      run: ssh rm -r /root/ConnectFour/publish/*
 
 
 env:
