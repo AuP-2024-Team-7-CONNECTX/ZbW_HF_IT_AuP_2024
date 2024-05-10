@@ -25,7 +25,7 @@ namespace ConnectFour.Controllers
 		{
 			try
 			{
-				string brokerAddress = "test.mosquitto.org";
+				string brokerAddress = "mqtt.mon3y.ch";
 				string port = "1883";
 				string topic = "MS3Test";
 				await _mqttService.ConnectToNewBrokerAsync(brokerAddress, port, "foo", "foo");
