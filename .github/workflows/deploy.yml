@@ -31,9 +31,9 @@ jobs:
     - name: Deploy Service
       run: |
         # Herstellung einer SSH-Verbindung und Ausführung von Befehlen auf einem Remote-Server
-        ssh root@100.87.201.117 "scp -r ./publish root@100.87.201.117:/root/ConnectFour"
-        ssh root@100.87.201.117 "scp -r root@100.87.201.117:/home/git-runner/actions-runner/_work/ZbW_HF_IT_AuP_2024/ZbW_HF_IT_AuP_2024/Frontend /var/www/public"
-        ssh root@100.87.201.117 "dotnet root@100.87.201.117:/root/ConnectFour/publish/ConnectFour.dll"
+        ssh root@100.87.201.117 "scp -r ./publish /root/ConnectFour"
+        ssh root@100.87.201.117 "scp -r /home/git-runner/actions-runner/_work/ZbW_HF_IT_AuP_2024/ZbW_HF_IT_AuP_2024/Frontend /var/www/public"
+        ssh root@100.87.201.117 "dotnet /root/ConnectFour/publish/ConnectFour.dll"
 
 
     - name: Clean up
