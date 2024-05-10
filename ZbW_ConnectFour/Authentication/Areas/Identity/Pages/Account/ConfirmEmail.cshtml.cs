@@ -56,7 +56,7 @@ namespace Authentication.Areas.Identity.Pages.Account
 			if (result.Succeeded)
             {
 				using var httpClient = new HttpClient();
-				var postData = new UserRequest(user.UserName, user.Email, user.EmailConfirmed,user.PasswordHash,user.Id);
+				var postData = new UserRequest(user.UserName, user.Email, user.EmailConfirmed,user.PasswordHash);
 				var apiUrl = $"{_configuration["EndpointApiConnectFour"]}api/Users";
 				var response = await httpClient.PostAsJsonAsync(apiUrl, postData);
 			}

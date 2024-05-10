@@ -126,7 +126,7 @@ namespace Authentication.Areas.Identity.Pages.Account.Manage
 			StatusMessage = "Your password has been changed.";
 
 			using var httpClient = new HttpClient();
-			var postData = new UserRequest(user.UserName, user.Email, user.EmailConfirmed, user.PasswordHash,user.Id);
+			var postData = new UserRequest(user.UserName, user.Email, user.EmailConfirmed, user.PasswordHash);
 			var apiUrl = $"{_configuration["EndpointApiConnectFour"]}api/Users/{user.Id}";
 			var response = await httpClient.PutAsJsonAsync(apiUrl, postData);
 
