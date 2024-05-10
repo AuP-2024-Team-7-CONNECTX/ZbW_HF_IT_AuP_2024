@@ -31,10 +31,10 @@ jobs:
     - name: Deploy Service
       run: |
         # Fügen Sie hier Ihre Deployment-Skripte ein, z.B. Kopieren der Dateien zum Server, Neustart des Dienstes etc.
-        cp -r ./publish /root/ConnectFour
-        cp -r /home/git-runner/actions-runner/_work/ZbW_HF_IT_AuP_2024/ZbW_HF_IT_AuP_2024/Frontend /var/www/public
+        ssh cp -r ./publish /root/ConnectFour
+        ssh cp -r /home/git-runner/actions-runner/_work/ZbW_HF_IT_AuP_2024/ZbW_HF_IT_AuP_2024/Frontend /var/www/public
         # cp- r /var/www/public/Frontend/index.html /var/www/public 
-        dotnet /root/ConnectFour/publish/ConnectFour.dll
+        ssh dotnet /root/ConnectFour/publish/ConnectFour.dll
 
     - name: Clean up
       run: rm -r /root/ConnectFour/publish/*
