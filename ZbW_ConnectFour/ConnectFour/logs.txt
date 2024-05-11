@@ -235,3 +235,15 @@ System.Text.Json.JsonException: The JSON value could not be converted to System.
 2024-04-29 18:47:23.415 +02:00 [INF] Application started. Press Ctrl+C to shut down.
 2024-04-29 18:47:23.419 +02:00 [INF] Hosting environment: Development
 2024-04-29 18:47:23.421 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-05-11 09:41:49.062 +02:00 [INF] Datenbank wurde erfolgreich verbunden!
+2024-05-11 09:41:49.725 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-05-11 09:41:50.095 +02:00 [INF] Now listening on: http://localhost:5260
+2024-05-11 09:41:50.100 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-05-11 09:41:50.104 +02:00 [INF] Hosting environment: Development
+2024-05-11 09:41:50.106 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
+2024-05-11 09:42:38.584 +02:00 [INF] Datenbank wurde erfolgreich verbunden!
+2024-05-11 09:42:39.120 +02:00 [INF] Datenbank wurde erfolgreich angelegt!
+2024-05-11 09:42:39.362 +02:00 [INF] Now listening on: http://localhost:5260
+2024-05-11 09:42:39.366 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-05-11 09:42:39.370 +02:00 [INF] Hosting environment: Development
+2024-05-11 09:42:39.371 +02:00 [INF] Content root path: C:\Repos\ZbW_HF_IT_AuP_2024\ZbW_ConnectFour\ConnectFour
