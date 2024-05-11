@@ -31,7 +31,7 @@ jobs:
     - name: Deploy Service
       run: |
         # Herstellung einer SSH-Verbindung und Ausführung von Befehlen auf einem Remote-Server
-        # ssh root@100.87.201.117 "ps -ef | grep dotnet | grep -v grep | awk '{print $2}' | xargs kill"
+        ssh root@100.87.201.117 "pkill -f 'ConnectFour.dll' || true"
         scp -r ./publish root@100.87.201.117:/root/ConnectFour
         scp -r ./Frontend root@100.87.201.117:/var/www/public
         ssh root@100.87.201.117 "dotnet /root/ConnectFour/publish/ConnectFour.dll"
@@ -40,9 +40,8 @@ jobs:
     - name: Clean up
       run: |
        ssh root@100.87.201.117 "rm -r /root/ConnectFour/publish/*"
-       # ssh root@100.87.201.117 "pkill -f 'ConnectFour.dll' || true"
-       # ssh root@100.87.201.117 "ps -ef | grep dotnet | grep -v grep | awk '{print $2}' | xargs kill"
-
+       ssh root@100.87.201.117 "pkill -f 'ConnectFour.dll' || true"
+       
 
 env:
   Solution_Name: ZbW_ConnectFour
