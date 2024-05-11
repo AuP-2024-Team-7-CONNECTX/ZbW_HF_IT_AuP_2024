@@ -58,22 +58,3 @@ function displayLoadingIndicator(show) {
     button.disabled = false;
   }
 }
-
-.register-button {
-    display: inline-block;
-    padding: 10px 20px;
-    margin-top: 10px;
-    background-color: #007BFF; /* Blau */
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-.register-button:hover {
-    background-color: #0056b3;
-    cursor: pointer;
-}
-
