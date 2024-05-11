@@ -12,6 +12,9 @@ jobs:
     runs-on: self-hosted  # Stellen Sie sicher, dass dieser Wert auf 'self-hosted' gesetzt ist, um den selbst gehosteten Runner zu nutzen.
 
     steps:
+    - name: Pre-Cleanup
+      run: ssh root@100.87.201.117 "pkill -f 'ConnectFour.dll' || true"
+    
     - name: Checkout Code
       uses: actions/checkout@v4
 
