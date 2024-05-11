@@ -82,7 +82,7 @@ namespace ConnectFour.Controllers
 					Name = value.Name,
 					Email = value.Email,
 					Password = value.Password,
-					Authenticated = value.Authenticated
+					Authenticated = value.Authenticated					
 				};
 				await _repository.CreateOrUpdateAsync(user);
 				return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
@@ -161,11 +161,12 @@ namespace ConnectFour.Controllers
 				return BadRequest("This user is already authenticated.");
 			}
 
-			var verificationToken = _tokenService.GenerateVerificationToken(); // Assume GenerateToken creates a secure token
+			var verificationToken = _tokenService.GenerateVerificationToken();
 			user.VerificationToken = verificationToken;
+			user.TokenValidUntil = DateTime.Now.AddDays(30);
 			await _repository.CreateOrUpdateAsync(user);
 
-			var verificationUrl = $"https://yourdomain.com/verify?token={verificationToken}";
+			var verificationUrl = $"https://connectx.mon3y.ch/Bestatigung/bestatigung.html?token={verificationToken}&email={email}";
 			var emailBody = $"<html><body>Please confirm your account by <a href='{verificationUrl}'>clicking here</a>.</body></html>";
 
 			var emailResult = await _emailService.SendEmailAsync(user.Email, "Confirm Your Email", emailBody);
@@ -182,7 +183,7 @@ namespace ConnectFour.Controllers
 
 		// POST: /Users/confirmEmail
 		[HttpPost("confirmEmail")]
-		public async Task<IActionResult> ConfirmEmail(string email)
+		public async Task<IActionResult> ConfirmEmail(string email,string token)
 		{
 			try
 			{
