@@ -15,12 +15,16 @@ namespace ConnectFour.Controllers
 	{
 		private readonly IUserRepository _repository;
 		private readonly ILogger<UserController> _logger;
+		private readonly ITokenService _tokenService;
+		private readonly IEmailSender _emailService;
 
-		public UserController(IUserRepository repository, ILogger<UserController> logger)
+		public UserController(IUserRepository repository, ILogger<UserController> logger, ITokenService tokenService, IEmailSender emailService)
 		{
 			ArgumentNullException.ThrowIfNull(repository, nameof(repository));
 			_repository = repository;
 			_logger = logger;
+			_tokenService = tokenService;
+			_emailService = emailService;
 		}
 
 
@@ -78,7 +82,7 @@ namespace ConnectFour.Controllers
 					Name = value.Name,
 					Email = value.Email,
 					Password = value.Password,
-					Authenticated = value.Authenticated
+					Authenticated = value.Authenticated					
 				};
 				await _repository.CreateOrUpdateAsync(user);
 				return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
@@ -145,61 +149,41 @@ namespace ConnectFour.Controllers
 		{
 			var users = await _repository.GetAllAsync();
 
-			var existingUser = users.FirstOrDefault(x => x.Email == email);
-
-			if (existingUser == null)
+			var user = users.FirstOrDefault(x => x.Email == email);
+			if (user == null)
 			{
-				_logger.LogError($"no existing user with mail {email}");
-				return BadRequest($"no existing user with mail  {email}");
+				_logger.LogError($"No existing user with email {email}");
+				return BadRequest("No existing user with this email address.");
 			}
-			if (existingUser.Authenticated)
+			if (user.Authenticated)
 			{
-				_logger.LogInformation($"user {existingUser.Id}, {existingUser.Name}, {existingUser.Email} already authenticated");
-				return BadRequest($"user {existingUser.Id}, {existingUser.Name}, {existingUser.Email} already authenticated");
+				_logger.LogInformation($"User {user.Id} already authenticated.");
+				return BadRequest("This user is already authenticated.");
 			}
 
-			try
+			var verificationToken = _tokenService.GenerateVerificationToken();
+			user.VerificationToken = verificationToken;
+			user.TokenValidUntil = DateTime.Now.AddDays(30);
+			await _repository.CreateOrUpdateAsync(user);
+
+			var verificationUrl = $"https://connectx.mon3y.ch/Bestatigung/bestatigung.html?token={verificationToken}&email={email}";
+			var emailBody = $"<html><body>Please confirm your account by <a href='{verificationUrl}'>clicking here</a>.</body></html>";
+
+			var emailResult = await _emailService.SendEmailAsync(user.Email, "Confirm Your Email", emailBody);
+			if (emailResult)
 			{
-				var client = new PostmarkClient("8600a7c6-16a7-4c4f-938e-e144b29f51de");
-
-				string encodedUrl = HtmlEncoder.Default.Encode("https://connectx.tailf1dac2.ts.net/Bestatigung/bestatigung.html");
-				string emailParam = $"?email={Uri.EscapeDataString(email)}";
-
-				var postmarkMessage = new PostmarkMessage()
-				{
-					To = email,
-					From = "nick.ponnadu.gmx.ch@zbw-online.ch",
-					TrackOpens = true,
-					Subject = "ConnectX Registration: Please confirm your E-Mail",
-					TextBody = $"Please confirm your account by clicking here: {encodedUrl}",
-					HtmlBody = $"<html><body>Please confirm your account by <a href='{encodedUrl}'>clicking here</a>.</body></html>",
-					MessageStream = "outbound",
-				};
-
-				var sendResult = await client.SendMessageAsync(postmarkMessage);
-
-				if (sendResult.Status == PostmarkStatus.Success)
-				{
-					_logger.LogInformation("Success on sending Email");
-
-					return Ok("Authentication was successful. Confirm email to register.");
-				}
-				else
-				{
-					_logger.LogError($"Error on sending Email: {sendResult.ErrorCode}");
-					return BadRequest($"Failed to send email. {sendResult.ErrorCode}");
-				}
-
+				_logger.LogInformation("Verification email sent successfully.");
+				return Ok("Verification email sent successfully. Please check your email to confirm.");
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"Internal server error: {ex.Message}");
-			}
+
+			_logger.LogError("Failed to send verification email.");
+			return StatusCode(500, "Failed to send verification email.");
 		}
+
 
 		// POST: /Users/confirmEmail
 		[HttpPost("confirmEmail")]
-		public async Task<IActionResult> ConfirmEmail(string email)
+		public async Task<IActionResult> ConfirmEmail(string email,string token)
 		{
 			try
 			{
