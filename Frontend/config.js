@@ -1,1 +1,1 @@
-const endpoint = "https://localhost:5001";
+const endpoint = "http://localhost:5000";
