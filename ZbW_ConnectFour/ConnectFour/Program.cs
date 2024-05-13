@@ -1,4 +1,4 @@
-using ConnectFour.Mqtt;
+ï»¿using ConnectFour.Mqtt;
 using ConnectFour.Repositories;
 using ConnectFour.Repositories.Implementations;
 using ConnectFour.Repositories.Interfaces;
@@ -44,6 +44,8 @@ namespace ConnectFour
 
 			}
 
+
+
 			var configuration = builder.Configuration;
 
 			#region Logging
@@ -61,14 +63,11 @@ namespace ConnectFour
 			// Add services to the container.
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
-			//builder.Services.AddSwaggerGen();
-
-			var test = configuration.GetConnectionString("ConnectFour");
-
+			
 			builder.Services.AddDbContext<GameDbContext>(options =>
 					options.UseSqlServer(configuration.GetConnectionString("ConnectFour")).UseLazyLoadingProxies());
 
-			// Füge das Health Check Paket für SQL Server hinzu
+			// Fï¿½ge das Health Check Paket fï¿½r SQL Server hinzu
 			builder.Services.AddHealthChecks()
 				.AddSqlServer(configuration.GetConnectionString("ConnectFour"),
 					name: "Database", // Name des Health Checks
@@ -85,16 +84,11 @@ namespace ConnectFour
 			// Mqtt
 			builder.Services.AddSingleton<IMqttService, MqttService>();
 
-			// Mail
-			builder.Services.AddSingleton<IEmailSender>(new PostmarkEmailSender("8600a7c6-16a7-4c4f-938e-e144b29f51de", "nick.ponnadu.gmx.ch@zbw-online.ch"));
-
-			builder.Services.AddSingleton<ITokenService, TokenService>();
-
 			builder.Services.AddCors(options =>
 			{
 				options.AddPolicy("AllowAll", builder =>
 				{
-					builder.AllowAnyOrigin()  // Erlaubt alle Ursprünge
+					builder.AllowAnyOrigin()  // Erlaubt alle Ursprï¿½nge
 						   .AllowAnyMethod()  // Erlaubt alle Methoden
 						   .AllowAnyHeader(); // Erlaubt alle Header
 				});
@@ -102,15 +96,15 @@ namespace ConnectFour
 
 
 			builder.Services.AddSwaggerGen(c =>
-{
-	c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-	c.ExampleFilters();
-});
+			{
+				c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+				c.ExampleFilters();
+			});
 
 			builder.Services.AddSwaggerExamplesFromAssemblyOf<UserRequestExample>();
 
 			var app = builder.Build();
-			// Datenbankprüfung und -erstellung
+			// Datenbankprï¿½fung und -erstellung
 			using (var scope = app.Services.CreateScope())
 			{
 				var services = scope.ServiceProvider;
@@ -123,14 +117,14 @@ namespace ConnectFour
 					var connected = context.Database.CanConnect();
 					if (connected)
 					{
-						context.Database.EnsureDeleted();
+						//context.Database.EnsureDeleted();
 						//logger.LogInformation("Datenbank erfolgreich geloescht");
 						logger.LogInformation("Datenbank wurde erfolgreich verbunden!");
 
 					}
 
 					// logger.LogInformation("Es wurde keine Datenbank gefunden. Neue Datenbank wird erstellt...");
-					context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+					context.Database.EnsureCreated(); // Prï¿½ft, ob die DB existiert, und erstellt sie, falls nicht
 					logger.LogInformation("Datenbank wurde erfolgreich angelegt!");
 
 
@@ -140,6 +134,7 @@ namespace ConnectFour
 					logger.LogError($"Ein Fehler ist aufgetreten beim Erstellen der Datenbank {ex.Message}");
 				}
 			}
+
 
 			// Konfiguriere Health Checks Route und die Ausgabe
 			app.MapHealthChecks("/health", new HealthCheckOptions
@@ -164,21 +159,21 @@ namespace ConnectFour
 			});
 
 			// Configure the HTTP request pipeline.
-			if (environment == "Development")
+			if (app.Environment.IsDevelopment())
 			{
 				app.UseSwagger();
 				app.UseSwaggerUI();
 			}
 
-			//app.UseHttpsRedirection();
+			app.UseHttpsRedirection();
 
 			app.UseAuthorization();
 
+
 			app.MapControllers();
+			app.UseCors("AllowAll");
 
 			app.Run();
-
-			app.UseCors("AllowAll");
 
 		}
 	}
