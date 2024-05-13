@@ -34,7 +34,7 @@ jobs:
     - name: Deploy Service
       run: |
         # Herstellung einer SSH-Verbindung und Ausführung von Befehlen auf einem Remote-Server
-        pkill -f 'ConnectFour.dll' || true"
+        pkill -f 'ConnectFour.dll' || true
         scp -r ./publish root@100.87.201.117:/root/ConnectFour
         scp -r ./Frontend root@100.87.201.117:/var/www/public
         ssh root@100.87.201.117 "dotnet /root/ConnectFour/publish/ConnectFour.dll"
