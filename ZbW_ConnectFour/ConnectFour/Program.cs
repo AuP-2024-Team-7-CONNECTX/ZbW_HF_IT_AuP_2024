@@ -163,14 +163,14 @@ namespace ConnectFour
 				}
 			});
 
-			//// Configure the HTTP request pipeline.
-			//if (environment == "Development")
-			//{
-			app.UseSwagger();
-			app.UseSwaggerUI();
-			//}
+			// Configure the HTTP request pipeline.
+			if (environment == "Development")
+			{
+				app.UseSwagger();
+				app.UseSwaggerUI();
+			}
 
-			app.UseHttpsRedirection();
+			//app.UseHttpsRedirection();
 
 			app.UseAuthorization();
 
