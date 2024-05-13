@@ -44,8 +44,6 @@ namespace ConnectFour
 
 			}
 
-
-
 			var configuration = builder.Configuration;
 
 			#region Logging
@@ -143,7 +141,6 @@ namespace ConnectFour
 				}
 			}
 
-
 			// Konfiguriere Health Checks Route und die Ausgabe
 			app.MapHealthChecks("/health", new HealthCheckOptions
 			{
@@ -166,20 +163,18 @@ namespace ConnectFour
 				}
 			});
 
-			// Configure the HTTP request pipeline.
-			if (app.Environment.IsDevelopment())
-			{
-				app.UseSwagger();
-				app.UseSwaggerUI();
-			}
+			//// Configure the HTTP request pipeline.
+			//if (environment == "Development")
+			//{
+			app.UseSwagger();
+			app.UseSwaggerUI();
+			//}
 
 			app.UseHttpsRedirection();
 
 			app.UseAuthorization();
 
-
 			app.MapControllers();
-			app.UseCors("AllowAll");
 
 			app.Run();
 
