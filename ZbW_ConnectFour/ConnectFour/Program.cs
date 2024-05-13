@@ -178,6 +178,8 @@ namespace ConnectFour
 
 			app.Run();
 
+			app.UseCors("AllowAll");
+
 		}
 	}
 }
