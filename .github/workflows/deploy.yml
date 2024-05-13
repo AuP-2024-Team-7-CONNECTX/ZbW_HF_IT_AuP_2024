@@ -37,13 +37,20 @@ jobs:
         scp -r ./publish root@100.87.201.117:/root/ConnectFour
         scp -r ./Frontend root@100.87.201.117:/var/www/public
         ssh root@100.87.201.117 "ASPNETCORE_ENVIRONMENT=Production dotnet /root/ConnectFour/publish/ConnectFour.dll"
+        
+  cleanup_on_cancel:
+    needs: deploy
+    if: ${{ needs.deploy.result == 'cancelled' }}
+    runs-on: self-hosted
+    steps:
+      - name: Clean up on Cancel
+        run: ssh root@100.87.201.117 "rm -r /root/ConnectFour/publish/* && echo 'Cleanup after cancel'"
 
-
-    - name: Clean up
-      run: |
-        ssh root@100.87.201.117 "rm -r /root/ConnectFour/publish/*"
+      - name: Clean up
+        run: |
+          ssh root@100.87.201.117 "rm -r /root/ConnectFour/publish/*"
+          ssh root@100.87.201.117:/root/ConnectFour/publish pkill -f 'ConnectFour.dll' || true
               
-
 env:
   Solution_Name: ZbW_ConnectFour
   Web_Project_Path: ZbW_ConnectFour\\ConnectFour
