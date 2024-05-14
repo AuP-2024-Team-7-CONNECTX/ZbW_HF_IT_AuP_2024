@@ -1,1 +1,1 @@
-const endpoint = "http://100.84.201.117:5000";
+const endpoint = "http://100.87.201.117:5000";
