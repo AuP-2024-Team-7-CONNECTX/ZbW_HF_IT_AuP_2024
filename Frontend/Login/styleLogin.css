@@ -16,15 +16,8 @@ section {
   background: url("../Bilder/hintergrund.jpg") no-repeat;
   background-size: cover;
   background-position: center;
-  animation: animateBg 30s linear infinite;
 }
-/*
-@keyframes animateBg {
-    100%{
-        filter: hue-rotate(360deg);
-    }
-}
-*/
+
 .login-box {
   position: relative;
   width: 400px;

@@ -84,6 +84,11 @@ namespace ConnectFour
 			// Mqtt
 			builder.Services.AddSingleton<IMqttService, MqttService>();
 
+			// Mail
+			builder.Services.AddSingleton<IEmailSender>(new PostmarkEmailSender("8600a7c6-16a7-4c4f-938e-e144b29f51de", "nick.ponnadu.gmx.ch@zbw-online.ch"));
+
+			builder.Services.AddSingleton<ITokenService, TokenService>();
+
 			builder.Services.AddCors(options =>
 			{
 				options.AddPolicy("AllowAll", builder =>
