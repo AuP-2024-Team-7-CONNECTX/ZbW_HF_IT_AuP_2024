@@ -9,29 +9,7 @@ document.getElementById('reset-password-form').addEventListener('submit', functi
         return;
     }
 
-    // Erstellung des JSON-Objekts mit der E-Mail-Adresse
-    var requestData = {
-        email: email
-    };
-
-    // Senden der Anforderung an das Backend
-    fetch('https://example.com/api/reset-password', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData),
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Hier könntest du eine Bestätigungsnachricht anzeigen oder den Benutzer weiterleiten
-        console.log('Erfolg:', data.message);
-        alert('Ein Link zum Zurücksetzen Ihres Passworts wurde gesendet. Bitte überprüfen Sie Ihr E-Mail-Postfach.');
-    })
-    .catch(error => {
-        console.error('Fehler:', error);
-        alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
-    });
+    alert('Ein Link zum Zurücksetzen Ihres Passworts wurde gesendet. Bitte überprüfen Sie Ihr E-Mail-Postfach.');
 });
 
 function validateEmail(email) {

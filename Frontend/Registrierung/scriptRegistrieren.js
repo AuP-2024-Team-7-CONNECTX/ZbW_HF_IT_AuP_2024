@@ -16,39 +16,9 @@ document.getElementById('register-form').addEventListener('submit', function(eve
         return;
     }
 
-    // Erstellung des JSON-Objekts mit den Registrierungsinformationen
-    var registrationData = {
-        username: username,
-        firstname: firstname,
-        lastname: lastname,
-        email: email,
-        password: password
-    };
-
-    // Senden der Anforderung an das Backend
-    fetch('https://example.com/api/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registrationData),
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error('Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben und versuchen Sie es erneut.');
-        }
-    })
-    .then(data => {
-        console.log('Registrierung erfolgreich:', data);
-        alert('Registrierung erfolgreich! Sie können sich jetzt einloggen.');
-        window.location.href = '../Login/Login.html'; // Weiterleitung zur Login-Seite
-    })
-    .catch(error => {
-        console.error('Fehler:', error);
-        alert(error.message);
-    });
+    // Registrierung erfolgreich
+    alert('Registrierung erfolgreich! Sie können sich jetzt einloggen.');
+    window.location.href = '../Login/Login.html'; // Weiterleitung zur Login-Seite
 });
 
 function validateEmail(email) {

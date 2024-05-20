@@ -1,4 +1,3 @@
-// Starten, sobald das DOM vollständig geladen ist
 document.addEventListener('DOMContentLoaded', () => {
     // Initialisieren der Sounds für die Spieler
     const redSound = new Audio('../Sounds/red.m4a');
@@ -71,41 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updateTimeDisplay();
     }
-    
-
-    // Überprüft, ob alle Felder besetzt sind, und damit ein Unentschieden vorliegt
-    function checkDraw() {
-        return [...gameState].flat().every(cell => cell !== null);
-    }
-
-    // Überprüft, ob der aktuelle Spieler gewonnen hat
-    function checkForWinner(col, row, player) {
-        return checkLine(player, col, row, 0, 1) || 
-               checkLine(player, col, row, 1, 0) ||
-               checkLine(player, col, row, 1, 1) ||
-               checkLine(player, col, row, 1, -1);
-    }
-
-    // Hilfsfunktion zum Überprüfen einer Linie auf vier gleiche Steine
-    function checkLine(player, startX, startY, stepX, stepY) {
-        let count = 0;
-        let col = startX + stepX;
-        let row = startY + stepY;
-        while (col >= 0 && col < 7 && row >= 0 && row < 6 && gameState[col][row] === player) {
-            count++;
-            col += stepX;
-            row += stepY;
-        }
-        
-        col = startX - stepX;
-        row = startY - stepY;
-        while (col >= 0 && col < 7 && row >= 0 && row < 6 && gameState[col][row] === player) {
-            count++;
-            col -= stepX;
-            row -= stepY;
-        }
-        return count >= 3;
-    }
 
     // Initialisiert die Spalten mit klickbaren Zellen
     function initializeColumn(column) {
@@ -115,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             column.appendChild(cell);
         }
     }
-    
+
     // Beendet das Spiel und zeigt das Ergebnis an
     function endGame(message) {
         setTimeout(() => {
@@ -123,9 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showRestartButton();
             showNewOpponentButton();
             columns.forEach(column => column.removeEventListener('click', handleColumnClick));
-
-            // Sendet die gesammelte Spielzeit an das Backend, nachdem das Spiel beendet wurde.
-            sendGameTimeToBackend(redTotalTime, blueTotalTime);
         }, 100);
     }
 
@@ -149,48 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.reload();
     }
 
-    // Sendet einen Zug an das Backend
-    function sendMoveToBackend(player, column, row) {
-        fetch('https://example.com/api/move', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ player, column, row })
-        })
-        .then(response => response.json())
-        .then(data => console.log('Move recorded:', data))
-        .catch(error => console.error('Error sending move:', error));
-    }
-
-    // Sendet das Spielergebnis an das Backend
-    function sendWinToBackend(winner) {
-        fetch('https://example.com/api/win', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ winner })
-        })
-        .then(response => response.json())
-        .then(data => console.log('Win recorded:', data))
-        .catch(error => console.error('Error sending win:', error));
-    }
-
-    // Sendet die Gesamtspielzeit beider Spieler an das Backend
-    function sendGameTimeToBackend(totalTimeRed, totalTimeBlue) {
-        fetch('https://example.com/api/game-time', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ totalTimeRed, totalTimeBlue })
-        })
-        .then(response => response.json())
-        .then(data => console.log('Total game time recorded:', data))
-        .catch(error => console.error('Error sending game time:', error));
-    }
-
     // Behandelt Klicks auf eine Spalte und führt Spiellogik durch
     function handleColumnClick(event) {
         if (!gameStarted) {
@@ -208,22 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
             stopGameTimer();
             emptyCell.classList.add(currentPlayer);
             gameState[column.dataset.column][rowIndex] = currentPlayer;
-
-            sendMoveToBackend(currentPlayer, column.dataset.column, rowIndex);
-
-            if (checkForWinner(parseInt(column.dataset.column), rowIndex, currentPlayer)) {
-                emptyCell.classList.add('win');
-                endGame(`Spieler ${currentPlayer} hat gewonnen!`);
-                sendWinToBackend(currentPlayer);
-                gameStarted = false;
-                return;
-            }
-
-            if (checkDraw()) {
-                endGame("Unentschieden!");
-                gameStarted = false;
-                return;
-            }
 
             currentPlayer = currentPlayer === 'rot' ? 'blau' : 'rot';
             updatePlayerInfo();

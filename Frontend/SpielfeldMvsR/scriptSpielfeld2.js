@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Status des Spiels initialisieren
     let currentPlayer = 'rot'; // Roter Spieler beginnt immer
-    const computerPlayer = 'blau'; // Computer ist immer Blau
 
     let redRemaining = 21, blueRemaining = 21;
     let gameStarted = true;
@@ -78,37 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Auf einen Gewinner prüfen
-    function checkForWinner(col, row, player) {
-        return checkDirection(player, col, row, 0, 1) || // Horizontal
-               checkDirection(player, col, row, 1, 0) || // Vertikal
-               checkDirection(player, col, row, 1, 1) || // Diagonal /
-               checkDirection(player, col, row, 1, -1);  // Diagonal \
-    }
-
-    // Eine bestimmte Richtung auf eine Gewinnlinie prüfen
-    function checkDirection(player, startX, startY, stepX, stepY) {
-        let count = 1;
-
-        let col = startX + stepX;
-        let row = startY + stepY;
-        while (col >= 0 && col < 7 && row >= 0 && row < 6 && gameState[col][row] === player) {
-            count++;
-            col += stepX;
-            row += stepY;
-        }
-
-        col = startX - stepX;
-        row = startY - stepY;
-        while (col >= 0 && col < 7 && row >= 0 && row < 6 && gameState[col][row] === player) {
-            count++;
-            col -= stepX;
-            row -= stepY;
-        }
-
-        return count >= 4;
-    }
-
     // Einen Zug in der angegebenen Spalte verarbeiten
     function handleMove(columnIndex, player) {
         const column = document.querySelector(`.column[data-column="${columnIndex}"]`);
@@ -127,31 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 blueSound.play();
             }
 
-            // Auf einen Gewinn oder ein Unentschieden prüfen und eine Verzögerung anwenden, bevor Nachrichten angezeigt oder das Spielfeld deaktiviert wird
-            const playerName = player === 'rot' ? 'Spielername 1' : 'Spielername 2';
-
-            if (checkForWinner(columnIndex, rowIndex, player)) {
-                stopMoveTimer();
-                setTimeout(() => {
-                    alert(`Spieler ${playerName} hat gewonnen!`);
-                    showRestartButton();
-                    showNewOpponentButton();
-                    gameStarted = false;
-                }, 100);
-                return;
-            }
-
-            if (gameState.every(col => col.every(cell => cell !== null))) {
-                stopMoveTimer();
-                setTimeout(() => {
-                    alert("Unentschieden!");
-                    showRestartButton();
-                    showNewOpponentButton();
-                    gameStarted = false;
-                }, 100);
-                return;
-            }
-
             stopMoveTimer();
 
             // Zum nächsten Spieler wechseln
@@ -159,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 redRemaining--;
                 currentPlayer = 'blau';
                 updatePlayerInfo();
-                setTimeout(makeComputerMove, 500);
+                startMoveTimer();
             } else {
                 blueRemaining--;
                 currentPlayer = 'rot';
@@ -169,29 +112,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Den Zug des Computers verarbeiten
-    function makeComputerMove() {
-        if (currentPlayer !== computerPlayer || !gameStarted) {
-            return;
-        }
-
-        startMoveTimer(); // Den Timer für den Zug des Computers starten
-
-        let columnIndex;
-        do {
-            columnIndex = Math.floor(Math.random() * 7);
-        } while (gameState[columnIndex].every(cell => cell !== null)); // Sicherstellen, dass die Spalte nicht voll ist
-
-        setTimeout(() => {
-            handleMove(columnIndex, computerPlayer);
-        }, 500);
-    }
-
     // Spalten-Klick-Ereignis (für menschliche Spieler)
     function handleColumnClick(event) {
-        if (currentPlayer === 'rot' && gameStarted) {
+        if (gameStarted) {
             const columnIndex = parseInt(event.currentTarget.dataset.column);
-            handleMove(columnIndex, 'rot');
+            handleMove(columnIndex, currentPlayer);
         }
     }
 

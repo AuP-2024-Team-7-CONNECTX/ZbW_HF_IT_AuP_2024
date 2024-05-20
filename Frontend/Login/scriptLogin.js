@@ -4,46 +4,18 @@ document.getElementById('login-form').addEventListener('submit', function(event)
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value;
 
+    // Validierung der Eingaben
+    if (!validateEmail(email)) {
+        alert("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
+        return;
+    } else if (!validatePassword(password)) {
+        alert("Das Passwort muss mindestens 8 Zeichen lang sein und mindestens einen Grossbuchstaben, eine Zahl und ein Sonderzeichen enthalten.");
+        return;
+    }
 
-    // Ladeindikator anzeigen
-    displayLoadingIndicator(true);
-
-    // Erstellung des JSON-Objekts mit den Anmeldeinformationen
-    var loginData = {
-        email: email,
-        password: password
-    };
-
-    // Konvertierung des JSON-Objekts in einen String und Senden der Daten
-    fetch('https://example.com/api/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData),
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            response.json().then(data => {
-                throw new Error(data.message || 'Login fehlgeschlagen');
-            });
-        }
-    })
-    .then(data => {
-        console.log('Erfolg:', data);
-        // Weiterleitung oder Benachrichtigung des Benutzers nach erfolgreicher Authentifizierung
-        window.location.href = '../Spielstart/spielstart.html'; // Anpassen an deine tatsächliche Zielseite
-    })
-    .catch((error) => {
-        console.error('Fehler:', error);
-        alert('Login fehlgeschlagen: ' + error.message);  // Benutzern die Fehlermeldung zeigen
-    })
-    .finally(() => {
-        // Ladeindikator ausblenden
-        displayLoadingIndicator(false);
-    });
+    // Anmeldeinformationen verarbeiten
+    alert('Login erfolgreich! Weiterleitung zur Startseite.');
+    window.location.href = '../Spielstart/spielstart.html'; // Weiterleitung zur Spielstart-Seite
 });
 
 function validateEmail(email) {
@@ -57,15 +29,4 @@ function validatePassword(password) {
     var hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     var isValidLength = password.length >= 8;
     return hasUpperCase && hasNumber && hasSpecialChar && isValidLength;
-}
-
-function displayLoadingIndicator(show) {
-    const button = document.querySelector('button[type="submit"]');
-    if (show) {
-        button.innerText = 'Lädt...';
-        button.disabled = true;
-    } else {
-        button.innerText = 'Login';
-        button.disabled = false;
-    }
 }
