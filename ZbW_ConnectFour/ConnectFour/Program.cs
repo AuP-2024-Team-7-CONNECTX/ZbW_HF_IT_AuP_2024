@@ -2,7 +2,7 @@
 using ConnectFour.Repositories;
 using ConnectFour.Repositories.Implementations;
 using ConnectFour.Repositories.Interfaces;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
@@ -24,34 +24,39 @@ namespace ConnectFour
 
 			var builder = WebApplication.CreateBuilder(options);
 
-			if (environment != "Development")
+			if (!(environment == "Development"))
 			{
 				builder.Configuration
-					.SetBasePath("/root/ConnectFour/publish")
-					.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-					.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-					.AddEnvironmentVariables();
+	.SetBasePath("/root/ConnectFour/publish")
+	.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+	.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+	.AddEnvironmentVariables();
+
 			}
 			else
 			{
 				// Konfiguration laden
 				builder.Configuration
-					.SetBasePath(Directory.GetCurrentDirectory())
-					.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-					.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-					.AddEnvironmentVariables();
+	.SetBasePath(Directory.GetCurrentDirectory())
+	.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+	.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+	.AddEnvironmentVariables();
+
 			}
+
+
 
 			var configuration = builder.Configuration;
 
 			#region Logging
 
 			Log.Logger = new LoggerConfiguration()
-							.ReadFrom.Configuration(configuration)
-							.CreateLogger();
+	.ReadFrom.Configuration(configuration)
+	.CreateLogger();
 
 			builder.Services.AddLogging(loggingBuilder =>
 				loggingBuilder.AddSerilog(dispose: true));
+
 
 			#endregion
 
@@ -61,6 +66,13 @@ namespace ConnectFour
 
 			builder.Services.AddDbContext<GameDbContext>(options =>
 					options.UseSqlServer(configuration.GetConnectionString("ConnectFour")).UseLazyLoadingProxies());
+
+			// F�ge das Health Check Paket f�r SQL Server hinzu
+			builder.Services.AddHealthChecks()
+				.AddSqlServer(configuration.GetConnectionString("ConnectFour"),
+					name: "Database", // Name des Health Checks
+					failureStatus: HealthStatus.Unhealthy, // Status bei Fehlschlagen
+					tags: new[] { "db", "sql", "database" });
 
 			builder.Services.AddScoped<IGenericRepository, GenericRepository>();
 			builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -81,11 +93,12 @@ namespace ConnectFour
 			{
 				options.AddPolicy("AllowAll", builder =>
 				{
-					builder.AllowAnyOrigin()  // Erlaubt alle Ursprünge
+					builder.AllowAnyOrigin()  // Erlaubt alle Urspr�nge
 						   .AllowAnyMethod()  // Erlaubt alle Methoden
 						   .AllowAnyHeader(); // Erlaubt alle Header
 				});
 			});
+
 
 			builder.Services.AddSwaggerGen(c =>
 			{
@@ -96,8 +109,7 @@ namespace ConnectFour
 			builder.Services.AddSwaggerExamplesFromAssemblyOf<UserRequestExample>();
 
 			var app = builder.Build();
-
-			// Datenbankprüfung und -erstellung
+			// Datenbankpr�fung und -erstellung
 			using (var scope = app.Services.CreateScope())
 			{
 				var services = scope.ServiceProvider;
@@ -111,14 +123,15 @@ namespace ConnectFour
 					if (connected)
 					{
 						//context.Database.EnsureDeleted();
-						//logger.LogInformation("Datenbank erfolgreich gelöscht");
+						//logger.LogInformation("Datenbank erfolgreich geloescht");
 						logger.LogInformation("Datenbank wurde erfolgreich verbunden!");
 
 					}
 
 					// logger.LogInformation("Es wurde keine Datenbank gefunden. Neue Datenbank wird erstellt...");
-					context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+					context.Database.EnsureCreated(); // Pr�ft, ob die DB existiert, und erstellt sie, falls nicht
 					logger.LogInformation("Datenbank wurde erfolgreich angelegt!");
+
 
 				}
 				catch (Exception ex)
@@ -126,6 +139,29 @@ namespace ConnectFour
 					logger.LogError($"Ein Fehler ist aufgetreten beim Erstellen der Datenbank {ex.Message}");
 				}
 			}
+
+
+			// Konfiguriere Health Checks Route und die Ausgabe
+			app.MapHealthChecks("/health", new HealthCheckOptions
+			{
+				ResponseWriter = async (context, report) =>
+				{
+					context.Response.ContentType = "application/json";
+					var results = report.Entries.Select(e => new
+					{
+						name = e.Key,
+						status = e.Value.Status == HealthStatus.Healthy
+					}).ToList();
+
+					var response = new
+					{
+						checks = results,
+						overallStatus = report.Status == HealthStatus.Healthy
+					};
+
+					await context.Response.WriteAsJsonAsync(response);
+				}
+			});
 
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment())
@@ -138,21 +174,12 @@ namespace ConnectFour
 
 			app.UseAuthorization();
 
+
 			app.MapControllers();
 			app.UseCors("AllowAll");
 
 			app.Run();
-		}
 
-		public static IHostBuilder CreateHostBuilder(string[] args) =>
-			Host.CreateDefaultBuilder(args)
-				.ConfigureWebHostDefaults(webBuilder =>
-				{
-					webBuilder.UseStartup<Startup>();
-					webBuilder.UseKestrel((context, options) =>
-					{
-						options.Configure(context.Configuration.GetSection("Kestrel"));
-					});
-				});
+		}
 	}
 }
