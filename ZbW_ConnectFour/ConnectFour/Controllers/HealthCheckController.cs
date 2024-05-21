@@ -19,10 +19,10 @@ public class HealthCheckController : ControllerBase
 	[HttpGet]
 	public async Task<IActionResult> Get()
 	{
-		// Setze CORS-Header in der Antwort
-		Response.Headers.Add("Access-Control-Allow-Origin", "*"); // Erlaubt den Zugriff von allen Herkunftsorten
-		Response.Headers.Add("Access-Control-Allow-Methods", "POST"); // Erlaubt POST-Anfragen
-		Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type"); // Erlaubt bestimmte Header
+		//// Setze CORS-Header in der Antwort
+		//Response.Headers.Add("Access-Control-Allow-Origin", "*"); // Erlaubt den Zugriff von allen Herkunftsorten
+		//Response.Headers.Add("Access-Control-Allow-Methods", "GET"); // Erlaubt POST-Anfragen
+		//Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type"); // Erlaubt bestimmte Header
 
 
 		return Ok("test Text 123");
