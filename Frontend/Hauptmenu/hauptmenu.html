@@ -57,16 +57,13 @@
     ></script>
     <script>
       function testFunction() {
-        let headers = new Headers();
-
-        headers.append("Content-Type", "application/json");
-        headers.append("Accept", "application/json");
-        headers.append("Origin", "foo");
-
-        fetch(`${endpoint}/HealthCheck`, {
+        fetch(`${endpoint}/healthcheck`, {
           method: "GET",
           mode: "cors",
-          headers: headers,
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
         })
           .then(function (response) {
             if (response.ok) {
