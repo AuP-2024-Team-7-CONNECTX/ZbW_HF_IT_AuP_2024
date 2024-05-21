@@ -1,38 +1,81 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hauptmenü</title>
-    <link rel="stylesheet" href="hauptmenu.css"> 
-</head>
-<body>
+    <link rel="stylesheet" href="hauptmenu.css" />
+    <script src="../config.js"></script>
+  </head>
+  <body>
     <section>
-        <div class="menu-box">
-            <h2>Hauptmenü</h2>
-            <div class="menu-option">
-                <a href='../Spielstart/spielstart.html'>
-                    <span class="icon"><ion-icon name="game-controller-outline"></ion-icon></span>
-                    Spielen
-                </a>
-            </div>
-            <div class="menu-option">
-                <a href="../Bestenliste/bestenliste.html">
-                    <span class="icon"><ion-icon name="trophy-outline"></ion-icon></span>
-                    Bestenliste
-                </a>
-            </div>
-            <div class="menu-option">
-                <a href="../Roboterverwaltung/roboterverwaltung.html">
-                    <span class="icon"><ion-icon name="construct-outline"></ion-icon></span>
-                    Roboterverwaltung
-                </a>
-            </div>
+      <div class="menu-box">
+        <h2>Hauptmenü</h2>
+        <div class="menu-option">
+          <a href="../Spielstart/spielstart.html">
+            <span class="icon"
+              ><ion-icon name="game-controller-outline"></ion-icon
+            ></span>
+            Spielen
+          </a>
         </div>
+        <div class="menu-option">
+          <a href="../Bestenliste/bestenliste.html">
+            <span class="icon"
+              ><ion-icon name="trophy-outline"></ion-icon
+            ></span>
+            Bestenliste
+          </a>
+        </div>
+        <div class="menu-option">
+          <a href="../Roboterverwaltung/roboterverwaltung.html">
+            <span class="icon"
+              ><ion-icon name="construct-outline"></ion-icon
+            ></span>
+            Roboterverwaltung
+          </a>
+        </div>
+        <div class="menu-option">
+          <button id="check-endpoint" onclick="testFunction()">
+            <span class="icon"
+              ><ion-icon name="checkmark-circle-outline"></ion-icon
+            ></span>
+            Check Endpoint
+          </button>
+        </div>
+      </div>
     </section>
 
     <!-- Skripte für Ionicons (Icon-Set) -->
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-</body>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+
+    <script>
+      function testFunction() {
+        fetch(`${endpoint}/HealthCheck`)
+          .then(function (response) {
+            if (response.ok) {
+              console.log("Verbindung zu Backend hergestellt");
+              alert("Verbindung zu Backend hergestellt");
+            } else {
+              console.error("Fehler beim Herstellen der Verbindung zu Backend");
+              alert("Fehler beim Herstellen der Verbindung zu Backend");
+            }
+          })
+          .catch(function (error) {
+            console.error(
+              "Fehler beim Herstellen der Verbindung zu Backend:",
+              error
+            );
+            alert("Fehler beim Herstellen der Verbindung zu Backend");
+          });
+      }
+    </script>
+  </body>
 </html>
