@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace ConnectFour.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class HealthCheckController : ControllerBase
 {
 	private readonly HealthCheckService _healthCheckService;
