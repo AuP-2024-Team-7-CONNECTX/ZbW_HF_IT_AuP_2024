@@ -26,6 +26,7 @@ jobs:
 
     - name: Build and Publish
       run: |
+        # pkill -f 'ConnectFour.dll' || true
         # ssh root@100.87.201.117 "pkill -f 'ConnectFour.dll'"
         dotnet build ${{ env.Solution_Name }} --configuration Release
         dotnet publish ${{ env.Web_Project_Path }} -c Release -o ./publish --no-restore
@@ -33,10 +34,10 @@ jobs:
     - name: Deploy Service
       run: |
         # Herstellung einer SSH-Verbindung und Ausführung von Befehlen auf einem Remote-Server
-        ssh root@100.87.201.117 "rm -r /root/ConnectFour/publish/*"
+        # ssh root@100.87.201.117 "rm -r /root/ConnectFour/publish/*"
         scp -r ./publish root@100.87.201.117:/root/ConnectFour
         scp -r ./Frontend root@100.87.201.117:/var/www/public
-        ssh root@100.87.201.117 "ASPNETCORE_ENVIRONMENT=Production ASPNETCORE_URLS=https://localhost:5000 dotnet /root/ConnectFour/publish/ConnectFour.dll"
+        ssh root@100.87.201.117 "ASPNETCORE_ENVIRONMENT=Production dotnet /root/ConnectFour/publish/ConnectFour.dll"
       
 
               
