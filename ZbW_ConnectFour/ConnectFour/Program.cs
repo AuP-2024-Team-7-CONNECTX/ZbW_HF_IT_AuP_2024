@@ -90,9 +90,9 @@ namespace ConnectFour
 			{
 				options.AddPolicy("AllowAll", builder =>
 				{
-					builder.AllowAnyOrigin()
-						   .WithHeaders("Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
-						   .WithMethods("GET,POST,OPTIONS,PUT,DELETE,PATCH");
+					builder.WithOrigins("https://connectx.mon3y.ch")
+						   .WithHeaders("Authorization, Origin, X-Requested-With, Content-Type, Accept")
+						   .WithMethods("GET, POST, OPTIONS, HEAD, PATCH, DELETE");
 						   
 				});
 			});
