@@ -29,7 +29,7 @@ namespace ConnectFour.Controllers
 		public IActionResult Options()
 		{
 			// CORS-Header werden jetzt global gesetzt, keine Notwendigkeit, sie hier hinzuzufügen
-			return Ok();
+			return Ok("WENN DU DAS LIEST, HABE ICH KEINE NERVEN MEHR");
 		}
 	}
 }
