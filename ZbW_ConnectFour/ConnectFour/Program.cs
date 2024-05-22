@@ -68,11 +68,7 @@ namespace ConnectFour
 					options.UseSqlServer(configuration.GetConnectionString("ConnectFour")).UseLazyLoadingProxies());
 
 			// F�ge das Health Check Paket f�r SQL Server hinzu
-			builder.Services.AddHealthChecks()
-				.AddSqlServer(configuration.GetConnectionString("ConnectFour"),
-					name: "Database", // Name des Health Checks
-					failureStatus: HealthStatus.Unhealthy, // Status bei Fehlschlagen
-					tags: new[] { "db", "sql", "database" });
+			builder.Services.AddHealthChecks();
 
 			builder.Services.AddScoped<IGenericRepository, GenericRepository>();
 			builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -176,8 +172,17 @@ namespace ConnectFour
 
 
 			app.MapControllers();
+
+			app.UseRouting();
+
+			// Füge die CORS-Middleware hinzu
 			app.UseCors("AllowAll");
 
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapControllers();
+				endpoints.MapHealthChecks("/health");
+			});
 			app.Run();
 
 		}

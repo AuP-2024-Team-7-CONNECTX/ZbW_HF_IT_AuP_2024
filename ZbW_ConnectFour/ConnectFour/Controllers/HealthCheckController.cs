@@ -4,30 +4,32 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ConnectFour.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-[EnableCors("AllowAll")]
-public class HealthCheckController : ControllerBase
+namespace ConnectFour.Controllers
 {
-	private readonly HealthCheckService _healthCheckService;
-
-	public HealthCheckController(HealthCheckService healthCheckService)
+	[ApiController]
+	[Route("[controller]")]
+	[EnableCors("AllowAll")] // Diese Zeile kann entfernt werden, da CORS jetzt global konfiguriert ist
+	public class HealthCheckController : ControllerBase
 	{
-		_healthCheckService = healthCheckService;
-	}
+		private readonly HealthCheckService _healthCheckService;
 
-	[HttpGet]
-	public async Task<IActionResult> Get()
-	{
-		//// Setze CORS-Header in der Antwort
-		Response.Headers.Add("Access-Control-Allow-Origin", "*"); // Erlaubt den Zugriff von allen Herkunftsorten
-																  ////Response.Headers.Add("Access-Control-Allow-Methods", "GET"); // Erlaubt POST-Anfragen
-																  //Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type"); // Erlaubt bestimmte Header
-																  //Response.Headers.Add("Access-Control-Allow-Credentials", "true"); // Erlaubt bestimmte Header
+		public HealthCheckController(HealthCheckService healthCheckService)
+		{
+			_healthCheckService = healthCheckService;
+		}
 
+		[HttpGet]
+		public async Task<IActionResult> Get()
+		{
+			// CORS-Header werden jetzt global gesetzt, keine Notwendigkeit, sie hier hinzuzufügen
+			return Ok();
+		}
 
-		return Ok();
+		[HttpOptions]
+		public IActionResult Options()
+		{
+			// CORS-Header werden jetzt global gesetzt, keine Notwendigkeit, sie hier hinzuzufügen
+			return Ok();
+		}
 	}
 }

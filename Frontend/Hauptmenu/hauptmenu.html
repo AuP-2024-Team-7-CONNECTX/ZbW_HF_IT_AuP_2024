@@ -57,7 +57,12 @@
     ></script>
     <script>
       async function logMovies() {
-        const response = await fetch(`${endpoint}/HealthCheck`);
+        const response = await fetch(`${endpoint}/HealthCheck`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         const test = await response;
         console.log(test);
       }
