@@ -26,6 +26,13 @@ namespace ConnectFour
 
 			var builder = WebApplication.CreateBuilder(options);
 
+
+			// Configure forwarded headers
+			builder.Services.Configure<ForwardedHeadersOptions>(options =>
+			{
+				options.KnownProxies.Add(IPAddress.Parse("65.109.166.81"));
+			});
+
 			if (!(environment == "Development"))
 			{
 				builder.Configuration
@@ -55,6 +62,9 @@ namespace ConnectFour
 			Log.Logger = new LoggerConfiguration()
 	.ReadFrom.Configuration(configuration)
 	.CreateLogger();
+
+
+
 
 			builder.Services.AddLogging(loggingBuilder =>
 				loggingBuilder.AddSerilog(dispose: true));
@@ -89,12 +99,6 @@ namespace ConnectFour
 
 			builder.Services.AddCors();
 
-			// Configure forwarded headers
-			builder.Services.Configure<ForwardedHeadersOptions>(options =>
-			{
-				options.KnownProxies.Add(IPAddress.Parse("65.109.166.81"));
-			});
-
 
 			//builder.Services.AddCors(options =>
 			//{
@@ -119,7 +123,10 @@ namespace ConnectFour
 
 			var app = builder.Build();
 
-
+			app.UseForwardedHeaders(new ForwardedHeadersOptions
+			{
+				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+			});
 
 			// Datenbankpr�fung und -erstellung
 			using (var scope = app.Services.CreateScope())
@@ -186,10 +193,7 @@ namespace ConnectFour
 
 			app.UseAuthorization();
 
-			app.UseForwardedHeaders(new ForwardedHeadersOptions
-			{
-				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-			});
+		
 
 			//app.Use((httpContext, next) =>
 			//{
