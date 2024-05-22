@@ -86,16 +86,19 @@ namespace ConnectFour
 
 			builder.Services.AddSingleton<ITokenService, TokenService>();
 
-			builder.Services.AddCors(options =>
-			{
-				options.AddPolicy("AllowAll", builder =>
-				{
-					builder.WithOrigins("https://connectx.mon3y.ch")
-						   .WithHeaders("Authorization, Origin, X-Requested-With, Content-Type, Accept")
-						   .WithMethods("GET, POST, OPTIONS, HEAD, PATCH, DELETE");
-						   
-				});
-			});
+			builder.Services.AddCors();
+
+			//builder.Services.AddCors(options =>
+			//{
+			//	options.AddPolicy("AllowAll", builder =>
+			//	{
+			//		builder.WithOrigins("https://connectx.mon3y.ch")
+			//			   .AllowAnyHeader()
+			//			   .WithMethods("GET", "POST", "OPTIONS", "HEAD", "PATCH", "DELETE")
+			//			   .SetIsOriginAllowedToAllowWildcardSubdomains();
+
+			//	});
+			//});
 
 
 			builder.Services.AddSwaggerGen(c =>
@@ -107,6 +110,22 @@ namespace ConnectFour
 			builder.Services.AddSwaggerExamplesFromAssemblyOf<UserRequestExample>();
 
 			var app = builder.Build();
+
+
+			// Füge die CORS-Middleware hinzu
+			app.UseCors(builder =>
+			{
+				builder
+					  .WithOrigins("https://connectx.mon3y.ch")
+					  .SetIsOriginAllowedToAllowWildcardSubdomains()
+					  .AllowAnyHeader()
+					  .AllowCredentials()
+					  .WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
+					  .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
+
+			}
+);
+
 			// Datenbankpr�fung und -erstellung
 			using (var scope = app.Services.CreateScope())
 			{
@@ -182,9 +201,7 @@ namespace ConnectFour
 
 			app.UseRouting();
 
-			// Füge die CORS-Middleware hinzu
-			app.UseCors("AllowAll");
-
+			
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
