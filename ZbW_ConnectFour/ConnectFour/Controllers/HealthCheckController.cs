@@ -28,6 +28,6 @@ public class HealthCheckController : ControllerBase
 																  //Response.Headers.Add("Access-Control-Allow-Credentials", "true"); // Erlaubt bestimmte Header
 
 
-		return Ok("test Text 123");
+		return Ok();
 	}
 }
