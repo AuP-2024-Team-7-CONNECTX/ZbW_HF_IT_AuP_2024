@@ -21,7 +21,11 @@ namespace ConnectFour.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Get()
 		{
-			// CORS-Header werden jetzt global gesetzt, keine Notwendigkeit, sie hier hinzuzufügen
+			Response.Headers.Add("Access-Control-Allow-Origin", "*");
+			Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+			Response.Headers.Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+
+
 			return Ok();
 		}
 
