@@ -59,6 +59,12 @@
       async function logMovies() {
         const response = await fetch(`${endpoint}/HealthCheck`, {
           method: "GET",
+          headers: {
+            "Access-Control-Allow-Headers":
+              "Authorization,Accept,Origin,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range",
+            "Access-Control-Allow-Methods": "GET,POST,OPTIONS,PUT,DELETE,PATCH",
+            "Access-Control-Allow-Origin": "*",
+          },
           origin: `${endpoint}`,
           referrer: "no-referrer",
         });
