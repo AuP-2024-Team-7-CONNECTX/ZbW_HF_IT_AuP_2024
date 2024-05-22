@@ -31,6 +31,7 @@ namespace ConnectFour
 			builder.Services.Configure<ForwardedHeadersOptions>(options =>
 			{
 				options.KnownProxies.Add(IPAddress.Parse("65.109.166.81"));
+				options.KnownProxies.Add(IPAddress.Parse("100.87.201.117"));
 			});
 
 			if (!(environment == "Development"))
@@ -62,8 +63,6 @@ namespace ConnectFour
 			Log.Logger = new LoggerConfiguration()
 	.ReadFrom.Configuration(configuration)
 	.CreateLogger();
-
-
 
 
 			builder.Services.AddLogging(loggingBuilder =>
@@ -159,7 +158,6 @@ namespace ConnectFour
 				}
 			}
 
-
 			// Konfiguriere Health Checks Route und die Ausgabe
 			app.MapHealthChecks("/health", new HealthCheckOptions
 			{
@@ -189,7 +187,10 @@ namespace ConnectFour
 				app.UseSwaggerUI();
 			}
 
-			app.UseHttpsRedirection();
+			if (!app.Environment.IsDevelopment())
+			{
+				app.UseHttpsRedirection();
+			}
 
 			app.UseAuthorization();
 
@@ -226,7 +227,7 @@ namespace ConnectFour
 				endpoints.MapHealthChecks("/health");
 			});
 
-			app.MapGet("/", () => "65.109.166.81");
+			//app.MapGet("/", () => "65.109.166.81");
 
 
 			app.Run();
