@@ -9,6 +9,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Swashbuckle.AspNetCore.Filters;
+using System.Net;
 
 namespace ConnectFour
 {
@@ -87,6 +88,13 @@ namespace ConnectFour
 			builder.Services.AddSingleton<ITokenService, TokenService>();
 
 			builder.Services.AddCors();
+
+			// Configure forwarded headers
+			builder.Services.Configure<ForwardedHeadersOptions>(options =>
+			{
+				options.KnownProxies.Add(IPAddress.Parse("65.109.166.81"));
+			});
+
 
 			//builder.Services.AddCors(options =>
 			//{
@@ -183,6 +191,11 @@ namespace ConnectFour
 				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 			});
 
+			//app.Use((httpContext, next) =>
+			//{
+			//	httpContext.Request.PathBase = pathBase;
+			//	return next();
+			//});
 
 			app.MapControllers();
 
@@ -208,6 +221,10 @@ namespace ConnectFour
 				endpoints.MapControllers();
 				endpoints.MapHealthChecks("/health");
 			});
+
+			app.MapGet("/", () => "65.109.166.81");
+
+
 			app.Run();
 
 		}
