@@ -3,6 +3,7 @@ using ConnectFour.Repositories;
 using ConnectFour.Repositories.Implementations;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
@@ -169,6 +170,11 @@ namespace ConnectFour
 			app.UseHttpsRedirection();
 
 			app.UseAuthorization();
+
+			app.UseForwardedHeaders(new ForwardedHeadersOptions
+			{
+				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+			});
 
 
 			app.MapControllers();
