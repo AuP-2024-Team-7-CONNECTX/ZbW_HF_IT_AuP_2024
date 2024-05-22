@@ -90,9 +90,9 @@ namespace ConnectFour
 			{
 				options.AddPolicy("AllowAll", builder =>
 				{
-					builder.AllowAnyOrigin()  // Erlaubt alle Urspr�nge
-						   .AllowAnyMethod()  // Erlaubt alle Methoden
-						   .AllowAnyHeader(); // Erlaubt alle Header
+					builder.WithOrigins("https://proxmox.mon3y.ch") 
+						   .AllowAnyMethod()  
+						   .AllowAnyHeader();
 				});
 			});
 

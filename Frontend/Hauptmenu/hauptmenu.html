@@ -60,7 +60,9 @@
         const response = await fetch(`${endpoint}/HealthCheck`, {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
+            "Access-control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Methods": "*",
           },
           origin: `${endpoint}`,
         });
