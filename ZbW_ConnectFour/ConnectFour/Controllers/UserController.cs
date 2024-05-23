@@ -2,10 +2,6 @@
 using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using PostmarkDotNet.Model;
-using PostmarkDotNet;
-using System.Text.Encodings.Web;
-using Serilog;
 
 namespace ConnectFour.Controllers
 {

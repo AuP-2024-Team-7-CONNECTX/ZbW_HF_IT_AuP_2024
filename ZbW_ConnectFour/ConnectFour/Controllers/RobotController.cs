@@ -95,7 +95,8 @@ namespace ConnectFour.Controllers
 					IsConnected = robotRequest.IsConnected,
 					Color = color,
 					IsIngame = false, // Initial false, robots wont be ingame upon creation
-					Topic = robotRequest.Topic,
+					BrokerAddress = robotRequest.BrokerAddress,
+					BrokerPort = robotRequest.BrokerPort,
 				};
 
 				await _repository.CreateOrUpdateAsync(newRobot);
@@ -108,7 +109,7 @@ namespace ConnectFour.Controllers
 					IsConnected = newRobot.IsConnected,
 					Color = newRobot.Color,
 					IsIngame = newRobot.IsIngame,
-					Topic = newRobot.Topic,
+
 				});
 			}
 			catch (Exception ex)

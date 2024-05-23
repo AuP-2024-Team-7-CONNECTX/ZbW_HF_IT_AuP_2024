@@ -12,7 +12,8 @@ public class RobotRequestExample : IExamplesProvider<RobotRequest>
 			IsIngame = false,
 			Color = "Red",
 			Name = "Röbby",
-			Topic = "RöbbysGame"
+			BrokerAddress = "mqtt.mon3y.ch",
+			BrokerPort = 1883
 		};
 	}
 

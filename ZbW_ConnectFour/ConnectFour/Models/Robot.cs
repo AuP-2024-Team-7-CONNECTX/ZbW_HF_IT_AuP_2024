@@ -19,7 +19,9 @@ namespace ConnectFour.Models
 
 		[NotMapped]
 		public bool ControlledByHuman { get; set; }
-		public required string Topic { get; set; }
+		public required string BrokerAddress { get; set; }
+
+		public required int BrokerPort { get; set; }
 
 	}
 }

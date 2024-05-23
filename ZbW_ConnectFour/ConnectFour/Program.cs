@@ -140,7 +140,7 @@ namespace ConnectFour
 					var connected = context.Database.CanConnect();
 					if (connected)
 					{
-						//context.Database.EnsureDeleted();
+						context.Database.EnsureDeleted();
 						//logger.LogInformation("Datenbank erfolgreich geloescht");
 						logger.LogInformation("Datenbank wurde erfolgreich verbunden!");
 

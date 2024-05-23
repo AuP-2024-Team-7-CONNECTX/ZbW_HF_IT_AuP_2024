@@ -275,18 +275,19 @@ namespace ConnectFour.GameControllers
 
 		private async void ConnectWithMqtt()
 		{
-			
-			await _mqttService.ConnectAsync();
-			await _mqttService.SubscribeAsync($"{_robot1.Topic}/feedback");
-			await _mqttService.SubscribeAsync($"{_robot2.Topic}/feedback");
+			// needed ?
+			//await _mqttService.ConnectToNewBrokerAsync();
+			//await _mqttService.SubscribeAsync($"{_robot1.Topic}/feedback");
+			//await _mqttService.SubscribeAsync($"{_robot2.Topic}/feedback");
 			await _mqttService.RegisterGameHandler(this);
 		}
 
 
 		private async void DisconnectFromMqtt()
 		{
-			await _mqttService.UnsubscribeAsync($"{_robot1.Topic}/feedback");
-			await _mqttService.UnsubscribeAsync($"{_robot2.Topic}/feedback");
+			// needed?
+			//await _mqttService.UnsubscribeAsync($"{_robot1.Topic}/feedback");
+			//await _mqttService.UnsubscribeAsync($"{_robot2.Topic}/feedback");
 			await _mqttService.DisconnectAsync();
 		}
 

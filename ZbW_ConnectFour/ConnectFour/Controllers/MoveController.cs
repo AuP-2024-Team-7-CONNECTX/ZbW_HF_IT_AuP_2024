@@ -129,10 +129,9 @@ public class MoveController : ControllerBase
 			return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
 		}
 	}
-
 	// PUT api/Moves/{id}
 	[HttpPut("{id}")]
-	public async Task<ActionResult> Put(string id, [FromBody] Move moveUpdate)
+	public async Task<ActionResult> Put(string id, [FromBody] MoveRequest moveUpdate)
 	{
 		try
 		{
@@ -142,16 +141,36 @@ public class MoveController : ControllerBase
 				return NotFound("Move not found.");
 			}
 
-			moveUpdate.Id = move.Id; // Ensure the ID is set correctly
-			await _moveRepository.CreateOrUpdateAsync(moveUpdate);
+			// Retrieve the associated entities
+			var robot = await _robotRepository.GetByIdAsync(moveUpdate.RobotId);
+			var game = await _gameRepository.GetByIdAsync(moveUpdate.GameId);
+
+			if (robot == null)
+			{
+				return StatusCode(404, $"No Robot with id {moveUpdate.RobotId} was found");
+			}
+
+			if (game == null)
+			{
+				return StatusCode(404, $"No Game with id {moveUpdate.GameId} was found");
+			}
+
+			// Update the necessary fields
+			move.Robot = robot;
+			move.Game = game;
+			move.Player = robot.CurrentPlayer;
+			move.MoveDetails = moveUpdate.MoveDetails ?? move.MoveDetails;
+
+			await _moveRepository.CreateOrUpdateAsync(move);
 			return NoContent();
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, $"An error occurred while updating the move with ID {id}.{ex.Message}");
-			return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
+			_logger.LogError(ex, $"An error occurred while updating the move with ID {id}. {ex.Message}");
+			return StatusCode(500, $"An error occurred while processing your request. {ex.Message}");
 		}
 	}
+
 
 	// DELETE api/Moves/{id}
 	[HttpDelete("{id}")]
