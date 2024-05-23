@@ -101,20 +101,20 @@ namespace ConnectFour.GameControllers
 
 				// Algorithmus bestimmt
 
-				if (!_currentMove.Robot.ControlledByHuman)
-				{
+				//if (!_currentMove.Robot.ControlledByHuman)
+				//{
 
-					// Keine Änderung passiert -> Algorithmus bestimmt
+				//	// Keine Änderung passiert -> Algorithmus bestimmt
 
-					if (_gameField == _game._gameField)
-					{
-						// PlaceNewStoneFromAlgorithm()
+				//	if (_gameField == _game._gameField)
+				//	{
+				//		// PlaceNewStoneFromAlgorithm()
 
-						// Spielfeld von Game aktualisieren, dass frontend informiert ist.
-						_game._gameField = _gameField;
+				//		// Spielfeld von Game aktualisieren, dass frontend informiert ist.
+				//		_game.GameField = _gameField;
 
-					}
-				}
+				//	}
+				//}
 
 
 				if (RobotIsReadyForNextTurn)

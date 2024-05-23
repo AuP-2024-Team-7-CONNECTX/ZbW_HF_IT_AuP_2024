@@ -12,6 +12,7 @@ namespace ConnectFour.Models
         public virtual Robot Robot { get; set; }
         public string RobotId { get; set; }
 
+        // Columns 1-7
         public string MoveDetails { get; set; }
 
         public DateTime? MoveStarted { get; set; }

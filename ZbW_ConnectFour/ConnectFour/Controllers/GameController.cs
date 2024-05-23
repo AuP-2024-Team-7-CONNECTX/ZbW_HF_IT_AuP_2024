@@ -2,6 +2,7 @@
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using static ConnectFour.Enums.Enum;
 
 namespace ConnectFour.Controllers
@@ -67,7 +68,7 @@ namespace ConnectFour.Controllers
 		{
 			try
 			{
-				
+
 				var allRobots = await _robotRepository.GetAllAsync();
 				var listRobots = allRobots.ToList();
 				var robots = listRobots.Where(r => request.RobotIds.Contains(r.Id)).ToList();
@@ -84,24 +85,24 @@ namespace ConnectFour.Controllers
 					throw new Exception("Too many/few Players in List. Couldnt create game");
 				}
 
+				var gameField = new GameField();
+
+				var options = new JsonSerializerOptions
+				{
+					WriteIndented = true
+				};
+				var gameFieldJson = JsonSerializer.Serialize(gameField, options);
+
 				var game = new Game
 				{
 					Id = Guid.NewGuid().ToString(),
-					//Players = players,
+					Players = players,
 					Robots = robots,
 					CurrentMoveId = request.CurrentMoveId,
 					State = GameState.InProgress,
-
-					// On creating a Game, the Field is empty
-					GameFieldJson = @"{ ""1"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
-            ""2"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
-            ""3"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
-            ""4"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
-            ""5"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
-            ""6"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0},
-            ""7"": {""A"": 0, ""B"": 0, ""C"": 0, ""D"": 0, ""E"": 0, ""F"": 0}
-        }"
+					GameFieldJson = gameFieldJson
 				};
+
 
 				await _gameRepository.CreateOrUpdateAsync(game);
 				return CreatedAtAction(nameof(Get), new { id = game.Id }, game);
