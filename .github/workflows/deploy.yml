@@ -33,7 +33,7 @@ jobs:
 
     - name: Deploy Service
       run: |
-        # Herstellung einer SSH-Verbindung und Ausführung von Befehlen auf einem Remote-Server
+        # Herstellung einer SSH-Verbindung und Ausführung von Befehlen auf einem Remote-Server 
         # ssh root@100.87.201.117 "rm -r /root/ConnectFour/publish/*"
         scp -r ./publish root@100.87.201.117:/root/ConnectFour
         scp -r ./Frontend root@100.87.201.117:/var/www/public
