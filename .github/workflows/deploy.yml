@@ -37,7 +37,7 @@ jobs:
         # ssh root@100.87.201.117 "rm -r /root/ConnectFour/publish/*"
         scp -r ./publish root@100.87.201.117:/root/ConnectFour
         scp -r ./Frontend root@100.87.201.117:/var/www/public
-        ssh root@100.87.201.117 "ASPNETCORE_ENVIRONMENT=Production ASPNETCORE_URLS=https://127.0.0.1:5001 dotnet /root/ConnectFour/publish/ConnectFour.dll"
+        ssh root@100.87.201.117 "ASPNETCORE_ENVIRONMENT=Production ASPNETCORE_URLS=https://connectx.mon3y.ch:5000 dotnet /root/ConnectFour/publish/ConnectFour.dll"
       
 
               
