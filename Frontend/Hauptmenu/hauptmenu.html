@@ -1,70 +1,67 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hauptmenü</title>
     <link rel="stylesheet" href="hauptmenu.css" />
     <script src="../config.js"></script>
-  </head>
-  <body>
+</head>
+<body>
     <section>
-      <div class="menu-box">
-        <h2>Hauptmenü</h2>
-        <div class="menu-option">
-          <a href="../Spielstart/spielstart.html">
-            <span class="icon"
-              ><ion-icon name="game-controller-outline"></ion-icon
-            ></span>
-            Spielen
-          </a>
+        <div class="menu-box">
+            <h2>Hauptmenü</h2>
+            <div class="menu-option">
+                <a href="../Spielstart/spielstart.html">
+                    <span class="icon"><ion-icon name="game-controller-outline"></ion-icon></span>
+                    Spielen
+                </a>
+            </div>
+            <div class="menu-option">
+                <a href="../Bestenliste/bestenliste.html">
+                    <span class="icon"><ion-icon name="trophy-outline"></ion-icon></span>
+                    Bestenliste
+                </a>
+            </div>
+            <div class="menu-option">
+                <a href="../Roboterverwaltung/roboterverwaltung.html">
+                    <span class="icon"><ion-icon name="construct-outline"></ion-icon></span>
+                    Roboterverwaltung
+                </a>
+            </div>
+            <div class="menu-option">
+                <button id="check-endpoint" class="subtle-button" onclick="logMovies()">
+                    <span class="icon"><ion-icon name="checkmark-circle-outline"></ion-icon></span>
+                    Check Endpoint
+                </button>
+            </div>
+            <div class="menu-option">
+                <button id="logout-button" class="subtle-button" onclick="logout()">
+                    <span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>
+                    Abmelden
+                </button>
+            </div>
         </div>
-        <div class="menu-option">
-          <a href="../Bestenliste/bestenliste.html">
-            <span class="icon"
-              ><ion-icon name="trophy-outline"></ion-icon
-            ></span>
-            Bestenliste
-          </a>
-        </div>
-        <div class="menu-option">
-          <a href="../Roboterverwaltung/roboterverwaltung.html">
-            <span class="icon"
-              ><ion-icon name="construct-outline"></ion-icon
-            ></span>
-            Roboterverwaltung
-          </a>
-        </div>
-        <div class="menu-option">
-          <button id="check-endpoint" onclick="logMovies()">
-            <span class="icon"
-              ><ion-icon name="checkmark-circle-outline"></ion-icon
-            ></span>
-            Check Endpoint
-          </button>
-        </div>
-      </div>
     </section>
 
     <!-- Skripte für Ionicons (Icon-Set) -->
-    <script
-      type="module"
-      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
-    ></script>
-    <script
-      nomodule
-      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
-    ></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script>
-      async function logMovies() {
-        const response = await fetch(`${endpoint}/HealthCheck`, {
-          method: "GET",
-          headers: {},
-          origin: `${endpoint}`,
-        });
-        const test = await response;
-        console.log(test);
-      }
+        async function logMovies() {
+            const response = await fetch(`${endpoint}/HealthCheck`, {
+                method: "GET",
+                headers: {},
+                origin: `${endpoint}`,
+            });
+            const test = await response;
+            console.log(test);
+        }
+
+        function logout() {
+            // Hier können zusätzliche Logout-Prozesse eingefügt werden, z.B. Session beenden
+            window.location.href = '../Login/Login.html'; // Weiterleitung zur Login-Seite
+        }
     </script>
-  </body>
+</body>
 </html>

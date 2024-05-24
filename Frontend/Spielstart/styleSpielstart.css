@@ -67,6 +67,28 @@ button:hover {
     width: 200px;
 }
 
+.subtle-button {
+    padding: 10px; 
+    font-size: 1.5em;
+    width: 100%;
+    background-color: transparent;
+    color: #d32f2f;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.subtle-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.subtle-button .icon {
+    margin-right: 8px;
+}
+
 @media (max-width: 600px) {
     .play-Box {
         width: 90%;

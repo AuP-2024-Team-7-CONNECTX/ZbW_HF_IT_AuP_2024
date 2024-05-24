@@ -18,80 +18,139 @@ section {
     background-position: center;
 }
 
-.roboterverwaltung-box {
-    width: 800px; /* Set width to the same as your other elements */
+.verwaltung-box {
+    position: relative;
+    width: 500px; /* Adjusted width for better readability */
     background: rgba(255, 255, 255, 0.8); /* Slightly opaque white background for better readability */
     border: 2px solid rgba(255, 255, 255, 0.5);
     border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     backdrop-filter: blur(15px);
-    padding: 40px; /* Adjusted padding for aesthetics */
+    padding: 40px; /* Added padding for aesthetics */
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Added shadow for better visibility */
-    color: #d32f2f; /* Dark red for text */
+}
+
+h2 {
+    font-size: 2em;
+    color: #d32f2f; /* Dark red to match the background */
     text-align: center;
+    margin-bottom: 20px; /* Added margin for spacing */
 }
 
-.roboterverwaltung-box h2 {
-    font-size: 2.5em; /* Adjusted font size */
-    margin-bottom: 20px;
-    color: #d32f2f; /* Dark red for heading */
-}
-
-.robot-list {
-    text-align: left; /* Align text to the left for the list */
-}
-
-.robot-entry {
-    background: rgba(255, 255, 255, 0.9); /* Slightly opaque white background for list items */
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added shadow for better visibility */
-    margin-bottom: 10px; /* Space between entries */
-}
-
-.robot-entry h3 {
-    font-size: 1.5em;
-    color: #d32f2f;
-    margin-bottom: 5px;
-}
-
-.robot-entry p {
-    font-size: 1.2em;
+.input-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     margin-bottom: 10px;
 }
 
-button {
-    padding: 10px 20px;
-    margin: 5px;
-    border: none;
-    border-radius: 10px;
-    background-color: #d32f2f; /* Dark red button background */
-    color: white;
-    cursor: pointer;
+.input-group input {
+    margin-bottom: 10px;
+    padding: 10px;
     font-size: 1em;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added shadow for better visibility */
-    transition: background-color 0.3s ease;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-button:hover {
-    background-color: #b71c1c; /* Slightly darker red on hover */
+.input-group button {
+    width: 100%;
+    padding: 10px;
+    background: #d32f2f; /* Dark red */
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
-.add-robot {
-    margin-top: 20px;
+.input-group button:hover {
+    background: #b71c1c; /* Slightly darker red for hover effect */
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
     width: 100%;
 }
 
-@media (max-width: 360px) {
-    .roboterverwaltung-box {
-        width: 100%;
-        padding: 20px; /* Adjust padding for smaller screens */
-    }
+ul li {
+    background: #e2e2e2;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 1em;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    word-wrap: break-word; /* Ensure long text wraps */
+}
 
-    .robot-entry {
-        padding: 8px;
-    }
+ul li span {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
 
-    button {
-        padding: 8px 16px;
-    }
+.button-group {
+    display: flex;
+    justify-content: space-between;
+}
+
+.edit-button, .delete-button {
+    background: #4caf50; /* Green */
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+    flex: 1;
+    margin: 0 5px;
+}
+
+.edit-button:hover {
+    background: #388e3c; /* Darker green for hover effect */
+}
+
+.delete-button {
+    background: #f44336; /* Red */
+}
+
+.delete-button:hover {
+    background: #d32f2f; /* Darker red for hover effect */
+}
+
+.save-button {
+    background: #4caf50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.save-button:hover {
+    background: #388e3c; /* Darker green for hover effect */
+}
+
+.edit-input-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.edit-input-group input {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }

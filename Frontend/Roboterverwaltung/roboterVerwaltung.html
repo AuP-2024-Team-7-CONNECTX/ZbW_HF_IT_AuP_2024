@@ -4,30 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roboterverwaltung</title>
-    <link rel="stylesheet" href="roboterVerwaltung.css"> 
+    <link rel="stylesheet" href="roboterVerwaltung.css">
 </head>
 <body>
     <section>
-        <div class="roboterverwaltung-box">
+        <div class="verwaltung-box">
             <h2>Roboterverwaltung</h2>
-            <div class="robot-list">
-
-                <div class="robot-entry">
-                    <h3>Robotername 1</h3>
-                    <p>Status: Aktiv</p>
-                    <button>Bearbeiten</button>
-                    <button>Löschen</button>
-                </div>
-                <div class="robot-entry">
-                    <h3>Robotername 2</h3>
-                    <p>Status: Inaktiv</p>
-                    <button>Bearbeiten</button>
-                    <button>Löschen</button>
-                </div>
-
+            <div class="input-group">
+                <input type="text" id="robotName" placeholder="Name">
+                <input type="text" id="robotAddress" placeholder="Adresse">
+                <input type="text" id="robotPort" placeholder="Port">
+                <button onclick="addItem()">Hinzufügen</button>
             </div>
-            <button class="add-robot">Neuen Roboter hinzufügen</button>
+            <ul id="robotList">
+                <!-- Initial keine Einträge -->
+            </ul>
         </div>
     </section>
+
+    <script>
+        function addItem() {
+            // Die Werte der Eingabefelder erhalten
+            var name = document.getElementById('robotName').value;
+            var address = document.getElementById('robotAddress').value;
+            var port = document.getElementById('robotPort').value;
+
+            // Wenn die Eingabefelder nicht leer sind, dann den neuen Eintrag hinzufügen
+            if (name.trim() !== "" && address.trim() !== "" && port.trim() !== "") {
+                // Neues Listenelement erstellen
+                var li = document.createElement('li');
+                li.innerHTML = `<span>${name}, ${address}, ${port}</span>`;
+
+                // Bearbeiten-Button erstellen
+                var editButton = document.createElement('button');
+                editButton.textContent = "Bearbeiten";
+                editButton.className = "edit-button";
+                editButton.onclick = function() { editItem(editButton); };
+
+                // Löschen-Button erstellen
+                var deleteButton = document.createElement('button');
+                deleteButton.textContent = "Löschen";
+                deleteButton.className = "delete-button";
+                deleteButton.onclick = function() { deleteItem(deleteButton); };
+
+                // Button-Gruppe erstellen
+                var buttonGroup = document.createElement('div');
+                buttonGroup.className = 'button-group';
+                buttonGroup.appendChild(editButton);
+                buttonGroup.appendChild(deleteButton);
+
+                // Bearbeiten- und Löschen-Buttons zur Button-Gruppe hinzufügen
+                li.appendChild(buttonGroup);
+
+                // Das neue Listenelement zur Liste hinzufügen
+                document.getElementById('robotList').appendChild(li);
+
+                // Die Eingabefelder leeren
+                document.getElementById('robotName').value = '';
+                document.getElementById('robotAddress').value = '';
+                document.getElementById('robotPort').value = '';
+            } else {
+                alert('Bitte füllen Sie alle Felder aus.');
+            }
+        }
+
+        function deleteItem(button) {
+            // Das Listenelement entfernen, das den Button enthält
+            var li = button.parentNode.parentNode;
+            li.parentNode.removeChild(li);
+        }
+
+        function editItem(button) {
+            // Das Listenelement, das den Button enthält
+            var li = button.parentNode.parentNode;
+            
+            // Der aktuelle Text des Listenelements
+            var currentText = li.firstChild.textContent;
+            var parts = currentText.split(', ');
+            var name = parts[0];
+            var address = parts[1];
+            var port = parts[2];
+
+            // Eingabefelder und einen Speichern-Button erstellen
+            var inputName = document.createElement('input');
+            inputName.type = 'text';
+            inputName.value = name;
+
+            var inputAddress = document.createElement('input');
+            inputAddress.type = 'text';
+            inputAddress.value = address;
+
+            var inputPort = document.createElement('input');
+            inputPort.type = 'text';
+            inputPort.value = port;
+
+            var saveButton = document.createElement('button');
+            saveButton.textContent = 'Speichern';
+            saveButton.className = 'save-button';
+            saveButton.onclick = function() {
+                // Den neuen Text speichern und das Eingabefeld und den Speichern-Button entfernen
+                var newName = inputName.value;
+                var newAddress = inputAddress.value;
+                var newPort = inputPort.value;
+                if (newName.trim() !== "" && newAddress.trim() !== "" && newPort.trim() !== "") {
+                    li.innerHTML = `<span>${newName}, ${newAddress}, ${newPort}</span>`;
+
+                    // Bearbeiten-Button neu erstellen
+                    var editButton = document.createElement('button');
+                    editButton.textContent = "Bearbeiten";
+                    editButton.className = "edit-button";
+                    editButton.onclick = function() { editItem(editButton); };
+
+                    // Löschen-Button neu erstellen
+                    var deleteButton = document.createElement('button');
+                    deleteButton.textContent = "Löschen";
+                    deleteButton.className = "delete-button";
+                    deleteButton.onclick = function() { deleteItem(deleteButton); };
+
+                    // Button-Gruppe neu erstellen
+                    var buttonGroup = document.createElement('div');
+                    buttonGroup.className = 'button-group';
+                    buttonGroup.appendChild(editButton);
+                    buttonGroup.appendChild(deleteButton);
+
+                    // Bearbeiten- und Löschen-Buttons zur Button-Gruppe hinzufügen
+                    li.appendChild(buttonGroup);
+                } else {
+                    alert('Bitte füllen Sie alle Felder aus.');
+                }
+            };
+
+            // Das Listenelement leeren und die Eingabefelder und den Speichern-Button hinzufügen
+            li.innerHTML = '';
+            var editGroup = document.createElement('div');
+            editGroup.className = 'edit-input-group';
+            editGroup.appendChild(inputName);
+            editGroup.appendChild(inputAddress);
+            editGroup.appendChild(inputPort);
+            editGroup.appendChild(saveButton);
+            li.appendChild(editGroup);
+        }
+    </script>
 </body>
 </html>

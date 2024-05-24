@@ -1,9 +1,6 @@
 document.getElementById('register-form').addEventListener('submit', function(event) {
     event.preventDefault(); // Verhindert das Standardverhalten des Formulars, also das Neuladen der Seite.
 
-    var username = document.getElementById('username').value;
-    var firstname = document.getElementById('firstname').value;
-    var lastname = document.getElementById('lastname').value;
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value;
 
@@ -12,7 +9,7 @@ document.getElementById('register-form').addEventListener('submit', function(eve
         alert("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
         return;
     } else if (!validatePassword(password)) {
-        alert("Das Passwort muss mindestens 8 Zeichen lang sein und mindestens einen Großbuchstaben, eine Zahl und ein Sonderzeichen enthalten.");
+        alert("Das Passwort muss mindestens 8 Zeichen lang sein und mindestens einen Grossbuchstaben, eine Zahl und ein Sonderzeichen enthalten.");
         return;
     }
 
