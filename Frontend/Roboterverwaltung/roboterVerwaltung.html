@@ -19,6 +19,12 @@
             <ul id="robotList">
                 <!-- Initial keine Einträge -->
             </ul>
+            <div class="menu-option">
+                <button id="back-button" class="subtle-button" type="button" onclick="goToMainMenu()">
+                    <span class="icon"><ion-icon name="arrow-back-outline"></ion-icon></span>
+                    Zurück zum Hauptmenü
+                </button>
+            </div>
         </div>
     </section>
 
@@ -144,6 +150,12 @@
             editGroup.appendChild(saveButton);
             li.appendChild(editGroup);
         }
+
+        function goToMainMenu() {
+            window.location.href = '../Hauptmenu/hauptmenu.html'; 
+        }
     </script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
 </html>

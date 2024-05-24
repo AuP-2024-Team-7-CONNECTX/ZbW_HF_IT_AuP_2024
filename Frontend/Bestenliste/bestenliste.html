@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bestenliste</title>
-    <link rel="stylesheet" href="styleBestenliste.css"> <!-- Stellen Sie sicher, dass der Pfad korrekt ist -->
+    <link rel="stylesheet" href="styleBestenliste.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script defer src="scriptBestenliste.js"></script>
 </head>
 <body>
     <section>
@@ -22,9 +25,14 @@
                 <li>Spielername 8 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min</li>
                 <li>Spielername 9 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min</li>
                 <li>Spielername 10 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min</li>
-
                 <!-- Fügen Sie hier weitere Spieler hinzu -->
             </ul>
+            <div class="menu-option">
+                <button id="back-button" class="subtle-button" type="button" onclick="goToMainMenu()">
+                    <span class="icon"><ion-icon name="arrow-back-outline"></ion-icon></span>
+                    Zurück zum Hauptmenü
+                </button>
+            </div>
         </div>
     </section>
 </body>

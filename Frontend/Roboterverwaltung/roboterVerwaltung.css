@@ -7,15 +7,20 @@
     font-family: 'Poppins', sans-serif;
 }
 
-section {
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100vh;
-    background: url('../Bilder/Logo_ConnectX.png') no-repeat;
+    background: url('../Bilder/Logo_ConnectX.png') no-repeat center center fixed; 
     background-size: cover;
-    background-position: center;
+}
+
+section {
+    width: 100%;
+    max-width: 800px; 
 }
 
 .verwaltung-box {
@@ -153,4 +158,30 @@ ul li span {
     font-size: 1em;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+.menu-option {
+    margin-top: 20px;
+}
+
+.subtle-button {
+    padding: 10px; 
+    font-size: 1.5em;
+    width: 100%;
+    background-color: transparent;
+    color: #d32f2f;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.subtle-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.subtle-button .icon {
+    margin-right: 8px;
 }

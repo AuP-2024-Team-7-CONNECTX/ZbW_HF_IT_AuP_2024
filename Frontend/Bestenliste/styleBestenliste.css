@@ -52,3 +52,29 @@ section {
     border-radius: 10px; /* Added border radius for rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added shadow for better visibility */
 }
+
+.menu-option {
+    margin-top: 20px;
+}
+
+.subtle-button {
+    padding: 10px; 
+    font-size: 1.5em;
+    width: 100%;
+    background-color: transparent;
+    color: #d32f2f;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.subtle-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.subtle-button .icon {
+    margin-right: 8px;
+}
