@@ -135,7 +135,7 @@ namespace ConnectFour
 					}
 
 					// logger.LogInformation("Es wurde keine Datenbank gefunden. Neue Datenbank wird erstellt...");
-					context.Database.EnsureCreated(); // Pr�ft, ob die DB existiert, und erstellt sie, falls nicht
+					context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
 					logger.LogInformation("Datenbank wurde erfolgreich angelegt!");
 
 

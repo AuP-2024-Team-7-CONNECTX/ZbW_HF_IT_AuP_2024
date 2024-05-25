@@ -165,12 +165,8 @@ namespace ConnectFour.Controllers
 				return BadRequest("This user is already authenticated.");
 			}
 
-			var verificationToken = _tokenService.GenerateVerificationToken();
-			user.VerificationToken = verificationToken;
-			user.TokenValidUntil = DateTime.Now.AddDays(30);
 			await _repository.CreateOrUpdateAsync(user);
 
-			//var verificationUrl = $"https://connectx.mon3y.ch/Bestatigung/bestatigung.html?token={verificationToken}&email={email}";
 			var verificationUrl = $"https://connectx.mon3y.ch/Bestatigung/bestatigung.html";
 			var emailBody = $"<html><body>Please confirm your account by <a href='{verificationUrl}'>clicking here</a>.</body></html>";
 
