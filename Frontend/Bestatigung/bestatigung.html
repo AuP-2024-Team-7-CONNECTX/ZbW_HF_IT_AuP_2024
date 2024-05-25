@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>E-Mail Bestätigung</title>
-    <link rel="stylesheet" href="styleBestatigung.css"> <!-- Stellen Sie sicher, dass der Pfad korrekt ist -->
-</head>
-<body>
+    <link rel="stylesheet" href="styleBestatigung.css" />
+    <!-- Stellen Sie sicher, dass der Pfad korrekt ist -->
+  </head>
+  <body>
     <section>
-        <div class="confirmation-box">
-            <h2>Bitte bestätigen Sie Ihre E-Mail-Adresse!</h2>
-        </div>
-        <div class="confirmation-link">
-            <p><a href="#">Bestätigungsmail erneut senden?</a></p>
-        </div>
+      <div class="confirmation-box">
+        <h2>Bitte bestätigen Sie Ihre E-Mail-Adresse!</h2>
+      </div>
+      <div class="confirmation-link">
+        <form id="resend-form">
+          <label for="email">E-Mail-Adresse:</label>
+          <input type="email" id="email" name="email" required />
+          <button type="submit">Bestätigungsmail erneut senden</button>
+        </form>
+      </div>
     </section>
-</body>
+    <script src="resendConfirmation.js"></script>
+  </body>
 </html>

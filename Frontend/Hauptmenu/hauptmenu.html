@@ -36,7 +36,7 @@
           </a>
         </div>
         <div class="menu-option">
-          <button id="check-endpoint" onclick="logMovies()">
+          <button id="check-endpoint" onclick="logHealthCheck()">
             <span class="icon"
               ><ion-icon name="checkmark-circle-outline"></ion-icon
             ></span>
@@ -56,14 +56,24 @@
       src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
     ></script>
     <script>
-      async function logMovies() {
-        const response = await fetch(`${endpoint}/HealthCheck`, {
-          method: "GET",
-          headers: {},
-          origin: `${endpoint}`,
-        });
-        const test = await response;
-        console.log(test);
+      // Stellen Sie sicher, dass die Variable endpoint in config.js definiert ist
+
+      async function logHealthCheck() {
+        try {
+          const response = await fetch(`${endpoint}/HealthCheck`, {
+            method: "GET",
+            mode: "cors", // oder "no-cors", wenn notwendig
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Health check passed:", data);
+          } else {
+            console.error("Health check failed:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
       }
     </script>
   </body>

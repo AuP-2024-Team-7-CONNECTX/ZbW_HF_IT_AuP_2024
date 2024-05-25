@@ -1,125 +1,125 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap");
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
 section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100vh;
-    background: url('../Bilder/Logo_ConnectX.png') no-repeat;
-    background-size: cover;
-    background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background: url("../Bilder/Logo_ConnectX.png") no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 .register-box {
-    position: relative;
-    width: 400px;
-    background: rgba(255, 255, 255, 0.8);
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Added shadow for better visibility */
-    padding: 20px;
+  position: relative;
+  width: 400px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  padding: 20px;
 }
 
 h2 {
-    font-size: 2em;
-    color: #d32f2f; /* Dark red to match the background */
-    text-align: center;
-    margin-bottom: 20px;
+  font-size: 2em;
+  color: #d32f2f;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .input-box {
-    position: relative;
-    width: 310px;
-    margin: 20px 0;
-    border-bottom: 2px solid #d32f2f; /* Dark red */
+  position: relative;
+  width: 310px;
+  margin: 20px 0;
+  border-bottom: 2px solid #d32f2f;
 }
 
 .input-box label {
-    position: absolute;
-    top: 50%;
-    left: 5px;
-    transform: translateY(-50%);
-    font-size: 1em;
-    color: #d32f2f; /* Dark red */
-    pointer-events: none;
-    transition: 0.5s;
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  transform: translateY(-50%);
+  font-size: 1em;
+  color: #d32f2f;
+  pointer-events: none;
+  transition: 0.5s;
 }
 
 .input-box input:focus ~ label,
 .input-box input:valid ~ label {
-    top: -5px;
+  top: -5px;
 }
 
 .input-box input {
-    width: 100%;
-    height: 50px;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-size: 1em;
-    color: #d32f2f; /* Dark red */
-    padding: 0 8px 0 5px;
+  width: 100%;
+  height: 50px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1em;
+  color: #d32f2f;
+  padding: 0 8px 0 5px;
 }
 
 button {
-    width: 100%;
-    height: 50px;
-    background: #d32f2f; /* Dark red */
-    border: 2px solid #fff;
-    outline: none;
-    border-radius: 10px; /* Increased border radius */
-    cursor: pointer;
-    font-size: 1.2em; /* Increased font size */
-    color: #fff;
-    font-weight: 700;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* More pronounced shadow */
-    margin: 20px 0; /* Increased margin */
-    transition: background 0.3s, transform 0.3s; /* Added transition for smooth hover effect */
+  width: 100%;
+  height: 50px;
+  background: #d32f2f;
+  border: 2px solid #fff;
+  outline: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.2em;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  margin: 20px 0;
+  transition: background 0.3s, transform 0.3s;
 }
 
 button:hover {
-    background: #b71c1c; /* Slightly darker red for hover effect */
-    transform: scale(1.05); /* Slightly increase size on hover */
+  background: #b71c1c;
+  transform: scale(1.05);
 }
 
 .register-link {
-    font-size: 0.9em;
-    color: #d32f2f; /* Dark red */
-    text-align: center;
-    margin: 25px 0 10px;
+  font-size: 0.9em;
+  color: #d32f2f;
+  text-align: center;
+  margin: 25px 0 10px;
 }
 
 .register-link p a {
-    color: #d32f2f; /* Dark red */
-    text-decoration: none;
-    font-weight: 600;
+  color: #d32f2f;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .register-link p a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 @media (max-width: 360px) {
-    .register-box {
-        width: 100%;
-        height: 100vh;
-        border: none;
-        border-radius: 0;
-    }
+  .register-box {
+    width: 100%;
+    height: 100vh;
+    border: none;
+    border-radius: 0;
+  }
 }
 
 .input-box {
-    width: 290px;
+  width: 290px;
 }

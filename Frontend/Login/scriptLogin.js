@@ -1,32 +1,49 @@
-document.getElementById('login-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // Verhindert das Standardverhalten des Formulars
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("login-form");
+  const loginButton = document.getElementById("login-button");
 
-    var email = document.getElementById('email').value;
-    var password = document.getElementById('password').value;
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-    // Validierung der Eingaben
-    if (!validateEmail(email)) {
-        alert("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
-        return;
-    } else if (!validatePassword(password)) {
-        alert("Das Passwort muss mindestens 8 Zeichen lang sein und mindestens einen Grossbuchstaben, eine Zahl und ein Sonderzeichen enthalten.");
-        return;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    // Überprüfen, ob die Eingabefelder nicht leer sind (einfache Validierung)
+    if (!email || !password) {
+      alert("Bitte E-Mail und Passwort eingeben.");
+      return;
     }
 
-    // Anmeldeinformationen verarbeiten
-    alert('Login erfolgreich! Weiterleitung zur Startseite.');
-    window.location.href = '../Spielstart/spielstart.html'; // Weiterleitung zur Spielstart-Seite
+    try {
+      const response = await fetch(`${endpoint}/User`, {
+        // Setze hier deinen API-Endpunkt ein
+        method: "GET",
+        mode: "cors", // oder 'no-cors', falls notwendig
+      });
+
+      if (response.ok) {
+        const users = await response.json();
+        console.log("Fetched users:", users);
+
+        const user = users.find(
+          (user) => user.email === email && user.password === password
+        );
+
+        if (user && user.authenticated) {
+          console.log("Erfolg:", user);
+          window.location.href = "../Spielstart/spielstart.html"; // Anpassen an Ihre tatsächliche Zielseite
+        } else if (user && !user.authenticated) {
+          alert("Login fehlgeschlagen: Benutzer nicht authentifiziert");
+        } else {
+          alert(
+            "LLogin fehlgeschlagen: Benutzer nicht gefunden oder falsches Passwort"
+          );
+        }
+      } else {
+        console.error("Failed to fetch users:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  });
 });
-
-function validateEmail(email) {
-    var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    return regex.test(email);
-}
-
-function validatePassword(password) {
-    var hasUpperCase = /[A-Z]/.test(password);
-    var hasNumber = /[0-9]/.test(password);
-    var hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    var isValidLength = password.length >= 8;
-    return hasUpperCase && hasNumber && hasSpecialChar && isValidLength;
-}
