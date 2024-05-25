@@ -99,18 +99,6 @@ namespace ConnectFour
 			builder.Services.AddCors();
 
 
-			//builder.Services.AddCors(options =>
-			//{
-			//	options.AddPolicy("AllowAll", builder =>
-			//	{
-			//		builder.WithOrigins("https://connectx.mon3y.ch")
-			//			   .AllowAnyHeader()
-			//			   .WithMethods("GET", "POST", "OPTIONS", "HEAD", "PATCH", "DELETE")
-			//			   .SetIsOriginAllowedToAllowWildcardSubdomains();
-
-			//	});
-			//});
-
 
 			builder.Services.AddSwaggerGen(c =>
 			{
@@ -127,7 +115,7 @@ namespace ConnectFour
 				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 			});
 
-			// Datenbankpr�fung und -erstellung
+			// Datenbankpruefung und -erstellung
 			using (var scope = app.Services.CreateScope())
 			{
 				var services = scope.ServiceProvider;
@@ -195,13 +183,6 @@ namespace ConnectFour
 			app.UseAuthorization();
 
 		
-
-			//app.Use((httpContext, next) =>
-			//{
-			//	httpContext.Request.PathBase = pathBase;
-			//	return next();
-			//});
-
 			app.MapControllers();
 
 			app.UseRouting();
@@ -211,7 +192,7 @@ namespace ConnectFour
 			app.UseCors(builder =>
 			{
 				builder
-					  .WithOrigins("https://connectx.mon3y.ch")
+					  .WithOrigins("https://connectx.mon3y.ch","https://localhost:5000")
 					  .SetIsOriginAllowedToAllowWildcardSubdomains()
 					  .AllowAnyHeader()
 					  .AllowCredentials()
@@ -227,8 +208,7 @@ namespace ConnectFour
 				endpoints.MapHealthChecks("/health");
 			});
 
-			//app.MapGet("/", () => "65.109.166.81");
-
+			
 
 			app.Run();
 

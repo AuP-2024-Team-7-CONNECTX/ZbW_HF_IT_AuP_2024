@@ -70,6 +70,14 @@ namespace ConnectFour.Controllers
 		[HttpPost]
 		public async Task<ActionResult<UserResponse>> Post(UserRequest value)
 		{
+			var users = await _repository.GetAllAsync();
+
+			if (users.Any(u => u.Name == value.Name))
+			{
+				return StatusCode(500, $"User already exists");
+
+			}
+
 			try
 			{
 				var user = new User
