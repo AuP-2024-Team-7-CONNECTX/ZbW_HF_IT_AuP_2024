@@ -21,8 +21,11 @@ namespace ConnectFour.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Get()
 		{
-			
-			return Ok("ich habe keine nerven mehr");
+			var newJson = new
+			{
+				Message = "foo"
+			};
+			return Ok(newJson);
 		}
 
 		
