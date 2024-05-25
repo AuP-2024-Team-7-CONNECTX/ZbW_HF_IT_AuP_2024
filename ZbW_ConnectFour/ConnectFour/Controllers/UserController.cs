@@ -2,6 +2,10 @@
 using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Crypto.Generators;
+using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ConnectFour.Controllers
 {
@@ -78,6 +82,9 @@ namespace ConnectFour.Controllers
 
 			}
 
+			// password hashen, im frontend gleiche funktion dazu im frontend einbauen
+			var hashedPassword = HashPassword(value.Password);
+
 			try
 			{
 				var user = new User
@@ -85,7 +92,7 @@ namespace ConnectFour.Controllers
 					Id = Guid.NewGuid().ToString(),
 					Name = value.Name,
 					Email = value.Email,
-					Password = value.Password,
+					Password = hashedPassword,
 					Authenticated = value.Authenticated
 				};
 				await _repository.CreateOrUpdateAsync(user);
@@ -95,6 +102,21 @@ namespace ConnectFour.Controllers
 			{
 				_logger.LogError(ex, "An error occurred while creating a new user.");
 				return StatusCode(500, $"An error occurred while processing your request. {ex.Message}");
+			}
+		}
+
+		private string HashPassword(string password)
+		{
+			using (SHA256 sha256Hash = SHA256.Create())
+			{
+				byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+				StringBuilder builder = new StringBuilder();
+				for (int i = 0; i < bytes.Length; i++)
+				{
+					builder.Append(bytes[i].ToString("x2"));
+				}
+				return builder.ToString();
 			}
 		}
 
