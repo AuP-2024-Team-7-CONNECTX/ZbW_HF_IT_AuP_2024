@@ -1,6 +1,7 @@
 ﻿using ConnectFour.Api.User;
 using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Crypto.Generators;
 using System.Runtime.Intrinsics.Arm;
@@ -72,6 +73,7 @@ namespace ConnectFour.Controllers
 
 		// POST api/Users
 		[HttpPost]
+		[EnableCors("AllowAllCorsPolicy")]
 		public async Task<ActionResult<UserResponse>> Post(UserRequest value)
 		{
 			var users = await _repository.GetAllAsync();
@@ -240,6 +242,7 @@ namespace ConnectFour.Controllers
 
 		// POST: /User/changepassword
 		[HttpPost("changepassword")]
+		[EnableCors("AllowAllCorsPolicy")]
 		public async Task<IActionResult> ChangePassword(string email, string newPassword)
 		{
 			try
