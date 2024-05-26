@@ -184,23 +184,23 @@ namespace ConnectFour
 			app.UseRouting();
 
 
-			//			if (app.Environment.IsDevelopment())
-			//			{
-			//				app.UseCors(builder =>
-			//				{
-			//					builder
-			//						  .AllowAnyOrigin()
-			//						  .AllowAnyMethod()
-			//						  .AllowAnyHeader();
+			if (app.Environment.IsDevelopment())
+			{
+				app.UseCors(builder =>
+				{
+					builder
+						  .AllowAnyOrigin()
+						  .AllowAnyMethod()
+						  .AllowAnyHeader();
 
 
-			//				}
-			//);
-			//			}
-			//			else
-			//			{
-			// Füge die CORS-Middleware hinzu
-			app.UseCors(builder =>
+				}
+);
+			}
+			else
+			{
+
+				app.UseCors(builder =>
 			{
 				builder
 					  //.WithOrigins("https://connectx.mon3y.ch", "https://localhost:5000")
@@ -212,7 +212,7 @@ namespace ConnectFour
 
 			});
 
-			//}
+			}
 
 
 			app.UseEndpoints(endpoints =>

@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch(`${endpoint}/User`, {
         // Setze hier deinen API-Endpunkt ein
         method: "GET",
-        mode: "cors", // oder 'no-cors', falls notwendig
+        mode: "cors",
       });
 
       if (response.ok) {
