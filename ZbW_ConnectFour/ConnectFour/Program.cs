@@ -203,7 +203,7 @@ namespace ConnectFour
 			app.UseCors(builder =>
 			{
 				builder
-					  .WithOrigins("https://connectx.mon3y.ch", "https://localhost:5000")
+					  //.WithOrigins("https://connectx.mon3y.ch", "https://localhost:5000")
 					  .SetIsOriginAllowedToAllowWildcardSubdomains()
 					  .AllowAnyHeader()
 					  .AllowCredentials()
