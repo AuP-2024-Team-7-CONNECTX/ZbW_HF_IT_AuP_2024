@@ -184,37 +184,35 @@ namespace ConnectFour
 			app.UseRouting();
 
 
-			if (app.Environment.IsDevelopment())
+			//			if (app.Environment.IsDevelopment())
+			//			{
+			//				app.UseCors(builder =>
+			//				{
+			//					builder
+			//						  .AllowAnyOrigin()
+			//						  .AllowAnyMethod()
+			//						  .AllowAnyHeader();
+
+
+			//				}
+			//);
+			//			}
+			//			else
+			//			{
+			// Füge die CORS-Middleware hinzu
+			app.UseCors(builder =>
 			{
-				app.UseCors(builder =>
-				{
-					builder
-						  .AllowAnyOrigin()
-						  .AllowAnyMethod()
-						  .AllowAnyHeader();
+				builder
+					  .WithOrigins("https://connectx.mon3y.ch", "https://localhost:5000")
+					  .SetIsOriginAllowedToAllowWildcardSubdomains()
+					  .AllowAnyHeader()
+					  .AllowCredentials()
+					  .WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
+					  .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
 
+			});
 
-				}
-);
-			}
-			else
-			{
-				// Füge die CORS-Middleware hinzu
-				app.UseCors(builder =>
-				{
-					builder
-						  .WithOrigins("https://connectx.mon3y.ch", "https://localhost:5000")
-						  .SetIsOriginAllowedToAllowWildcardSubdomains()
-						  .AllowAnyHeader()
-						  .AllowCredentials()
-						  .WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
-						  .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
-
-				}
-
-);
-
-			}
+			//}
 
 
 			app.UseEndpoints(endpoints =>
