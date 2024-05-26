@@ -32,6 +32,7 @@ document
         headers: {
           "Content-Type": "application/json",
         },
+        mode: "cors",
         body: JSON.stringify(userRequest),
       });
 
@@ -47,6 +48,7 @@ document
             headers: {
               "Content-Type": "text/plain",
             },
+            mode: "cors",
           }
         );
         if (response.ok) {

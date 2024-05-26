@@ -73,7 +73,7 @@ namespace ConnectFour.Controllers
 
 		// POST api/Users
 		[HttpPost]
-		[EnableCors("AllowAllCorsPolicy")]
+		//[EnableCors("AllowAllCorsPolicy")]
 		public async Task<ActionResult<UserResponse>> Post(UserRequest value)
 		{
 			var users = await _repository.GetAllAsync();
@@ -242,7 +242,7 @@ namespace ConnectFour.Controllers
 
 		// POST: /User/changepassword
 		[HttpPost("changepassword")]
-		[EnableCors("AllowAllCorsPolicy")]
+		//[EnableCors("AllowAllCorsPolicy")]
 		public async Task<IActionResult> ChangePassword(string email, string newPassword)
 		{
 			try

@@ -12,33 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// function confirmEmail(email) {
-//   const fullEndpoint = `${endpoint}/User/confirmEmail?email=${encodeURIComponent(
-//     email
-//   )}&token=${encodeURIComponent(token)}`;
-//   fetch(fullEndpoint, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "text/plain",
-//     },
-//   })
-//     .then((response) => {
-//       if (response.ok) {
-//         alert("Email successfully verified!");
-//         window.location.href = "../Login/login.html";
-//       } else {
-//         throw new Error("Failed to verify email.");
-//       }
-//     })
-//     .catch((error) => {
-//       alert("Verification failed: " + error.message);
-//     });
-// }
-
 function confirmEmail(email) {
-  // const fullEndpoint = `${endpoint}/User/confirmEmail?email=${encodeURIComponent(
-  //   email
-  // )}`;
   const fullEndpoint = `${endpoint}/User/confirmEmail?email=${email}`;
 
   fetch(fullEndpoint, {
@@ -46,11 +20,12 @@ function confirmEmail(email) {
     headers: {
       "Content-Type": "text/plain",
     },
+    mode: "cors",
   })
     .then((response) => {
       if (response.ok) {
         alert("Email wurde verifiziert. Sie können sich jetzt einloggen!");
-        window.location.href = "../Login/login.html"; // Adjust to your actual target page
+        window.location.href = "../Login/login.html";
       } else {
         throw new Error("Failed to verify email.");
       }
