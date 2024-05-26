@@ -182,25 +182,44 @@ namespace ConnectFour
 
 			app.UseAuthorization();
 
-		
+
 			app.MapControllers();
 
 			app.UseRouting();
 
 
-			// Füge die CORS-Middleware hinzu
-			app.UseCors(builder =>
+			if (app.Environment.IsDevelopment())
 			{
-				builder
-					  .WithOrigins("https://connectx.mon3y.ch","https://localhost:5000")
-					  .SetIsOriginAllowedToAllowWildcardSubdomains()
-					  .AllowAnyHeader()
-					  .AllowCredentials()
-					  .WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
-					  .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
+				app.UseCors(builder =>
+				{
+					builder
+						  .AllowAnyOrigin()
+						  .AllowAnyMethod()
+						  .AllowAnyHeader();
+
+
+				}
+);
+			}
+			else
+			{
+				// Füge die CORS-Middleware hinzu
+				app.UseCors(builder =>
+				{
+					builder
+						  .WithOrigins("https://connectx.mon3y.ch", "https://localhost:5000")
+						  .SetIsOriginAllowedToAllowWildcardSubdomains()
+						  .AllowAnyHeader()
+						  .AllowCredentials()
+						  .WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
+						  .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
+
+				}
+
+);
 
 			}
-);
+
 
 			app.UseEndpoints(endpoints =>
 			{
@@ -208,7 +227,7 @@ namespace ConnectFour
 				endpoints.MapHealthChecks("/health");
 			});
 
-			
+
 
 			app.Run();
 

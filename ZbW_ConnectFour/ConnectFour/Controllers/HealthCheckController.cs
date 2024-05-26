@@ -8,7 +8,6 @@ namespace ConnectFour.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]
-	[EnableCors("AllowAll")] // Diese Zeile kann entfernt werden, da CORS jetzt global konfiguriert ist
 	public class HealthCheckController : ControllerBase
 	{
 		private readonly HealthCheckService _healthCheckService;
@@ -28,6 +27,6 @@ namespace ConnectFour.Controllers
 			return Ok(newJson);
 		}
 
-		
+
 	}
 }
