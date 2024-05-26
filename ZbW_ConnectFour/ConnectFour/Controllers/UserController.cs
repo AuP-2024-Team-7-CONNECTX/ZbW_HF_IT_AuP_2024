@@ -189,7 +189,8 @@ namespace ConnectFour.Controllers
 
 			await _repository.CreateOrUpdateAsync(user);
 
-			var verificationUrl = $"https://connectx.mon3y.ch/Bestatigung/bestatigung.html";
+			var verificationUrl = $"https://connectx.mon3y.ch/Bestatigung/bestatigung.html?email={Uri.EscapeDataString(email)}";
+
 			var emailBody = $"<html><body>Please confirm your account by <a href='{verificationUrl}'>clicking here</a>.</body></html>";
 
 			var emailResult = await _emailService.SendEmailAsync(user.Email, "Confirm Your Email", emailBody);
@@ -206,7 +207,7 @@ namespace ConnectFour.Controllers
 
 		// POST: /Users/confirmEmail
 		[HttpPost("confirmEmail")]
-		public async Task<IActionResult> ConfirmEmail(string email, string token)
+		public async Task<IActionResult> ConfirmEmail(string email)
 		{
 			try
 			{

@@ -41,13 +41,12 @@ document
         );
 
         const responseRegisterEmail = await fetch(
-          `${endpoint}/User/registeremail?email=${response.email}`,
+          `${endpoint}/User/registeremail?email=${email}`,
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": "text/plain",
             },
-            body: JSON.stringify(userRequest),
           }
         );
         if (response.ok) {

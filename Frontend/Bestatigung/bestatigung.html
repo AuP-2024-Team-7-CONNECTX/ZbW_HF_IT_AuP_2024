@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>E-Mail Bestätigung</title>
     <link rel="stylesheet" href="styleBestatigung.css" />
+    <script defer src="scriptBestatigung.js"></script>
+    <script src="../config.js"></script>
     <!-- Stellen Sie sicher, dass der Pfad korrekt ist -->
   </head>
   <body>
     <section>
       <div class="confirmation-box">
-        <h2>Bitte bestätigen Sie Ihre E-Mail-Adresse!</h2>
+        <h2>
+          Bitte geben sie ihre Email Adresse ein und bestätigen sie mit Klick
+          auf den Button
+        </h2>
       </div>
       <div class="confirmation-link">
         <form id="resend-form">
-          <label for="email">E-Mail-Adresse:</label>
-          <input type="email" id="email" name="email" required />
-          <button type="submit">Bestätigungsmail erneut senden</button>
+          <label for="emailInput">E-Mail-Adresse:</label>
+          <input type="email" id="emailInput" name="email" required />
+          <button type="button" id="confirmButton">Registrieren</button>
         </form>
       </div>
     </section>
-    <script src="resendConfirmation.js"></script>
   </body>
 </html>
