@@ -96,7 +96,35 @@ namespace ConnectFour
 
 			builder.Services.AddSingleton<ITokenService, TokenService>();
 
-			builder.Services.AddCors();
+			builder.Services.AddCors(options =>
+			{
+				options.AddPolicy("DevelopmentCorsPolicy", builder =>
+				{
+					builder.AllowAnyOrigin()
+						   .AllowAnyMethod()
+						   .AllowAnyHeader();
+				});
+
+				options.AddPolicy("DefaultCorsPolicy", builder =>
+				{
+					builder
+					 .SetIsOriginAllowedToAllowWildcardSubdomains()
+					 .AllowAnyHeader()
+					 .AllowCredentials()
+					 .WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
+					 .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
+				});
+
+				options.AddPolicy("AllowAllCorsPolicy", builder =>
+				{
+					builder.WithOrigins("https://connectx.mon3y.ch")
+					 .SetIsOriginAllowedToAllowWildcardSubdomains()
+					 .AllowAnyHeader()
+					 .AllowCredentials()
+					 .WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
+					 .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
+				});
+			});
 
 
 
@@ -186,32 +214,12 @@ namespace ConnectFour
 
 			if (app.Environment.IsDevelopment())
 			{
-				app.UseCors(builder =>
-				{
-					builder
-						  .AllowAnyOrigin()
-						  .AllowAnyMethod()
-						  .AllowAnyHeader();
+				app.UseCors("DevelopmentCorsPolicy");
 
-
-				}
-);
 			}
 			else
 			{
-
-				app.UseCors(builder =>
-			{
-				builder
-					  //.WithOrigins("https://connectx.mon3y.ch", "https://localhost:5000")
-					  .SetIsOriginAllowedToAllowWildcardSubdomains()
-					  .AllowAnyHeader()
-					  .AllowCredentials()
-					  .WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
-					  .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
-
-			});
-
+				app.UseCors("DefaultCorsPolicy");
 			}
 
 
