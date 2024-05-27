@@ -12,17 +12,17 @@ namespace ConnectFour.Controllers
 	public class GameController : ControllerBase
 	{
 		private readonly IGameRepository _gameRepository;
-		private readonly IPlayerRepository _playerRepository;
+		private readonly IUserRepository _userRepository;
 
 		private readonly IRobotRepository _robotRepository;
 		private readonly ILogger<GameController> _logger;
 
 
-		public GameController(IGameRepository gameRepository, IPlayerRepository playerRepository, IRobotRepository robotRepository, ILogger<GameController> logger)
+		public GameController(IGameRepository gameRepository, IUserRepository UserRepository, IRobotRepository robotRepository, ILogger<GameController> logger)
 		{
 			_gameRepository = gameRepository ?? throw new ArgumentNullException(nameof(gameRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
-			_playerRepository = playerRepository;
+			_userRepository = UserRepository;
 			_robotRepository = robotRepository;
 		}
 
@@ -78,11 +78,11 @@ namespace ConnectFour.Controllers
 					throw new Exception("Too many/few Robots in List. Couldnt create game");
 				}
 
-				var players = robots.Select(r => r.CurrentPlayer).ToList();
+				var Users = robots.Select(r => r.CurrentUser).ToList();
 
-				if (players.Count() != 2)
+				if (Users.Count() != 2)
 				{
-					throw new Exception("Too many/few Players in List. Couldnt create game");
+					throw new Exception("Too many/few Users in List. Couldnt create game");
 				}
 
 				var gameField = new GameField();
@@ -96,7 +96,7 @@ namespace ConnectFour.Controllers
 				var game = new Game
 				{
 					Id = Guid.NewGuid().ToString(),
-					Players = players,
+					Users = Users,
 					Robots = robots,
 					CurrentMoveId = request.CurrentMoveId,
 					State = GameState.InProgress,

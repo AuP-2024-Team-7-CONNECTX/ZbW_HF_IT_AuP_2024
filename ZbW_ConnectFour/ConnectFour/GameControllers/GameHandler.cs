@@ -10,7 +10,7 @@ namespace ConnectFour.GameControllers
 	public class GameHandler
 	{
 		private readonly IGameRepository _gameRepository;
-		private readonly IPlayerRepository _playerRepository;
+		private readonly IUserRepository _UserRepository;
 		private readonly IRobotRepository _robotRepository;
 		private readonly IMoveRepository _moveRepository;
 		private readonly IMqttService _mqttService;
@@ -23,8 +23,8 @@ namespace ConnectFour.GameControllers
 		private Robot _robot1;
 		private Robot _robot2;
 
-		private Player _player1;
-		private Player _player2;
+		private User _User1;
+		private User _User2;
 
 		private static Random random = new Random();
 
@@ -34,10 +34,10 @@ namespace ConnectFour.GameControllers
 		// 7 Horizontal, 6 vertikal Maximal
 		private Dictionary<int, Dictionary<int, int>> _gameField;
 
-		public GameHandler(IGameRepository gameRepository, IPlayerRepository playerRepository, IRobotRepository robotRepository, Game game, ILogger<GameHandler> logger, IMoveRepository moveRepository, IMqttService mqttService)
+		public GameHandler(IGameRepository gameRepository, IUserRepository UserRepository, IRobotRepository robotRepository, Game game, ILogger<GameHandler> logger, IMoveRepository moveRepository, IMqttService mqttService)
 		{
 			_gameRepository = gameRepository;
-			_playerRepository = playerRepository;
+			_UserRepository = UserRepository;
 			_moveRepository = moveRepository;
 			_robotRepository = robotRepository;
 			_game = game;
@@ -54,7 +54,7 @@ namespace ConnectFour.GameControllers
 		}
 		public async void StartGame()
 		{
-			SetUpPlayersAndRobots();
+			SetUpUsersAndRobots();
 			ConnectWithMqtt();
 			ChangeIsIngameState(true, GameState.InProgress);
 
@@ -64,12 +64,12 @@ namespace ConnectFour.GameControllers
 			if (beginner == 0)
 			{
 				_currentMove.Robot = _robot1;
-				_currentMove.Player = _player1;
+				_currentMove.User = _User1;
 			}
 			else
 			{
 				_currentMove.Robot = _robot2;
-				_currentMove.Player = _player2;
+				_currentMove.User = _User2;
 			}
 			await _moveRepository.CreateOrUpdateAsync(_currentMove);
 
@@ -184,7 +184,7 @@ namespace ConnectFour.GameControllers
 		// Ansonsten passiert aktualisierung des gameFields mit neuem zug direkt im Frontend
 		public void PlaceNewStoneFromAlgorithm(int column)
 		{
-			var playerNumber = _currentMove.Player == _player1 ? 1 : 2;
+			var UserNumber = _currentMove.User == _User1 ? 1 : 2;
 			// Finde die erste leere Zeile in der angegebenen Spalte
 
 			// hier column zuweisen aufgrund errechneter Wert mit Algorithmus -> muss noch implementiert werden
@@ -194,7 +194,7 @@ namespace ConnectFour.GameControllers
 				if (_gameField[column][zeile] == 0)
 				{
 					// Setze den Stein des Spielers in das Feld
-					_gameField[column][zeile] = playerNumber;
+					_gameField[column][zeile] = UserNumber;
 
 					return;
 				}
@@ -203,29 +203,29 @@ namespace ConnectFour.GameControllers
 		}
 
 
-		private void SetUpPlayersAndRobots()
+		private void SetUpUsersAndRobots()
 		{
 			_robot1 = _game.Robots[0];
 			_robot2 = _game.Robots[1];
-			if (_robot1.CurrentPlayer != null)
+			if (_robot1.CurrentUser != null)
 			{
-				_player1 = _robot1.CurrentPlayer;
+				_User1 = _robot1.CurrentUser;
 				_robot1.ControlledByHuman = true;
 			}
 			else
 			{
-				_player1 = null;
+				_User1 = null;
 				_robot1.ControlledByHuman = false;
 			}
 
-			if (_robot2.CurrentPlayer != null)
+			if (_robot2.CurrentUser != null)
 			{
-				_player2 = _robot2.CurrentPlayer;
+				_User2 = _robot2.CurrentUser;
 				_robot2.ControlledByHuman = true;
 			}
 			else
 			{
-				_player2 = null;
+				_User2 = null;
 				_robot2.ControlledByHuman = false;
 			}
 
@@ -242,15 +242,15 @@ namespace ConnectFour.GameControllers
 			_lastMove.MoveFinished = DateTime.Now;
 			_lastMove = _currentMove;
 			_currentMove = _game.CurrentMove;
-			if (_currentMove.Player == _player1 && _currentMove.Robot == _robot1)
+			if (_currentMove.User == _User1 && _currentMove.Robot == _robot1)
 			{
 				_currentMove.Robot = _robot2;
-				_currentMove.Player = _player2;
+				_currentMove.User = _User2;
 			}
 			else
 			{
 				_currentMove.Robot = _robot1;
-				_currentMove.Player = _player1;
+				_currentMove.User = _User1;
 			}
 			_moveRepository.CreateOrUpdateAsync(_lastMove);
 			_moveRepository.CreateOrUpdateAsync(_currentMove);
@@ -299,10 +299,10 @@ namespace ConnectFour.GameControllers
 				foreach (var robot in _game.Robots)
 				{
 					robot.IsIngame = isIngame;
-					var currentPlayer = robot.CurrentPlayer;
-					currentPlayer.IsIngame = isIngame;
+					var currentUser = robot.CurrentUser;
+					currentUser.IsIngame = isIngame;
 					_robotRepository.CreateOrUpdateAsync(robot);
-					_playerRepository.CreateOrUpdateAsync(currentPlayer);
+					_UserRepository.CreateOrUpdateAsync(currentUser);
 				}
 				_game.State = gameState;
 				_gameRepository.CreateOrUpdateAsync(_game);

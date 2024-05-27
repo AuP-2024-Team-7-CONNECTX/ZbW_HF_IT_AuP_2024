@@ -4,6 +4,7 @@
 		string Name,
 		string Email,
 		bool Authenticated,
-		string Password
+		string Password,
+		bool isIngame
 	);
 }

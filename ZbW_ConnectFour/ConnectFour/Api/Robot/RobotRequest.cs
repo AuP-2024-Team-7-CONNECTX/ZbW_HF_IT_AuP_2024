@@ -2,7 +2,7 @@
 
 public record RobotRequest
 {
-	public string? CurrentPlayerId { get; init; }
+	public string? CurrentUserId { get; init; }
 	public bool IsConnected { get; init; }
 	public bool IsIngame { get; init; }
 	public string? Color { get; init; }

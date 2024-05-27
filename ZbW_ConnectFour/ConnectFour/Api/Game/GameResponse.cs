@@ -1,13 +1,14 @@
-﻿using ConnectFour.Models;
+﻿using ConnectFour.Api.User;
+using ConnectFour.Models;
 using static ConnectFour.Enums.Enum;
 
 public record GameResponse
 {
     public string Id { get; init; }
-    public IEnumerable<PlayerResponse> Players { get; init; } = new List<PlayerResponse>();
+    public IEnumerable<UserResponse> Players { get; init; } = new List<UserResponse>();
     public IEnumerable<RobotResponse> Robots { get; init; } = new List<RobotResponse>();
     public string? CurrentMoveId { get; init; }
-    public PlayerResponse? WinnerPlayer { get; init; }
+    public UserResponse? WinnerPlayer { get; init; }
     public RobotResponse? WinnerRobot { get; init; }
     public GameState State { get; init; }
     public decimal? TotalPointsPlayerOne { get; init; }

@@ -11,6 +11,7 @@ namespace ConnectFour.Models
 		public DateTime? TokenValidUntil { get; set; }
 		public bool Authenticated { get; set; }
 
+		public bool IsIngame { get; set; }
 	}
 
 }

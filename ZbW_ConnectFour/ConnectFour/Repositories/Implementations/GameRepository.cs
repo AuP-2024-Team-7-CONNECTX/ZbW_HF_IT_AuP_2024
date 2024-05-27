@@ -29,8 +29,8 @@ namespace ConnectFour.Repositories.Implementations
             entity.Robot1Id = entity.Robots[0].Id;
 			entity.Robot2Id = entity.Robots[1].Id;
 
-			entity.Player1Id = entity.Robots[0].CurrentPlayerId;
-			entity.Player2Id = entity.Robots[1].CurrentPlayerId;
+			entity.User1Id = entity.Robots[0].CurrentUserId;
+			entity.User2Id = entity.Robots[1].CurrentUserId;
 
 			await _genericRepository.CreateOrUpdateAsync(entity);
         }

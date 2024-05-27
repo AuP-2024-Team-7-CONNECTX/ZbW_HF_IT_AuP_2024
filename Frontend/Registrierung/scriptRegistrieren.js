@@ -23,6 +23,7 @@ document
       Email: email,
       Authenticated: false, // Standardwert, da der Benutzer sich gerade registriert.
       Password: password,
+      isIngame: false,
     };
 
     // Senden der POST-Anfrage

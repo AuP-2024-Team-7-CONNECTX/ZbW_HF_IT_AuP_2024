@@ -8,8 +8,8 @@ namespace ConnectFour.Models
 	{
 		public string Name { get; set; }
 
-		public virtual Player? CurrentPlayer { get; set; }
-		public string? CurrentPlayerId { get; set; }
+		public virtual User? CurrentUser { get; set; }
+		public string? CurrentUserId { get; set; }
 
 		public bool IsConnected { get; set; }
 

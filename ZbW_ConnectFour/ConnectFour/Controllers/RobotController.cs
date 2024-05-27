@@ -35,7 +35,7 @@ namespace ConnectFour.Controllers
 				var robotResponses = robots.Select(robot => new RobotResponse
 				{
 					Id = robot.Id,
-					CurrentPlayerId = robot.CurrentPlayerId,
+					CurrentUserId = robot.CurrentUserId,
 					Name = robot.Name,
 					IsConnected = robot.IsConnected,
 					Color = robot.Color,
@@ -68,7 +68,7 @@ namespace ConnectFour.Controllers
 				var robotResponse = new RobotResponse
 				{
 					Id = robot.Id,
-					CurrentPlayerId = robot.CurrentPlayerId,
+					CurrentUserId = robot.CurrentUserId,
 					IsConnected = robot.IsConnected,
 					Name = robot.Name,
 					Color = robot.Color,
@@ -100,7 +100,7 @@ namespace ConnectFour.Controllers
 				var newRobot = new Robot
 				{
 					Id = Guid.NewGuid().ToString(),
-					CurrentPlayerId = robotRequest.CurrentPlayerId,
+					CurrentUserId = robotRequest.CurrentUserId,
 					Name = robotRequest.Name,
 					IsConnected = robotRequest.IsConnected,
 					Color = null,
@@ -115,7 +115,7 @@ namespace ConnectFour.Controllers
 				{
 					Id = newRobot.Id,
 					Name = newRobot.Name,
-					CurrentPlayerId = newRobot.CurrentPlayerId,
+					CurrentUserId = newRobot.CurrentUserId,
 					IsConnected = newRobot.IsConnected,
 					Color = newRobot.Color,
 					IsIngame = newRobot.IsIngame,
@@ -142,7 +142,7 @@ namespace ConnectFour.Controllers
 					return NotFound(_responseJson);
 				}
 
-				robotToUpdate.CurrentPlayerId = robotRequest.CurrentPlayerId;
+				robotToUpdate.CurrentUserId = robotRequest.CurrentUserId;
 				robotToUpdate.IsConnected = robotRequest.IsConnected;
 				robotToUpdate.IsIngame = robotRequest.IsIngame;
 

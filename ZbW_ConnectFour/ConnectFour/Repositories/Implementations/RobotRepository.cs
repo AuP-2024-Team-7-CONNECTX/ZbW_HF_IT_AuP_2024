@@ -8,27 +8,27 @@ namespace ConnectFour.Repositories
 	public class RobotRepository : IRobotRepository // Stelle sicher, dass IRobotRepository definiert ist
 	{
 		private readonly IGenericRepository _genericRepository;
-		private readonly IPlayerRepository _playerRepository;
+		private readonly IUserRepository _userRepository;
 
 		private readonly ILogger<RobotRepository> _logger;
 
-		public RobotRepository(IGenericRepository genericRepository, IPlayerRepository playerRepository, ILogger<RobotRepository> logger)
+		public RobotRepository(IGenericRepository genericRepository, IUserRepository userRepository, ILogger<RobotRepository> logger)
 		{
 			_genericRepository = genericRepository;
-			_playerRepository = playerRepository;
+			_userRepository = userRepository;
 			_logger = logger;
 		}
 
 		public async Task CreateOrUpdateAsync(Robot entity)
 		{
-			if (entity.CurrentPlayerId != null)
+			if (entity.CurrentUserId != null)
 			{
-				var player = await _playerRepository.GetByIdAsync(entity.CurrentPlayerId);
+				var User = await _userRepository.GetByIdAsync(entity.CurrentUserId);
 
-				if (player == null)
+				if (User == null)
 				{
-					_logger.LogError("No Player found with Id {0}", entity.CurrentPlayerId);
-					throw new ObjectNotFoundException($"Player mit id {entity.CurrentPlayerId} konnte nicht gefunden werden");
+					_logger.LogError("No User found with Id {0}", entity.CurrentUserId);
+					throw new ObjectNotFoundException($"User mit id {entity.CurrentUserId} konnte nicht gefunden werden");
 				}
 			}
 			//if (_genericRepository.GetAllAsync<Robot>().Result.Where(r => r.Name == entity.Name).Count() > 0)

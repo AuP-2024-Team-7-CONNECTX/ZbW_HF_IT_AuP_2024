@@ -6,7 +6,7 @@ namespace ConnectFour.Models
     public class Move : Entity
     {
         
-        public virtual Player Player { get; set; }
+        public virtual User User { get; set; }
         public string PlayerId { get; set; }
        
         public virtual Robot Robot { get; set; }

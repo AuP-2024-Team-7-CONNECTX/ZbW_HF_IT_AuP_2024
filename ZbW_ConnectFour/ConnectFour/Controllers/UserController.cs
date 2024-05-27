@@ -42,7 +42,7 @@ namespace ConnectFour.Controllers
 			try
 			{
 				var users = await _repository.GetAllAsync();
-				var userResponses = users.Select(x => new UserResponse(x.Id, x.Name, x.Email, x.Password, x.Authenticated));
+				var userResponses = users.Select(x => new UserResponse(x.Id, x.Name, x.Email, x.Password, x.Authenticated,x.IsIngame));
 				return Ok(userResponses);
 			}
 			catch (Exception ex)
@@ -66,7 +66,7 @@ namespace ConnectFour.Controllers
 					return StatusCode(400, _responseJson);
 				}
 
-				var userResponse = new UserResponse(user.Id, user.Name, user.Email, user.Password, user.Authenticated);
+				var userResponse = new UserResponse(user.Id, user.Name, user.Email, user.Password, user.Authenticated,user.IsIngame);
 				return Ok(userResponse);
 			}
 			catch (Exception ex)
@@ -118,41 +118,39 @@ namespace ConnectFour.Controllers
 		}
 
 
-		//// PUT api/Users/{id}
-		//[HttpPut("{id}")]
-		//public async Task<ActionResult> Put(string id, UserRequest value)
-		//{
-		//	var existingUser = await _repository.GetByIdAsync(id);
+		// PUT api/Users/{id}
+		[HttpPut("{id}")]
+		public async Task<ActionResult> Put(string id, UserRequest value)
+		{
+			var existingUser = await _repository.GetByIdAsync(id);
 
 
-		//	if (existingUser != null)
-		//	{
+			if (existingUser != null)
+			{
 
-		//		try
-		//		{
-		//			existingUser.Name = value.Name;
-		//			existingUser.Email = value.Email;
-		//			existingUser.Authenticated = value.Authenticated;
-		//			existingUser.Password = value.Password;
+				try
+				{
 
-		//			await _repository.CreateOrUpdateAsync(existingUser);
-		//			return NoContent();
-		//		}
-		//		catch (Exception ex)
-		//		{
-		//			_logger.LogError(ex, "An error occurred while updating the user with ID {UserId}.", id);
-		//			_responseJson.Message = ex.Message;
-		//			return StatusCode(500, _responseJson);
-		//		}
+					existingUser.IsIngame = value.isIngame;
 
-		//	}
-		//	else
-		//	{
-		//		_responseJson.Message = "Kein Benutzer mit dieser Id gefunden";
-		//		return StatusCode(500, _responseJson);
+					await _repository.CreateOrUpdateAsync(existingUser);
+					return NoContent();
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "An error occurred while updating the user with ID {UserId}.", id);
+					_responseJson.Message = ex.Message;
+					return StatusCode(500, _responseJson);
+				}
 
-		//	}
-		//}
+			}
+			else
+			{
+				_responseJson.Message = "Kein Benutzer mit dieser Id gefunden";
+				return StatusCode(500, _responseJson);
+
+			}
+		}
 
 		// DELETE /Users/{id}
 		[HttpDelete("{id}")]

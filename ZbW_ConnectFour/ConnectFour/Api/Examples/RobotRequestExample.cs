@@ -7,7 +7,7 @@ public class RobotRequestExample : IExamplesProvider<RobotRequest>
 	{
 		return new RobotRequest
 		{
-			CurrentPlayerId = null,
+			CurrentUserId = null,
 			IsConnected = true,
 			IsIngame = false,
 			Color = null,

@@ -9,7 +9,8 @@ public class UserRequestExample : IExamplesProvider<UserRequest>
             Name: "Jane Doe",
             Email: "janedoe@example.com",
             Authenticated: false,
-            Password: "someHash"            
+            Password: "someHash",
+            isIngame: false
         );
     }
 }

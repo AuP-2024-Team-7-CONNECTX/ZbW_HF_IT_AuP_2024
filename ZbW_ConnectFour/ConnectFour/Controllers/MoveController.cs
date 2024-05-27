@@ -12,15 +12,15 @@ public class MoveController : ControllerBase
 	private readonly ILogger<MoveController> _logger;
 
 	private readonly IGameRepository _gameRepository;
-	private readonly IPlayerRepository _playerRepository;
+	private readonly IUserRepository _userRepository;
 	private readonly IRobotRepository _robotRepository;
 
-	public MoveController(IMoveRepository moveRepository, ILogger<MoveController> logger, IGameRepository gameRepository, IPlayerRepository playerRepository, IRobotRepository robotRepository)
+	public MoveController(IMoveRepository moveRepository, ILogger<MoveController> logger, IGameRepository gameRepository, IUserRepository userRepository, IRobotRepository robotRepository)
 	{
 		_moveRepository = moveRepository ?? throw new ArgumentNullException(nameof(moveRepository));
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		_gameRepository = gameRepository;
-		_playerRepository = playerRepository;
+		_userRepository = userRepository;
 		_robotRepository = robotRepository;
 	}
 
@@ -114,7 +114,7 @@ public class MoveController : ControllerBase
 				Id = Guid.NewGuid().ToString(),
 				Robot = robot,
 				Game = game,
-				Player = robot!.CurrentPlayer,
+				User = robot!.CurrentUser,
 				MoveStarted = DateTime.Now,
 				MoveDetails = moveRequest.MoveDetails
 			};
@@ -158,7 +158,7 @@ public class MoveController : ControllerBase
 			// Update the necessary fields
 			move.Robot = robot;
 			move.Game = game;
-			move.Player = robot.CurrentPlayer;
+			move.User = robot.CurrentUser;
 			move.MoveDetails = moveUpdate.MoveDetails ?? move.MoveDetails;
 
 			await _moveRepository.CreateOrUpdateAsync(move);

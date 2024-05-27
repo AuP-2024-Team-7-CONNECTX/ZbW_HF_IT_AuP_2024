@@ -83,7 +83,6 @@ namespace ConnectFour
 
 			builder.Services.AddScoped<IGenericRepository, GenericRepository>();
 			builder.Services.AddScoped<IUserRepository, UserRepository>();
-			builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 			builder.Services.AddScoped<IRobotRepository, RobotRepository>();
 			builder.Services.AddScoped<IMoveRepository, MoveRepository>();
 			builder.Services.AddScoped<IGameRepository, GameRepository>();
