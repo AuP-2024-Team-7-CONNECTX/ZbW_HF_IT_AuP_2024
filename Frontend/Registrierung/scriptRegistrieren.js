@@ -55,18 +55,17 @@ document
           console.log(response.message);
         } else {
           const error = await response.json();
-          throw new Error(
-            error.message || "Unbekannter Fehler beim Email-Versand."
-          );
+          alert("Unbekannter Fehler beim Email-Versand:" + error.message);
         }
       } else {
         const error = await response.json();
-        throw new Error(
-          error.message || "Unbekannter Fehler bei der Registrierung."
+
+        alert(
+          "Unbekannter Fehler beim der Benutzer-Registrierung:" + error.message
         );
       }
     } catch (error) {
-      console.error("Fehler bei der Registrierung:", error);
+      console.error("Fehler bei der Registrierung:", error.message);
       alert("Ein Fehler ist aufgetreten: " + error.message);
     }
   });

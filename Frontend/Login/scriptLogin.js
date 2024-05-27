@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Failed to fetch users:", response.statusText);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error:", error.message);
     }
   });
 });

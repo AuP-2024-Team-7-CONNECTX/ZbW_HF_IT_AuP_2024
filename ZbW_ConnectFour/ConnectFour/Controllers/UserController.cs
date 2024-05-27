@@ -78,9 +78,14 @@ namespace ConnectFour.Controllers
 		{
 			var users = await _repository.GetAllAsync();
 
+			var errorMessage = new ErrorMessage()
+			{
+				Message = ""
+			};
 			if (users.Any(u => u.Name == value.Name))
 			{
-				return StatusCode(500, $"User already exists");
+				errorMessage.Message = "Benutzer existiert bereits";
+				return StatusCode(500, errorMessage);
 
 			}
 
@@ -103,7 +108,9 @@ namespace ConnectFour.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred while creating a new user.");
-				return StatusCode(500, $"An error occurred while processing your request. {ex.Message}");
+				errorMessage.Message = ex.Message;
+				return StatusCode(500, errorMessage);
+
 			}
 		}
 
@@ -128,6 +135,11 @@ namespace ConnectFour.Controllers
 		{
 			var existingUser = await _repository.GetByIdAsync(id);
 
+			var errorMessage = new ErrorMessage()
+			{
+				Message = ""
+			};
+
 			if (existingUser != null)
 			{
 
@@ -144,13 +156,15 @@ namespace ConnectFour.Controllers
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, "An error occurred while updating the user with ID {UserId}.", id);
-					return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
+					errorMessage.Message = ex.Message;
+					return StatusCode(500, errorMessage);
 				}
 
 			}
 			else
 			{
-				return StatusCode(500, "No User found with this id");
+				errorMessage.Message = "No User found with this id";
+				return StatusCode(500, errorMessage);
 
 			}
 		}
@@ -175,6 +189,11 @@ namespace ConnectFour.Controllers
 		[HttpPost("registeremail")]
 		public async Task<IActionResult> RegisterEmail(string email)
 		{
+			var errorMessage = new ErrorMessage()
+			{
+				Message = ""
+			};
+
 			var users = await _repository.GetAllAsync();
 
 			var user = users.FirstOrDefault(x => x.Email == email);
@@ -182,6 +201,7 @@ namespace ConnectFour.Controllers
 			{
 				_logger.LogError($"No existing user with email {email}");
 				return BadRequest("No existing user with this email address.");
+				
 			}
 			if (user.Authenticated)
 			{
