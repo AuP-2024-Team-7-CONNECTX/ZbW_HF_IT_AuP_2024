@@ -3,7 +3,9 @@ using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto.Generators;
+using System.Numerics;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Text;
@@ -19,6 +21,8 @@ namespace ConnectFour.Controllers
 		private readonly ITokenService _tokenService;
 		private readonly IEmailSender _emailService;
 
+		private JsonResponseMessage _responseJson;
+
 		public UserController(IUserRepository repository, ILogger<UserController> logger, ITokenService tokenService, IEmailSender emailService)
 		{
 			ArgumentNullException.ThrowIfNull(repository, nameof(repository));
@@ -26,6 +30,8 @@ namespace ConnectFour.Controllers
 			_logger = logger;
 			_tokenService = tokenService;
 			_emailService = emailService;
+
+			_responseJson = new JsonResponseMessage();
 		}
 
 
@@ -42,7 +48,8 @@ namespace ConnectFour.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred while fetching all users.");
-				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
+				_responseJson.Message = $"{ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 
@@ -55,7 +62,8 @@ namespace ConnectFour.Controllers
 				var user = await _repository.GetByIdAsync(id);
 				if (user == null)
 				{
-					return NotFound("User not found.");
+					_responseJson.Message = $"User {user.Id} not found.";
+					return StatusCode(400, _responseJson);
 				}
 
 				var userResponse = new UserResponse(user.Id, user.Name, user.Email, user.Password, user.Authenticated);
@@ -64,28 +72,23 @@ namespace ConnectFour.Controllers
 			catch (Exception ex)
 			{
 				// Log the exception details for debugging purposes
-				_logger.LogError(ex, "An error occurred while fetching the user with ID {UserId}.", id);
-
-				// Return a generic error message to the client
-				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
+				_logger.LogError(ex, $"An error occurred while processing your request. {ex.Message}", id);
+				_responseJson.Message = $"{ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 
 		// POST api/Users
 		[HttpPost]
-		//[EnableCors("AllowAllCorsPolicy")]
 		public async Task<ActionResult<UserResponse>> Post(UserRequest value)
 		{
 			var users = await _repository.GetAllAsync();
 
-			var errorMessage = new ErrorMessage()
-			{
-				Message = ""
-			};
+
 			if (users.Any(u => u.Name == value.Name))
 			{
-				errorMessage.Message = "Benutzer existiert bereits";
-				return StatusCode(500, errorMessage);
+				_responseJson.Message = "Benutzer existiert bereits";
+				return StatusCode(500, _responseJson);
 
 			}
 
@@ -108,66 +111,48 @@ namespace ConnectFour.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred while creating a new user.");
-				errorMessage.Message = ex.Message;
-				return StatusCode(500, errorMessage);
+				_responseJson.Message = ex.Message;
+				return StatusCode(500, _responseJson);
 
 			}
 		}
 
-		private string HashPassword(string password)
-		{
-			using (SHA256 sha256Hash = SHA256.Create())
-			{
-				byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
 
-				StringBuilder builder = new StringBuilder();
-				for (int i = 0; i < bytes.Length; i++)
-				{
-					builder.Append(bytes[i].ToString("x2"));
-				}
-				return builder.ToString();
-			}
-		}
+		//// PUT api/Users/{id}
+		//[HttpPut("{id}")]
+		//public async Task<ActionResult> Put(string id, UserRequest value)
+		//{
+		//	var existingUser = await _repository.GetByIdAsync(id);
 
-		// PUT api/Users/{id}
-		[HttpPut("{id}")]
-		public async Task<ActionResult> Put(string id, UserRequest value)
-		{
-			var existingUser = await _repository.GetByIdAsync(id);
 
-			var errorMessage = new ErrorMessage()
-			{
-				Message = ""
-			};
+		//	if (existingUser != null)
+		//	{
 
-			if (existingUser != null)
-			{
+		//		try
+		//		{
+		//			existingUser.Name = value.Name;
+		//			existingUser.Email = value.Email;
+		//			existingUser.Authenticated = value.Authenticated;
+		//			existingUser.Password = value.Password;
 
-				try
-				{
-					existingUser.Name = value.Name;
-					existingUser.Email = value.Email;
-					existingUser.Authenticated = value.Authenticated;
-					existingUser.Password = value.Password;
+		//			await _repository.CreateOrUpdateAsync(existingUser);
+		//			return NoContent();
+		//		}
+		//		catch (Exception ex)
+		//		{
+		//			_logger.LogError(ex, "An error occurred while updating the user with ID {UserId}.", id);
+		//			_responseJson.Message = ex.Message;
+		//			return StatusCode(500, _responseJson);
+		//		}
 
-					await _repository.CreateOrUpdateAsync(existingUser);
-					return NoContent();
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "An error occurred while updating the user with ID {UserId}.", id);
-					errorMessage.Message = ex.Message;
-					return StatusCode(500, errorMessage);
-				}
+		//	}
+		//	else
+		//	{
+		//		_responseJson.Message = "Kein Benutzer mit dieser Id gefunden";
+		//		return StatusCode(500, _responseJson);
 
-			}
-			else
-			{
-				errorMessage.Message = "No User found with this id";
-				return StatusCode(500, errorMessage);
-
-			}
-		}
+		//	}
+		//}
 
 		// DELETE /Users/{id}
 		[HttpDelete("{id}")]
@@ -189,27 +174,21 @@ namespace ConnectFour.Controllers
 		[HttpPost("registeremail")]
 		public async Task<IActionResult> RegisterEmail(string email)
 		{
-			var errorMessage = new ErrorMessage()
-			{
-				Message = ""
-			};
 
 			var users = await _repository.GetAllAsync();
 
 			var user = users.FirstOrDefault(x => x.Email == email);
 			if (user == null)
 			{
-				_logger.LogError($"No existing user with email {email}");
-				return BadRequest("No existing user with this email address.");
-				
+				_responseJson.Message = $"Kein Benutzer mit Mail: {email} gefunden";
+				return StatusCode(400, _responseJson);
+
 			}
 			if (user.Authenticated)
 			{
-				_logger.LogInformation($"User {user.Id} already authenticated.");
-				return BadRequest("This user is already authenticated.");
+				_responseJson.Message = $"User {user.Id} bereits verifiziert.";
+				return StatusCode(400, _responseJson);
 			}
-
-			await _repository.CreateOrUpdateAsync(user);
 
 			var verificationUrl = $"https://connectx.mon3y.ch/Bestatigung/bestatigung.html?email={Uri.EscapeDataString(email)}";
 
@@ -219,11 +198,12 @@ namespace ConnectFour.Controllers
 			if (emailResult)
 			{
 				_logger.LogInformation("Verification email sent successfully.");
-				return Ok("Verification email sent successfully. Please check your email to confirm.");
+				_responseJson.Message = "Verifizierungsmail erfolgreich versendet. Bitte prüfen sie ihren Posteingang";
+				return StatusCode(200, _responseJson);
 			}
 
-			_logger.LogError("Failed to send verification email.");
-			return StatusCode(500, "Failed to send verification email.");
+			_responseJson.Message = "Fehler beim Mailversand. Bitte Logs oder Konsole überprüfen";
+			return StatusCode(500, _responseJson);
 		}
 
 
@@ -239,52 +219,76 @@ namespace ConnectFour.Controllers
 
 				if (existingUser == null)
 				{
-					_logger.LogError($"no existing user with mail {email}");
-					return BadRequest($"no existing user with mail  {email}");
+					_responseJson.Message = $"Kein Benutzer mit Mail: {email} gefunden";
+					return StatusCode(400, _responseJson);
+
 				}
 				if (existingUser.Authenticated)
 				{
-					_logger.LogInformation($"user {existingUser.Id}, {existingUser.Name}, {existingUser.Email} already authenticated");
-					return BadRequest($"user {existingUser.Id}, {existingUser.Name}, {existingUser.Email} already authenticated");
+					_responseJson.Message = $"User {email} bereits verifiziert.";
+					return StatusCode(400, _responseJson);
 				}
 
 				existingUser.Authenticated = true;
 
 				await _repository.CreateOrUpdateAsync(existingUser);
-				return Ok("Email confirmed. User can log in now");
+				_responseJson.Message = $"Email wurde verifiziert. Sie können sich nun einloggen!";
+				return StatusCode(200, _responseJson);
 
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, $"Internal server error: {ex.Message}");
+				_responseJson.Message = ex.Message;
+				return StatusCode(500, _responseJson);
 			}
 		}
 
 		// POST: /User/changepassword
 		[HttpPost("changepassword")]
-		//[EnableCors("AllowAllCorsPolicy")]
 		public async Task<IActionResult> ChangePassword(string email, string newPassword)
 		{
 			try
 			{
 				var users = await _repository.GetAllAsync();
 
+
 				var existingUser = users.FirstOrDefault(x => x.Email == email);
 
 				if (existingUser == null)
 				{
-					_logger.LogError($"no existing user with mail {email}");
-					return BadRequest($"no existing user with mail  {email}");
+					_responseJson.Message = $"Kein Benutzer mit Mail: {email} gefunden";
+					return StatusCode(400, _responseJson);
 				}
 
-				existingUser.Password = newPassword;
+				var hashedPassword = HashPassword(newPassword);
+
+
+				existingUser.Password = hashedPassword;
 				await _repository.CreateOrUpdateAsync(existingUser);
 
-				return Ok("Password changed.");
+				_responseJson.Message = "Passwort konnte erfolgreich geändert werden";
+				return StatusCode(200, _responseJson);
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, $"Internal server error: {ex.Message}");
+				_responseJson.Message = ex.Message;
+				return StatusCode(500, _responseJson);
+			}
+		}
+
+
+		private string HashPassword(string password)
+		{
+			using (SHA256 sha256Hash = SHA256.Create())
+			{
+				byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+				StringBuilder builder = new StringBuilder();
+				for (int i = 0; i < bytes.Length; i++)
+				{
+					builder.Append(bytes[i].ToString("x2"));
+				}
+				return builder.ToString();
 			}
 		}
 	}

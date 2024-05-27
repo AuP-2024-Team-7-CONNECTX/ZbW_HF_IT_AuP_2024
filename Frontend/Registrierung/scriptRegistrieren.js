@@ -41,34 +41,55 @@ document
           "Registrierung erfolgreich! Sie erhalten ein Mail zur Registrierung!"
         );
 
-        const responseRegisterEmail = await fetch(
-          `${endpoint}/User/registeremail?email=${email}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "text/plain",
-            },
-            mode: "cors",
-          }
-        );
-        if (response.ok) {
-          console.log(response.message);
-        } else {
-          const error = await response.json();
-          alert("Unbekannter Fehler beim Email-Versand:" + error.message);
-        }
+        await sendRegistrationEmail(email);
+
+        // Aufruf der Funktion zum Senden der Registrierungs-E-Mail
       } else {
         const error = await response.json();
-
-        alert(
-          "Unbekannter Fehler beim der Benutzer-Registrierung:" + error.message
-        );
+        alert("Fehler bei der Registrierung: " + error.message);
       }
     } catch (error) {
-      console.error("Fehler bei der Registrierung:", error.message);
+      console.error("Fehler bei der Registrierung: ", error.message);
       alert("Ein Fehler ist aufgetreten: " + error.message);
     }
   });
+
+document
+  .getElementById("resend-email")
+  .addEventListener("click", async function (event) {
+    event.preventDefault(); // Verhindert das Standardverhalten des Buttons
+
+    var email = document.getElementById("email").value;
+    await sendRegistrationEmail(email);
+  });
+
+async function sendRegistrationEmail(email) {
+  try {
+    const response = await fetch(
+      `${endpoint}/User/registeremail?email=${email}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+        },
+        mode: "cors",
+      }
+    );
+    if (response.ok) {
+      console.log("Registrierungs-E-Mail wurde erfolgreich gesendet.");
+      alert("Registrierungs-E-Mail wurde erfolgreich gesendet.");
+    } else {
+      const error = await response.json();
+      alert("Fehler beim Email-Versand: " + error.message);
+    }
+  } catch (error) {
+    console.error(
+      "Fehler beim Versand der Registrierungs-E-Mail: ",
+      error.message
+    );
+    alert("Ein Fehler ist aufgetreten: " + error.message);
+  }
+}
 
 function validateEmail(email) {
   var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;

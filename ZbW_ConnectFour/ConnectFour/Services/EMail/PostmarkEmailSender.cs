@@ -24,7 +24,16 @@ public class PostmarkEmailSender : IEmailSender
 			TrackOpens = true
 		};
 
-		var response = await client.SendMessageAsync(message);
-		return response.Status == PostmarkStatus.Success;
+		var success = false;
+		try
+		{
+			var response = await client.SendMessageAsync(message);
+			return response.Status == PostmarkStatus.Success;
+		}
+		catch
+		{
+			return false;
+		}
+		
 	}
 }

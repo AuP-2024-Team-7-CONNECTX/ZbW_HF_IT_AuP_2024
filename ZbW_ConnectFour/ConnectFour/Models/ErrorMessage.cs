@@ -1,6 +1,6 @@
 ﻿namespace ConnectFour.Models
 {
-	public class ErrorMessage
+	public class JsonResponseMessage
 	{
 		public string Message { get; set; }
 	}

@@ -12,25 +12,28 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-function confirmEmail(email) {
+async function confirmEmail(email) {
   const fullEndpoint = `${endpoint}/User/confirmEmail?email=${email}`;
 
-  fetch(fullEndpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain",
-    },
-    mode: "cors",
-  })
-    .then((response) => {
-      if (response.ok) {
-        alert("Email wurde verifiziert. Sie können sich jetzt einloggen!");
-        window.location.href = "../Login/login.html";
-      } else {
-        throw new Error("Failed to verify email.");
-      }
-    })
-    .catch((error) => {
-      alert("Verification failed: " + error.message);
+  try {
+    const response = await fetch(fullEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
     });
+
+    if (response.ok) {
+      const data = await response.json(); // Antwort als JSON parsen
+
+      alert("Email wurde verifiziert. Sie können sich jetzt einloggen!");
+      window.location.href = "../Login/login.html";
+    } else {
+      const error = await response.json();
+      throw new Error("Failed to verify email: " + error.message);
+    }
+  } catch (error) {
+    alert("Verification failed: " + error.message);
+  }
 }
