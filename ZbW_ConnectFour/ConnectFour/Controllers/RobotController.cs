@@ -39,7 +39,9 @@ namespace ConnectFour.Controllers
 					Name = robot.Name,
 					IsConnected = robot.IsConnected,
 					Color = robot.Color,
-					IsIngame = robot.IsIngame
+					IsIngame = robot.IsIngame,
+					BrokerAddress = robot.BrokerAddress,
+					BrokerPort = robot.BrokerPort,
 				}).ToList();
 
 				return Ok(robotResponses);
@@ -72,7 +74,9 @@ namespace ConnectFour.Controllers
 					IsConnected = robot.IsConnected,
 					Name = robot.Name,
 					Color = robot.Color,
-					IsIngame = robot.IsIngame
+					IsIngame = robot.IsIngame,
+					BrokerAddress = robot.BrokerAddress,
+					BrokerPort = robot.BrokerPort,
 				};
 
 				return Ok(robotResponse);
@@ -119,6 +123,8 @@ namespace ConnectFour.Controllers
 					IsConnected = newRobot.IsConnected,
 					Color = newRobot.Color,
 					IsIngame = newRobot.IsIngame,
+					BrokerAddress = newRobot.BrokerAddress,
+					BrokerPort = newRobot.BrokerPort,
 				});
 			}
 			catch (Exception ex)
