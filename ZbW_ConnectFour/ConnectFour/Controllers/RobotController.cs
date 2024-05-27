@@ -2,6 +2,9 @@
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using static ConnectFour.Enums.Enum;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ConnectFour.Controllers
 {
@@ -12,11 +15,14 @@ namespace ConnectFour.Controllers
 		private readonly IRobotRepository _repository;
 		private readonly ILogger<RobotController> _logger;
 
+		private JsonResponseMessage _responseJson;
+
 		public RobotController(IRobotRepository repository, ILogger<RobotController> logger)
 		{
-			ArgumentNullException.ThrowIfNull(repository, nameof(repository));
 			_repository = repository;
 			_logger = logger;
+
+			_responseJson = new JsonResponseMessage();
 		}
 
 		// GET: api/Robots
@@ -40,8 +46,9 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while fetching all robots.{ex.Message}");
-				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
+				_logger.LogError(ex, $"An error occurred while fetching all robots. {ex.Message}");
+				_responseJson.Message = $"An error occurred while processing your request. {ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 
@@ -54,7 +61,8 @@ namespace ConnectFour.Controllers
 				var robot = await _repository.GetByIdAsync(id);
 				if (robot == null)
 				{
-					return NotFound("Robot not found.");
+					_responseJson.Message = "Robot not found.";
+					return NotFound(_responseJson);
 				}
 
 				var robotResponse = new RobotResponse
@@ -71,8 +79,9 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occurred while fetching the robot with ID {RobotId}.", id);
-				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
+				_logger.LogError(ex, $"An error occurred while fetching the robot with ID {id}. {ex.Message}");
+				_responseJson.Message = $"An error occurred while processing your request. {ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 
@@ -80,10 +89,11 @@ namespace ConnectFour.Controllers
 		[HttpPost]
 		public async Task<ActionResult<RobotResponse>> Post(RobotRequest robotRequest)
 		{
-			if (!Enum.TryParse<ConnectFourColor>(robotRequest.Color, out var color))
-			{
-				return StatusCode(500, "Invalid value for Color");
-			}
+			//if (!Enum.TryParse<ConnectFourColor>(robotRequest.Color, out var color))
+			//{
+			//	_responseJson.Message = "Invalid value for Color";
+			//	return StatusCode(500, _responseJson);
+			//}
 
 			try
 			{
@@ -93,8 +103,8 @@ namespace ConnectFour.Controllers
 					CurrentPlayerId = robotRequest.CurrentPlayerId,
 					Name = robotRequest.Name,
 					IsConnected = robotRequest.IsConnected,
-					Color = color,
-					IsIngame = false, // Initial false, robots wont be ingame upon creation
+					Color = null,
+					IsIngame = false, // Initial false, robots won't be ingame upon creation
 					BrokerAddress = robotRequest.BrokerAddress,
 					BrokerPort = robotRequest.BrokerPort,
 				};
@@ -109,13 +119,13 @@ namespace ConnectFour.Controllers
 					IsConnected = newRobot.IsConnected,
 					Color = newRobot.Color,
 					IsIngame = newRobot.IsIngame,
-
 				});
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred while creating a new robot.");
-				return StatusCode(500, $"An error occurred while processing your request. {ex.Message}");
+				_responseJson.Message = $"An error occurred while processing your request. {ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 
@@ -128,7 +138,8 @@ namespace ConnectFour.Controllers
 				var robotToUpdate = await _repository.GetByIdAsync(id);
 				if (robotToUpdate == null)
 				{
-					return NotFound("Robot not found.");
+					_responseJson.Message = "Robot not found.";
+					return NotFound(_responseJson);
 				}
 
 				robotToUpdate.CurrentPlayerId = robotRequest.CurrentPlayerId;
@@ -137,7 +148,8 @@ namespace ConnectFour.Controllers
 
 				if (!Enum.TryParse<ConnectFourColor>(robotRequest.Color, out var color))
 				{
-					return StatusCode(500, "Invalid value for Color");
+					_responseJson.Message = "Invalid value for Color";
+					return StatusCode(500, _responseJson);
 				}
 
 				robotToUpdate.Color = color;
@@ -149,8 +161,9 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occurred while updating the robot with ID {RobotId}.", id);
-				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
+				_logger.LogError(ex, $"An error occurred while updating the robot with ID {id}. {ex.Message}");
+				_responseJson.Message = $"An error occurred while processing your request. {ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 
@@ -163,7 +176,8 @@ namespace ConnectFour.Controllers
 				var robotToDelete = await _repository.GetByIdAsync(id);
 				if (robotToDelete == null)
 				{
-					return NotFound("Robot not found.");
+					_responseJson.Message = "Robot not found.";
+					return NotFound(_responseJson);
 				}
 
 				await _repository.DeleteAsync<Robot>(robotToDelete.Id);
@@ -172,8 +186,9 @@ namespace ConnectFour.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occurred while deleting the robot with ID {RobotId}.", id);
-				return StatusCode(500, $"An error occurred while processing your request.{ex.Message}");
+				_logger.LogError(ex, $"An error occurred while deleting the robot with ID {id}. {ex.Message}");
+				_responseJson.Message = $"An error occurred while processing your request. {ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 	}

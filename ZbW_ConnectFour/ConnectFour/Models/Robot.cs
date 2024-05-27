@@ -13,7 +13,7 @@ namespace ConnectFour.Models
 
 		public bool IsConnected { get; set; }
 
-		public ConnectFourColor Color { get; set; }
+		public ConnectFourColor? Color { get; set; }
 
 		public bool IsIngame { get; set; }
 

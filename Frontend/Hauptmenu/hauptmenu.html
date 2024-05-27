@@ -5,9 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hauptmenü</title>
     <link rel="stylesheet" href="hauptmenu.css" />
+    <script defer src="hauptmenu.js"></script>
     <script src="../config.js"></script>
+    <script src="../localStorage.js"></script>
+    <link rel="stylesheet" href="../localStorage.css" />
   </head>
   <body>
+    <div id="user-info"></div>
+
     <section>
       <div class="menu-box">
         <h2>Hauptmenü</h2>
@@ -28,19 +33,29 @@
           </a>
         </div>
         <div class="menu-option">
-          <a href="../Roboterverwaltung/roboterverwaltung.html">
+          <a href="../Roboterverwaltung/roboterVerwaltung.html">
             <span class="icon"
               ><ion-icon name="construct-outline"></ion-icon
             ></span>
             Roboterverwaltung
           </a>
         </div>
+
         <div class="menu-option">
-          <button id="check-endpoint" onclick="logHealthCheck()">
+          <a href="../PasswortZurucksetzen/PasswortZurucksetzen.html">
             <span class="icon"
-              ><ion-icon name="checkmark-circle-outline"></ion-icon
+              ><ion-icon name="construct-outline"></ion-icon
             ></span>
-            Check Endpoint
+            Passwort ändern
+          </a>
+        </div>
+
+        <div class="menu-option">
+          <button id="logout-button">
+            <span class="icon"
+              ><ion-icon name="construct-outline"></ion-icon
+            ></span>
+            Abmelden
           </button>
         </div>
       </div>
@@ -55,26 +70,5 @@
       nomodule
       src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
     ></script>
-    <script>
-      // Stellen Sie sicher, dass die Variable endpoint in config.js definiert ist
-
-      async function logHealthCheck() {
-        try {
-          const response = await fetch(`${endpoint}/HealthCheck`, {
-            method: "GET",
-            mode: "cors", // oder "no-cors", wenn notwendig
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            console.log("Health check passed:", data);
-          } else {
-            console.error("Health check failed:", response.statusText);
-          }
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      }
-    </script>
   </body>
 </html>

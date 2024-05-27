@@ -10,7 +10,7 @@ public class RobotRequestExample : IExamplesProvider<RobotRequest>
 			CurrentPlayerId = null,
 			IsConnected = true,
 			IsIngame = false,
-			Color = "Red",
+			Color = null,
 			Name = "Röbby",
 			BrokerAddress = "mqtt.mon3y.ch",
 			BrokerPort = 1883

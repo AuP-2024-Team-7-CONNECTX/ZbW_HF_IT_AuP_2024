@@ -1,18 +1,41 @@
-document.getElementById('reset-password-form').addEventListener('submit', function(event) {
+document
+  .getElementById("reset-password-form")
+  .addEventListener("submit", async function (event) {
     event.preventDefault(); // Verhindert das Standardverhalten des Formulars, also das Neuladen der Seite.
 
-    var email = document.getElementById('email').value;
+    var email = document.getElementById("email").value;
 
-    // Einfache Überprüfung der E-Mail-Adresse auf Gültigkeit
-    if (!validateEmail(email)) {
-        alert("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
-        return;
+    try {
+      const response = await fetch(`${endpoint}/User/${email}`, {
+        // Setze hier deinen API-Endpunkt ein
+        method: "GET",
+        mode: "cors",
+      });
+
+      if (response.ok) {
+        const users = await response.json();
+        console.log("Fetched users:", users);
+
+        const hashedPassword = await hashPassword(password);
+
+        const user = users.find(
+          (user) => user.email === email && user.password === hashedPassword
+        );
+
+        if (user && user.authenticated) {
+          console.log("Erfolg:", user);
+          window.location.href = "../Hauptmenu/hauptmenu.html"; // Anpassen an Ihre tatsächliche Zielseite
+        } else if (user && !user.authenticated) {
+          alert("Login fehlgeschlagen: Benutzer nicht authentifiziert");
+        } else {
+          alert(
+            "Login fehlgeschlagen: Benutzer nicht gefunden oder falsches Passwort"
+          );
+        }
+      } else {
+        console.error("Failed to fetch users:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
     }
-
-    alert('Ein Link zum Zurücksetzen Ihres Passworts wurde gesendet. Bitte überprüfen Sie Ihr E-Mail-Postfach.');
-});
-
-function validateEmail(email) {
-    var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    return regex.test(email);
-}
+  });

@@ -62,7 +62,7 @@ namespace ConnectFour.Controllers
 				var user = await _repository.GetByIdAsync(id);
 				if (user == null)
 				{
-					_responseJson.Message = $"User {user.Id} not found.";
+					_responseJson.Message = $"Benutzer {id} konnte nicht gefunden werden.";
 					return StatusCode(400, _responseJson);
 				}
 

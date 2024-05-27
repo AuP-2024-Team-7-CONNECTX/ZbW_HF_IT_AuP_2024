@@ -33,9 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (user && user.authenticated) {
           console.log("Erfolg:", user);
+          localStorage.setItem("user", JSON.stringify(user));
           window.location.href = "../Hauptmenu/hauptmenu.html"; // Anpassen an Ihre tatsächliche Zielseite
         } else if (user && !user.authenticated) {
-          alert("Login fehlgeschlagen: Benutzer nicht authentifiziert");
+          alert("Login fehlgeschlagen: Benutzer nicht verifiziert");
         } else {
           alert(
             "Login fehlgeschlagen: Benutzer nicht gefunden oder falsches Passwort"
