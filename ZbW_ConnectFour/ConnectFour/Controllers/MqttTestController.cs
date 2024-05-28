@@ -1,4 +1,5 @@
-﻿using ConnectFour.Mqtt;
+﻿using ConnectFour.Models;
+using ConnectFour.Mqtt;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace ConnectFour.Controllers
 	{
 		private readonly IMqttService _mqttService;
 		private readonly ILogger<MqttTestController> _mqttTestController;
+		private JsonResponseMessage _responseJson;
 
 		public MqttTestController(IMqttService mqttService, ILogger<MqttTestController> mqttTestController)
 		{
@@ -19,49 +21,28 @@ namespace ConnectFour.Controllers
 			_mqttTestController = mqttTestController;
 		}
 
-		[HttpPost("MqttTestComplete")]
-		[EnableCors("AllowAll")] // Erlaubt den Zugriff für alle Herkunftsorte
-		public async Task<IActionResult> MqttTestComplete()
+		[HttpPost("MqttConnectToBrokerAndTopic")]
+		public async Task<IActionResult> MqttConnectToBrokerAndTopic([FromBody] MqttRequest request)
 		{
 			try
 			{
-				string brokerAddress = "mqtt.mon3y.ch";
-				string port = "1883";
-				string topic = "MS3Test";
-				await _mqttService.ConnectToNewBrokerAsync(brokerAddress, port, "foo", "foo");
-				await _mqttService.SubscribeAsync(topic);
+				await _mqttService.ConnectToNewBrokerAsync(request.BrokerAddress, request.Port, "foo", "foo");
+				await _mqttService.SubscribeAsync(request.Topic);
 				await _mqttService.RegisterTestConsoleLog();
 
-				// Setze CORS-Header in der Antwort
-				Response.Headers.Add("Access-Control-Allow-Origin", "*"); // Erlaubt den Zugriff von allen Herkunftsorten
-				Response.Headers.Add("Access-Control-Allow-Methods", "GET"); // Erlaubt POST-Anfragen
-				Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type"); // Erlaubt bestimmte Header
-				
-				return Ok($"Connect / subscribe to broker {brokerAddress}:{port}/{topic} was successful. Please publish something on your broker");
+				_responseJson.Message = $"Verbindung zu Mqtt-Broker {request.BrokerAddress}:{request.Port}/{request.Topic} war erfolgreich";
+				return StatusCode(200, _responseJson);
+
 			}
 			catch (Exception ex)
 			{
-				_mqttTestController.LogInformation($"Failed to connect to MQTT broker: {ex.Message}");
-				_mqttTestController.LogError($"Failed to connect to MQTT broker: {ex.Message}");
-				return StatusCode(500, $"Failed to connect to MQTT broker: {ex.Message}");
+				_mqttTestController.LogInformation($"Fehler beim Verbinden zu Mqtt-Broker: {request.BrokerAddress}:{request.Port}/{request.Topic} {ex.Message}");
+				_mqttTestController.LogError($"Fehler beim Verbinden zu Mqtt-Broker: {request.BrokerAddress}:{request.Port}/{request.Topic} {ex.Message}");
+				_responseJson.Message = $"Fehler beim Verbinden zu Mqtt-Broker: {request.BrokerAddress}:{request.Port}/{request.Topic} {ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 
-		[HttpPost("MqttConnect")]
-		public async Task<IActionResult> MqttConnect()
-		{
-			try
-			{
-				string brokerAddress = "test.mosquitto.org";
-				string port = "1883";
-				await _mqttService.ConnectToNewBrokerAsync(brokerAddress,port,"foo","foo");
-				return Ok($"Connected to MQTT broker {brokerAddress}:{port} successfully.");
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"Failed to connect to MQTT broker: {ex.Message}");
-			}
-		}
 
 		[HttpPost("MqttSubscribe")]
 		public async Task<IActionResult> MqttSubscribe(string topic)
@@ -75,21 +56,6 @@ namespace ConnectFour.Controllers
 			catch (Exception ex)
 			{
 				return StatusCode(500, $"Failed to subscribe to MQTT topic '{topic}': {ex.Message}");
-			}
-		}
-
-		[HttpPost("MqttRegisterConsoleLogging")]
-		public async Task<IActionResult> TestConsoleLog()
-		{
-			try
-			{
-				await _mqttService.RegisterTestConsoleLog();
-
-				return Ok($"register console loggin was successful");
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"Failed to register console logging");
 			}
 		}
 

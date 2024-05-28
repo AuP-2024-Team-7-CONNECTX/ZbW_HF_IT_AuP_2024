@@ -13,12 +13,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 });
 
-document.getElementById("logout-button").addEventListener("click", function () {
-  localStorage.removeItem("user");
-  localStorage.removeItem("robot");
-  window.location.href = "../Login/login.html";
-});
-
 async function setLocalStorageRobot(user) {
   try {
     const response = await fetch(`${endpoint}/Robot`, {

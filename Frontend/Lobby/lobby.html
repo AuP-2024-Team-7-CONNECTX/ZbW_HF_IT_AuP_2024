@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spielelobby</title>
+    <link rel="stylesheet" href="styleLobby.css" />
+    <script defer src="scriptLobby.js"></script>
+    <script src="../config.js"></script>
+    <script src="../localStorage.js"></script>
+    <link rel="stylesheet" href="../localStorage.css" />
+  </head>
+  <body>
+    <div id="user-info"></div>
+
+    <div class="lobby-container">
+      <div class="user-section">
+        <h2>Dein Roboter</h2>
+        <div id="robot-info-lobby-own"></div>
+      </div>
+
+      <div class="opponents-section">
+        <h2>Verfügbare Gegenspieler</h2>
+        <div id="robot-info-lobby-opponents"></div>
+
+        <div id="opponents-list"></div>
+      </div>
+    </div>
+
+    <button
+      id="back-button"
+      class="subtle-button"
+      type="button"
+      onclick="goToMainMenu()"
+    >
+      <span class="icon"><ion-icon name="arrow-back-outline"></ion-icon></span>
+      Zurück zum Hauptmenü
+    </button>
+  </body>
+</html>

@@ -1,51 +1,58 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vier gewinnt - Spieler an der Reihe</title>
-    <link rel="stylesheet" href="styleSpielfeld.css">
-</head>
-<body>
-    <div class="container">
-        <div class="info-and-game">
-            <div id="red-info" class="info-box rot">
-                <h2>Spielername 1</h2>
-                <p>Zeit pro Zug: <span id="red-time-move">0</span> Sekunden</p>
-                <p>Gesamtzeit: <span id="red-time-total">0</span> Sekunden</p>
-                <p>Übrige Spielsteine: <span id="red-remaining">21</span></p>
-            </div>
-
-            <div class="game-area">
-                <div id="current-player-info" class="current-player">
-                    <h1 id="current-player-title">Spieler an der Reihe: </h1>
-                </div>
-
-                <div class="game-container">
-                    <!-- 7 Spalten -->
-                    <div class="column" data-column="0"></div>
-                    <div class="column" data-column="1"></div>
-                    <div class="column" data-column="2"></div>
-                    <div class="column" data-column="3"></div>
-                    <div class="column" data-column="4"></div>
-                    <div class="column" data-column="5"></div>
-                    <div class="column" data-column="6"></div>
-                </div>
-            </div>
-
-            <div id="blue-info" class="info-box blau">
-                <h2>Spielername 2</h2>
-                <p>Zeit pro Zug: <span id="blue-time-move">0</span> Sekunden</p>
-                <p>Gesamtzeit: <span id="blue-time-total">0</span> Sekunden</p>
-                <p>Übrige Spielsteine: <span id="blue-remaining">21</span></p>
-            </div>
-        </div>
-        <div class="buttons">
-            <button id="restart-button" class="button" style="display: none;">Nochmals spielen</button>
-            <button id="new-opponent-button" class="button" style="display: none;">Neuen Gegner auswählen</button>
-        </div>
-    </div>
-
+    <link rel="stylesheet" href="styleSpielfeld.css" />
     <script src="scriptSpielfeld.js"></script>
-</body>
+    <script src="../config.js"></script>
+    <script src="../localStorage.js"></script>
+    <link rel="stylesheet" href="../localStorage.css" />
+  </head>
+  <body>
+    <div id="user-info"></div>
+    <div class="container">
+      <div class="info-and-game">
+        <div id="red-info" class="info-box rot">
+          <h2>Spielername 1</h2>
+          <p>Zeit pro Zug: <span id="red-time-move">0</span> Sekunden</p>
+          <p>Gesamtzeit: <span id="red-time-total">0</span> Sekunden</p>
+          <p>Übrige Spielsteine: <span id="red-remaining">21</span></p>
+        </div>
+
+        <div class="game-area">
+          <div id="current-player-info" class="current-player">
+            <h1 id="current-player-title">Spieler an der Reihe:</h1>
+          </div>
+
+          <div class="game-container">
+            <!-- 7 Spalten -->
+            <div class="column" data-column="0"></div>
+            <div class="column" data-column="1"></div>
+            <div class="column" data-column="2"></div>
+            <div class="column" data-column="3"></div>
+            <div class="column" data-column="4"></div>
+            <div class="column" data-column="5"></div>
+            <div class="column" data-column="6"></div>
+          </div>
+        </div>
+
+        <div id="blue-info" class="info-box blau">
+          <h2>Spielername 2</h2>
+          <p>Zeit pro Zug: <span id="blue-time-move">0</span> Sekunden</p>
+          <p>Gesamtzeit: <span id="blue-time-total">0</span> Sekunden</p>
+          <p>Übrige Spielsteine: <span id="blue-remaining">21</span></p>
+        </div>
+      </div>
+      <div class="buttons">
+        <button id="restart-button" class="button" style="display: none">
+          Nochmals spielen
+        </button>
+        <button id="new-opponent-button" class="button" style="display: none">
+          Neuen Gegner auswählen
+        </button>
+      </div>
+    </div>
+  </body>
 </html>

@@ -5,6 +5,7 @@ using static ConnectFour.Enums.Enum;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Routing;
 
 namespace ConnectFour.Controllers
 {
@@ -93,11 +94,14 @@ namespace ConnectFour.Controllers
 		[HttpPost]
 		public async Task<ActionResult<RobotResponse>> Post(RobotRequest robotRequest)
 		{
-			//if (!Enum.TryParse<ConnectFourColor>(robotRequest.Color, out var color))
-			//{
-			//	_responseJson.Message = "Invalid value for Color";
-			//	return StatusCode(500, _responseJson);
-			//}
+			var existingRobots = await _repository.GetAllAsync();
+
+			if (existingRobots.Any(r => r.Name == robotRequest.Name))
+			{
+				_logger.LogError($"Ein Roboter mit diesem Namen({robotRequest.Name}) existiert bereits");
+				_responseJson.Message = $"Ein Roboter mit diesem Namen ({robotRequest.Name}) existiert bereits";
+				return StatusCode(500, _responseJson);
+			}
 
 			try
 			{

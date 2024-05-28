@@ -59,18 +59,18 @@ namespace ConnectFour.GameControllers
 			ChangeIsIngameState(true, GameState.InProgress);
 
 			// First turn is decided randomly
-			var beginner = random.Next(0, 2);
+			//var beginner = _currentMove.User;
 
-			if (beginner == 0)
-			{
-				_currentMove.Robot = _robot1;
-				_currentMove.User = _User1;
-			}
-			else
-			{
-				_currentMove.Robot = _robot2;
-				_currentMove.User = _User2;
-			}
+			//if (beginner == 0)
+			//{
+			//	_currentMove.Robot = _robot1;
+			//	_currentMove.User = _User1;
+			//}
+			//else
+			//{
+			//	_currentMove.Robot = _robot2;
+			//	_currentMove.User = _User2;
+			//}
 			await _moveRepository.CreateOrUpdateAsync(_currentMove);
 
 		}
