@@ -29,7 +29,7 @@ namespace ConnectFour.Controllers
 			{
 				string brokerAddress = "mqtt.mon3y.ch";
 				string port = "1883";
-				string topic = "feedback";
+				string topic = "ConnectX/feedback";
 				await _mqttService.ConnectToNewBrokerAsync(brokerAddress, port, "foo", "foo");
 				await _mqttService.SubscribeAsync(topic);
 				await _mqttService.RegisterTestConsoleLog();
