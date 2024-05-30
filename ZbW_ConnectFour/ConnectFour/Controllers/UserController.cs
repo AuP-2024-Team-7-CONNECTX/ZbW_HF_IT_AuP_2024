@@ -42,7 +42,7 @@ namespace ConnectFour.Controllers
 			try
 			{
 				var users = await _repository.GetAllAsync();
-				var userResponses = users.Select(x => new UserResponse(x.Id, x.Name, x.Email, x.Password, x.Authenticated,x.IsIngame));
+				var userResponses = users.Select(x => new UserResponse(x.Id, x.Name, x.Email, x.Password, x.Authenticated, x.IsIngame));
 				return Ok(userResponses);
 			}
 			catch (Exception ex)
@@ -66,7 +66,7 @@ namespace ConnectFour.Controllers
 					return StatusCode(400, _responseJson);
 				}
 
-				var userResponse = new UserResponse(user.Id, user.Name, user.Email, user.Password, user.Authenticated,user.IsIngame);
+				var userResponse = new UserResponse(user.Id, user.Name, user.Email, user.Password, user.Authenticated, user.IsIngame);
 				return Ok(userResponse);
 			}
 			catch (Exception ex)
@@ -92,9 +92,6 @@ namespace ConnectFour.Controllers
 
 			}
 
-			// password hashen, im frontend gleiche funktion dazu im frontend einbauen
-			var hashedPassword = HashPassword(value.Password);
-
 			try
 			{
 				var user = new User
@@ -102,7 +99,8 @@ namespace ConnectFour.Controllers
 					Id = Guid.NewGuid().ToString(),
 					Name = value.Name,
 					Email = value.Email,
-					Password = hashedPassword,
+					// Password is already hashed
+					Password = value.Password,
 					Authenticated = value.Authenticated
 				};
 				await _repository.CreateOrUpdateAsync(user);
@@ -258,10 +256,7 @@ namespace ConnectFour.Controllers
 					return StatusCode(400, _responseJson);
 				}
 
-				var hashedPassword = HashPassword(newPassword);
-
-
-				existingUser.Password = hashedPassword;
+				existingUser.Password = newPassword;
 				await _repository.CreateOrUpdateAsync(existingUser);
 
 				_responseJson.Message = "Passwort konnte erfolgreich geändert werden";
@@ -275,19 +270,5 @@ namespace ConnectFour.Controllers
 		}
 
 
-		private string HashPassword(string password)
-		{
-			using (SHA256 sha256Hash = SHA256.Create())
-			{
-				byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
-
-				StringBuilder builder = new StringBuilder();
-				for (int i = 0; i < bytes.Length; i++)
-				{
-					builder.Append(bytes[i].ToString("x2"));
-				}
-				return builder.ToString();
-			}
-		}
 	}
 }

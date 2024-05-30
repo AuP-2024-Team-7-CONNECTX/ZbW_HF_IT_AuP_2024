@@ -17,12 +17,14 @@ document
       return;
     }
 
+    let hashedPassword = await hashPassword(password);
+
     // Erstellen des UserRequest-Objekts
     var userRequest = {
       Name: email,
       Email: email,
       Authenticated: false, // Standardwert, da der Benutzer sich gerade registriert.
-      Password: password,
+      Password: hashedPassword,
       isIngame: false,
     };
 
@@ -103,4 +105,14 @@ function validatePassword(password) {
   var hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
   var isValidLength = password.length >= 8;
   return hasUpperCase && hasNumber && hasSpecialChar && isValidLength;
+}
+
+async function hashPassword(password) {
+  const msgUint8 = new TextEncoder().encode(password); // encode as (utf-8) Uint8Array
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8); // hash the message
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(""); // convert bytes to hex string
+  return hashHex;
 }
