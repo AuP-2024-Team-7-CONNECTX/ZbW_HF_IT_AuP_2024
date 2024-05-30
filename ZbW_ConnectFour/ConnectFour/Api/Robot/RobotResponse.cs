@@ -11,5 +11,6 @@ public record RobotResponse
 	public string Name { get; init; }
 	public string BrokerAddress { get; set; }
 	public int BrokerPort { get; set; }
+	public string BrokerTopic { get; set; }
 	public RobotResponse() { }
 }

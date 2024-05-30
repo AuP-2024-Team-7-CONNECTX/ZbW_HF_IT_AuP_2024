@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectFour.Controllers
 {
-	// This class is for testing only
+	// Diese Klasse ist nur für Tests
 
 	[ApiController]
 	[Route("[controller]")]
@@ -19,10 +19,11 @@ namespace ConnectFour.Controllers
 		{
 			_mqttService = mqttService;
 			_mqttTestController = mqttTestController;
+
+			_responseJson = new JsonResponseMessage();
 		}
 
 		[HttpPost("MqttTestComplete")]
-
 		public async Task<IActionResult> MqttTestComplete()
 		{
 			try
@@ -31,96 +32,104 @@ namespace ConnectFour.Controllers
 				string port = "1883";
 				string topic = "ConnectX/feedback";
 				await _mqttService.ConnectToNewBrokerAsync(brokerAddress, port, "foo", "foo");
-				await _mqttService.SubscribeAsync(topic);
+				await _mqttService.SubscribeAsync(brokerAddress, port, topic);
 				await _mqttService.RegisterTestConsoleLog();
 
-				return Ok($"Connect / subscribe to broker {brokerAddress}:{port}/{topic} was successful. Please publish something on your broker");
-			}
-			catch (Exception ex)
-			{
-				_mqttTestController.LogInformation($"Failed to connect to MQTT broker: {ex.Message}");
-				_mqttTestController.LogError($"Failed to connect to MQTT broker: {ex.Message}");
-				return StatusCode(500, $"Failed to connect to MQTT broker: {ex.Message}");
-			}
-		}
-
-		[HttpPost("MqttConnectToBrokerAndTopic")]
-		public async Task<IActionResult> MqttConnectToBrokerAndTopic([FromBody] MqttRequest request)
-		{
-			try
-			{
-				await _mqttService.ConnectToNewBrokerAsync(request.BrokerAddress, request.Port, "foo", "foo");
-				await _mqttService.SubscribeAsync(request.Topic);
-				await _mqttService.RegisterTestConsoleLog();
-
-				_responseJson.Message = $"Verbindung zu Mqtt-Broker {request.BrokerAddress}:{request.Port}/{request.Topic} war erfolgreich";
+				_responseJson.Message = $"Verbindung und Abonnement zum Broker {brokerAddress}:{port}/{topic} war erfolgreich. Bitte veröffentlichen Sie etwas auf Ihrem Broker.";
 				return StatusCode(200, _responseJson);
-
 			}
 			catch (Exception ex)
 			{
-				_mqttTestController.LogInformation($"Fehler beim Verbinden zu Mqtt-Broker: {request.BrokerAddress}:{request.Port}/{request.Topic} {ex.Message}");
-				_mqttTestController.LogError($"Fehler beim Verbinden zu Mqtt-Broker: {request.BrokerAddress}:{request.Port}/{request.Topic} {ex.Message}");
-				_responseJson.Message = $"Fehler beim Verbinden zu Mqtt-Broker: {request.BrokerAddress}:{request.Port}/{request.Topic} {ex.Message}";
+				_mqttTestController.LogError($"Fehler beim Verbinden zum MQTT-Broker-Test");
+				_responseJson.Message = $"Fehler beim Verbinden zum MQTT-Broker-Test";
 				return StatusCode(500, _responseJson);
 			}
 		}
 
-
-		[HttpPost("MqttSubscribe")]
-		public async Task<IActionResult> MqttSubscribe(string topic)
+		[HttpPost("MqttConnectToBroker")]
+		public async Task<IActionResult> MqttConnectToBroker([FromBody] MqttRequest request)
 		{
 			try
 			{
-				await _mqttService.SubscribeAsync(topic);
+				await _mqttService.ConnectToNewBrokerAsync(request.BrokerAddress, request.Port, "foo", "foo");
+				await _mqttService.RegisterTestConsoleLog();
 
-				return Ok($"Subscribed to MQTT topic '{topic}' successfully.");
+				_responseJson.Message = $"Verbindung zu Mqtt-Broker {request.BrokerAddress}:{request.Port}/{request.Topic} war erfolgreich.";
+				return StatusCode(200, _responseJson);
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, $"Failed to subscribe to MQTT topic '{topic}': {ex.Message}");
+				_mqttTestController.LogError($"Fehler beim Verbinden zu Mqtt-Broker {request.BrokerAddress}:{request.Port}/{request.Topic}: {ex.Message}");
+				_responseJson.Message = $"Fehler beim Verbinden zu Mqtt-Broker {request.BrokerAddress}:{request.Port}/{request.Topic}: {ex.Message}";
+				return StatusCode(500, _responseJson);
+			}
+		}
+
+		[HttpPost("MqttSubscribe")]
+		public async Task<IActionResult> MqttSubscribe([FromBody] MqttRequest request)
+		{
+			try
+			{
+				await _mqttService.SubscribeAsync(request.BrokerAddress, request.Port, request.Topic);
+
+				_responseJson.Message = $"MQTT-Topic '{request.Topic}' bei Broker {request.BrokerAddress}:{request.Port} erfolgreich abonniert.";
+				return StatusCode(200, _responseJson);
+			}
+			catch (Exception ex)
+			{
+				_responseJson.Message = $"Fehler beim Abonnieren vom MQTT-Topic '{request.Topic}' bei Broker {request.BrokerAddress}:{request.Port}: {ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 
 		[HttpPost("MqttPublish")]
-		public async Task<IActionResult> MqttPublish(string topic)
+		public async Task<IActionResult> MqttPublish([FromBody] MqttRequest request)
 		{
 			try
 			{
-				await _mqttService.PublishAsync(topic, "Hello, MQTT! Message number 1");
-				return Ok($"Message published to MQTT topic '{topic}' successfully.");
+				await _mqttService.PublishAsync(request.BrokerAddress, request.Port, request.Topic, "5");
+
+				_responseJson.Message = $"Nachricht erfolgreich im MQTT-Topic '{request.Topic}' bei Broker {request.BrokerAddress}:{request.Port} veröffentlicht.";
+				return StatusCode(200, _responseJson);
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, $"Failed to publish message to MQTT topic '{topic}': {ex.Message}");
+				_responseJson.Message = $"Fehler beim Veröffentlichen der Nachricht im MQTT-Topic '{request.Topic}' bei Broker {request.BrokerAddress}:{request.Port}: {ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 
 		[HttpPost("MqttUnsubscribe")]
-		public async Task<IActionResult> MqttUnsubscribe(string topic)
+		public async Task<IActionResult> MqttUnsubscribe([FromBody] MqttRequest request)
 		{
 			try
 			{
-				await _mqttService.UnsubscribeAsync(topic);
-				return Ok($"Unsubscribed from MQTT topic '{topic}' successfully.");
+				await _mqttService.UnsubscribeAsync(request.BrokerAddress, request.Port, request.Topic);
+
+				_responseJson.Message = $"Erfolgreich vom MQTT-Topic '{request.Topic}' bei Broker {request.BrokerAddress}:{request.Port} abgemeldet.";
+				return StatusCode(200, _responseJson);
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, $"Failed to unsubscribe from MQTT topic '{topic}': {ex.Message}");
+				_responseJson.Message = $"Fehler beim Abmelden vom MQTT-Topic '{request.Topic}' bei Broker {request.BrokerAddress}:{request.Port}: {ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 
 		[HttpPost("MqttDisconnect")]
-		public async Task<IActionResult> MqttDisconnect()
+		public async Task<IActionResult> MqttDisconnect([FromBody] MqttRequest request)
 		{
 			try
 			{
-				await _mqttService.DisconnectAsync();
-				return Ok("Disconnected from MQTT broker.");
+				await _mqttService.DisconnectAsync(request.BrokerAddress, request.Port);
+
+				_responseJson.Message = $"Verbindung zum Mqtt-Broker {request.BrokerAddress}:{request.Port} wurde erfolgreich getrennt.";
+				return StatusCode(200, _responseJson);
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, $"Failed to disconnect from MQTT broker: {ex.Message}");
+				_responseJson.Message = $"Beim Trennen der Verbindung zum Mqtt-Broker {request.BrokerAddress}:{request.Port} ist ein Fehler aufgetreten: {ex.Message}";
+				return StatusCode(500, _responseJson);
 			}
 		}
 	}

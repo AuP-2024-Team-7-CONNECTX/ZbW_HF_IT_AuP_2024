@@ -288,7 +288,7 @@ namespace ConnectFour.GameControllers
 			// needed?
 			//await _mqttService.UnsubscribeAsync($"{_robot1.Topic}/feedback");
 			//await _mqttService.UnsubscribeAsync($"{_robot2.Topic}/feedback");
-			await _mqttService.DisconnectAsync();
+			//await _mqttService.DisconnectAsync();
 		}
 
 

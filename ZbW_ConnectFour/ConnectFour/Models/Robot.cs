@@ -23,5 +23,7 @@ namespace ConnectFour.Models
 
 		public required int BrokerPort { get; set; }
 
+		public required string BrokerTopic { get; set; }
+
 	}
 }

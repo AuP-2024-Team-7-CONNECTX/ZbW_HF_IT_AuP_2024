@@ -13,7 +13,8 @@ public class RobotRequestExample : IExamplesProvider<RobotRequest>
 			Color = null,
 			Name = "Röbby",
 			BrokerAddress = "mqtt.mon3y.ch",
-			BrokerPort = 1883
+			BrokerPort = 1883,
+			BrokerTopic = "ConnectX"
 		};
 	}
 

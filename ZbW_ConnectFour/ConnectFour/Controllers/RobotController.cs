@@ -43,6 +43,7 @@ namespace ConnectFour.Controllers
 					IsIngame = robot.IsIngame,
 					BrokerAddress = robot.BrokerAddress,
 					BrokerPort = robot.BrokerPort,
+					BrokerTopic = robot.BrokerTopic
 				}).ToList();
 
 				return Ok(robotResponses);
@@ -78,6 +79,7 @@ namespace ConnectFour.Controllers
 					IsIngame = robot.IsIngame,
 					BrokerAddress = robot.BrokerAddress,
 					BrokerPort = robot.BrokerPort,
+					BrokerTopic = robot.BrokerTopic
 				};
 
 				return Ok(robotResponse);
@@ -115,6 +117,8 @@ namespace ConnectFour.Controllers
 					IsIngame = false, // Initial false, robots won't be ingame upon creation
 					BrokerAddress = robotRequest.BrokerAddress,
 					BrokerPort = robotRequest.BrokerPort,
+					BrokerTopic = robotRequest.BrokerTopic
+
 				};
 
 				await _repository.CreateOrUpdateAsync(newRobot);
@@ -129,6 +133,7 @@ namespace ConnectFour.Controllers
 					IsIngame = newRobot.IsIngame,
 					BrokerAddress = newRobot.BrokerAddress,
 					BrokerPort = newRobot.BrokerPort,
+					BrokerTopic = newRobot.BrokerTopic
 				});
 			}
 			catch (Exception ex)

@@ -9,5 +9,6 @@ public record RobotRequest
 	public string Name { get; init; }
 	public required string BrokerAddress { get; set; }
 	public required int BrokerPort { get; set; }
+	public required string BrokerTopic { get; set; }
 	public RobotRequest() { }
 }

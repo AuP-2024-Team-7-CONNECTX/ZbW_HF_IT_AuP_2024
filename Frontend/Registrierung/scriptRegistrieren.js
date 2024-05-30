@@ -41,7 +41,7 @@ document
 
       if (response.ok) {
         alert(
-          "Registrierung erfolgreich! Sie erhalten ein Mail zur Registrierung!"
+          "Registrierung erfolgreich! Sie erhalten ein Mail zur Verifizierung!"
         );
 
         await sendRegistrationEmail(email);
