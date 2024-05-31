@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const redSound = new Audio("../Sounds/red.m4a");
   const blueSound = new Audio("../Sounds/blue.m4a");
 
+  // Broadcast Channel initialisieren
+  const broadcast = new BroadcastChannel("vier_gewinnt_channel");
+
   // Annahme: Spieler 1 ist "rot" und Spieler 2 ist "blau"
   const playerOne = JSON.parse(localStorage.getItem("user"));
   const playerTwo = JSON.parse(localStorage.getItem("opponent-user"));
@@ -29,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const newOpponentButton = document.getElementById("new-opponent-button");
   const redPlayerName = document.getElementById("red-player-name");
   const bluePlayerName = document.getElementById("blue-player-name");
+
   // Setzt die Spielernamen in den Info-Boxen
   redPlayerName.textContent = playerOne.name;
   bluePlayerName.textContent = playerTwo.name;
@@ -151,6 +155,14 @@ document.addEventListener("DOMContentLoaded", () => {
       gameState[column.dataset.column][rowIndex] =
         currentPlayer === playerOne ? "rot" : "blau";
 
+      // Broadcast the move to other tabs
+      broadcast.postMessage({
+        type: "move",
+        column: column.dataset.column,
+        rowIndex: rowIndex,
+        player: currentPlayer === playerOne ? "rot" : "blau",
+      });
+
       // Wechselt den aktuellen Spieler
       currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
       updatePlayerInfo();
@@ -167,6 +179,24 @@ document.addEventListener("DOMContentLoaded", () => {
   columns.forEach((column) => {
     column.addEventListener("click", handleColumnClick);
   });
+
+  // Handle incoming messages
+  broadcast.onmessage = (event) => {
+    if (event.data.type === "move") {
+      const column = columns[event.data.column];
+      const cells = Array.from(column.children).reverse();
+      const emptyCell = cells[event.data.rowIndex];
+
+      if (emptyCell) {
+        emptyCell.classList.add(event.data.player);
+        gameState[column.dataset.column][event.data.rowIndex] =
+          event.data.player;
+      }
+
+      currentPlayer = event.data.player === "rot" ? playerTwo : playerOne;
+      updatePlayerInfo();
+    }
+  };
 
   // Initialisiert das Spiel beim Laden der Seite
   function initializeGame() {

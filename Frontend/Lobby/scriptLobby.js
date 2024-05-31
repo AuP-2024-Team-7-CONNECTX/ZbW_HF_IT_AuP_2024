@@ -297,13 +297,13 @@ function goToMainMenu() {
 }
 
 async function sendGameRequest(receiverId) {
-  const localStorageUser = JSON.parse(localStorage.getItem("user"));
-  const request = {
+  let localStorageUser = JSON.parse(localStorage.getItem("user"));
+  let request = {
     SenderId: localStorageUser.id,
     ReceiverId: receiverId,
   };
 
-  const response = await fetch(`${endpoint}/GameRequest/SendRequest`, {
+  let response = await fetch(`${endpoint}/GameRequest/SendRequest`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -312,14 +312,44 @@ async function sendGameRequest(receiverId) {
     body: JSON.stringify(request),
   });
 
-  const responseData = await response.json();
+  let responseData = await response.json();
 
   if (response.ok && responseData.success) {
     alert(responseData.message);
+    // Wiederholtes Überprüfen auf eingehende Spielanfragen
+    setInterval(checkForGameAcceptRequest, 5000); // Überprüfe alle 5 Sekunden
   } else {
     alert("Fehler beim Senden der Spielanfrage.");
   }
 }
+
+async function sendGameAcceptRequest(receiverId) {
+  let localStorageUser = JSON.parse(localStorage.getItem("user"));
+  let request = {
+    SenderId: localStorageUser.id,
+    ReceiverId: receiverId,
+  };
+
+  let response = await fetch(`${endpoint}/GameRequest/AcceptRequest`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    mode: "cors",
+    body: JSON.stringify(request),
+  });
+
+  let responseData = await response.json();
+
+  if (response.ok && responseData.success) {
+    alert(responseData.message);
+    // Wiederholtes Überprüfen auf eingehende Spielanfragen
+    setInterval(checkForGameAcceptRequest, 2000); // Überprüfe alle 5 Sekunden
+  } else {
+    alert("Fehler beim Senden der Spielanfrage.");
+  }
+}
+
 function displayGameAcceptButton(senderId, senderEmail) {
   const invitationsList = document.getElementById("invitations-list");
   const invitationDiv = document.createElement("div");
@@ -339,7 +369,7 @@ function displayGameAcceptButton(senderId, senderEmail) {
 }
 
 async function checkForGameRequest() {
-  const localStorageUser = JSON.parse(localStorage.getItem("user"));
+  let localStorageUser = JSON.parse(localStorage.getItem("user"));
   const response = await fetch(
     `${endpoint}/GameRequest/CheckRequest/${localStorageUser.id}`,
     {
@@ -353,6 +383,30 @@ async function checkForGameRequest() {
     if (data.success) {
       const senderEmail = await fetchUserEmailById(data.senderId); // Funktion zum Abrufen der E-Mail des Senders
       displayGameAcceptButton(data.senderId, senderEmail);
+    } else {
+      console.log(data.message);
+    }
+  } else {
+    const errorData = await response.json();
+    console.error("Error:", errorData.message);
+  }
+}
+
+async function checkForGameAcceptRequest() {
+  let localStorageUser = JSON.parse(localStorage.getItem("user"));
+  const response = await fetch(
+    `${endpoint}/GameRequest/CheckAcceptRequest/${localStorageUser.id}`,
+    {
+      method: "GET",
+      mode: "cors",
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+    if (data.success) {
+      await SetOpponentsForLocalStorage(data.senderId);
+      window.location.href = "../Spielfeld/spielfeld.html";
     } else {
       console.log(data.message);
     }
@@ -379,7 +433,10 @@ async function fetchUserEmailById(userId) {
 
 async function acceptGameRequest(senderId) {
   // Logik zum Akzeptieren der Spielanfrage
-  SetOpponentsForLocalStorage(senderId);
+  let localStorageUser = JSON.parse(localStorage.getItem("user"));
+  await sendGameAcceptRequest(senderId);
+  await SetOpponentsForLocalStorage(senderId);
+  await setTimeout(1000);
   window.location.href = "../Spielfeld/spielfeld.html";
 }
 
