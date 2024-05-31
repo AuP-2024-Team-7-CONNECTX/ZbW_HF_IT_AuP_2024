@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Annahme: Spieler 1 ist "rot" und Spieler 2 ist "blau"
   const playerOne = JSON.parse(localStorage.getItem("user"));
-  const playerTwo = JSON.parse(localStorage.getItem("user"));
+  const playerTwo = JSON.parse(localStorage.getItem("opponent-user"));
 
   // Initialisierung der Spieler: Zufällige Auswahl wer beginnt
   let currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
@@ -27,6 +27,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const columns = document.querySelectorAll(".column");
   const restartButton = document.getElementById("restart-button");
   const newOpponentButton = document.getElementById("new-opponent-button");
+  const redPlayerName = document.getElementById("red-player-name");
+  const bluePlayerName = document.getElementById("blue-player-name");
+  // Setzt die Spielernamen in den Info-Boxen
+  redPlayerName.textContent = playerOne.name;
+  bluePlayerName.textContent = playerTwo.name;
 
   // Initialisierung des Spielzustands: 7x6 Spielfeld
   const gameState = Array.from({ length: 7 }, () => Array(6).fill(null));

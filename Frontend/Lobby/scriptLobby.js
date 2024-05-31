@@ -4,15 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function displayRobotInfo(robot) {
     const robotInfoLobby = document.getElementById("robot-info-lobby-own");
-    robotInfoLobby.innerHTML = ""; // Clear any existing content
-
-    const robotId = document.createElement("div");
-    robotId.classList.add("robot-id");
-    robotId.textContent = `ID: ${robot.id}`;
+    robotInfoLobby.innerHTML = "";
 
     const robotName = document.createElement("div");
     robotName.classList.add("robot-name");
-    robotName.textContent = `Name: ${robot.name}`;
+    robotName.textContent = `Roboter-Name: ${robot.name}`;
 
     const robotStatus = document.createElement("div");
     robotStatus.classList.add("robot-status");
@@ -32,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
     robotBrokerTopic.classList.add("robot-broker-topic");
     robotBrokerTopic.textContent = `Broker-Topic: ${robot.brokerTopic}`;
 
-    robotInfoLobby.appendChild(robotId);
     robotInfoLobby.appendChild(robotName);
     robotInfoLobby.appendChild(robotStatus);
     robotInfoLobby.appendChild(robotBrokerAddress);
@@ -54,16 +49,27 @@ document.addEventListener("DOMContentLoaded", () => {
       robotDiv.style.border = "0.3cm solid red";
       robotDiv.style.padding = "10px"; // Optional: add some padding inside the div for better appearance
 
+      const user = await fetchUserForRobot(robot);
+
+      if (user) {
+        const userDiv = document.createElement("div");
+        userDiv.classList.add("user-info-forRobot");
+        userDiv.textContent = `Benutzer: ${user.name}`;
+        userDiv.style.marginBottom = "30px";
+
+        robotDiv.appendChild(userDiv);
+      }
+
       const robotName = document.createElement("div");
       robotName.classList.add("name");
-      robotName.textContent = `Name: ${robot.name}`;
+      robotName.textContent = `Roboter-Name: ${robot.name}`;
 
-      const robotStatus = document.createElement("div");
-      robotStatus.classList.add("status");
-      robotStatus.textContent = `Status: ${
-        robot.isConnected ? "Verbunden" : "Nicht verbunden"
-      }`;
-      robotStatus.style.marginBottom = "15px"; // Add margin-bottom for spacing
+      // const robotStatus = document.createElement("div");
+      // robotStatus.classList.add("status");
+      // robotStatus.textContent = `Status: ${
+      //   robot.isConnected ? "Verbunden" : "Nicht verbunden"
+      // }`;
+      // robotStatus.style.marginBottom = "15px"; // Add margin-bottom for spacing
 
       const robotBrokerAddress = document.createElement("div");
       robotBrokerAddress.classList.add("robot-broker-address");
@@ -78,21 +84,10 @@ document.addEventListener("DOMContentLoaded", () => {
       robotBrokerTopic.textContent = `Broker-Topic: ${robot.brokerTopic}`;
 
       robotDiv.appendChild(robotName);
-      robotDiv.appendChild(robotStatus);
+      // robotDiv.appendChild(robotStatus);
       robotDiv.appendChild(robotBrokerAddress);
       robotDiv.appendChild(robotBrokerPort);
       robotDiv.appendChild(robotBrokerTopic);
-
-      const user = await fetchUserForRobot(robot);
-
-      if (user) {
-        const userDiv = document.createElement("div");
-        userDiv.classList.add("user-info-forRobot");
-        userDiv.textContent = `Benutzer: ${user.name}`;
-        userDiv.style.marginBottom = "30px";
-
-        robotDiv.appendChild(userDiv);
-      }
 
       // Erstelle den "Verbindung testen"-Button
       const testConnectionButton = document.createElement("button");
@@ -300,6 +295,7 @@ async function ConnectToMqtt(mqttRequest) {
 function goToMainMenu() {
   window.location.href = "../Hauptmenu/hauptmenu.html";
 }
+
 async function sendGameRequest(receiverId) {
   const localStorageUser = JSON.parse(localStorage.getItem("user"));
   const request = {
@@ -383,8 +379,53 @@ async function fetchUserEmailById(userId) {
 
 async function acceptGameRequest(senderId) {
   // Logik zum Akzeptieren der Spielanfrage
-  console.log(`Spielanfrage von ${senderId} angenommen`);
+  SetOpponentsForLocalStorage(senderId);
+  window.location.href = "../Spielfeld/spielfeld.html";
 }
 
 // Wiederholtes Überprüfen auf eingehende Spielanfragen
 setInterval(checkForGameRequest, 5000); // Überprüfe alle 5 Sekunden
+
+async function SetOpponentsForLocalStorage(opponentUserId) {
+  try {
+    // Abrufen aller Roboter
+    const response = await fetch(`${endpoint}/Robot`, {
+      method: "GET",
+      mode: "cors",
+    });
+
+    if (response.ok) {
+      const robots = await response.json();
+      const filteredRobot = robots.find(
+        (robot) =>
+          robot.isIngame === false && robot.currentUserId === opponentUserId
+      );
+
+      if (filteredRobot) {
+        // Abrufen des Benutzers
+        const responseUser = await fetch(`${endpoint}/User/${opponentUserId}`, {
+          method: "GET",
+          mode: "cors",
+        });
+
+        if (responseUser.ok) {
+          const user = await responseUser.json();
+
+          // Speichern des Benutzers und Roboters im localStorage
+          localStorage.setItem("opponent-user", JSON.stringify(user));
+          localStorage.setItem("opponent-robot", JSON.stringify(filteredRobot));
+
+          console.log("Opponent user and robot set in localStorage");
+        } else {
+          console.error("Failed to fetch user:", responseUser.statusText);
+        }
+      } else {
+        console.error("No available robot found for the user.");
+      }
+    } else {
+      console.error("Failed to fetch robots:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+}
