@@ -94,8 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
         robotDiv.appendChild(userDiv);
       }
 
-      // Create buttons
+      // Erstelle den "Verbindung testen"-Button
       const testConnectionButton = document.createElement("button");
+      testConnectionButton.className = "mqtt-button full-width";
       testConnectionButton.textContent = "Verbindung testen";
       testConnectionButton.onclick = () => {
         ConnectToMqttWithRobot(robot, testConnectionButton);
@@ -183,6 +184,7 @@ async function ConnectToMqttWithRobot(robot, button) {
     infoText = document.createElement("span");
     infoText.classList.add("info-text");
     infoText.style.marginLeft = "10px";
+    infoText.style.padding = "10px"; // Padding hinzufügen
     button.parentNode.appendChild(infoText);
   }
 
@@ -190,19 +192,27 @@ async function ConnectToMqttWithRobot(robot, button) {
     infoText.textContent = "Verbindung zum Mqtt-Client möglich";
     infoText.style.color = "green";
 
-    // Create "Spielanfrage senden" button if connection is ok
+    // Entferne vorhandene Buttons, falls sie existieren
+    removeExistingButtons(button.parentNode);
+
+    // Erstelle den Button-Div
+    const buttonDiv = document.createElement("div");
+    buttonDiv.className = "button-group"; // Klasse für Styling
+
+    // Erstelle den "Spielanfrage senden"-Button, wenn die Verbindung erfolgreich ist
     const sendGameRequestButton = document.createElement("button");
-    sendGameRequestButton.style.marginLeft = "10px"; // Add left margin for spacing
+    sendGameRequestButton.className = "mqtt-button";
     sendGameRequestButton.textContent = "Spielanfrage senden";
     sendGameRequestButton.onclick = () => {
-      console.log(`Spielanfrage senden for robot: ${robot.name}`);
+      sendGameRequest(robot.currentUserId);
     };
-    button.parentNode.appendChild(sendGameRequestButton);
+    buttonDiv.appendChild(sendGameRequestButton);
 
-    // Create "Test - publish auf Topic" button if connection is ok
+    // Erstelle den "Test - publish auf Topic"-Button, wenn die Verbindung erfolgreich ist
     const testPublishButton = document.createElement("button");
-    testPublishButton.style.marginLeft = "10px"; // Add left margin for spacing
-    testPublishButton.textContent = "Test - publish auf Topic";
+    testPublishButton.className = "mqtt-button";
+    testPublishButton.textContent =
+      "MQTT Test-publish mit '5' auf Roboter-Topic";
     testPublishButton.onclick = async () => {
       console.log(`Test - publish auf Topic for robot: ${robot.name}`);
 
@@ -210,12 +220,21 @@ async function ConnectToMqttWithRobot(robot, button) {
       await PublishToMqttTopic(mqttRequest);
       await DisconnectFromMqtt(mqttRequest);
     };
-    button.parentNode.appendChild(testPublishButton);
+    buttonDiv.appendChild(testPublishButton);
+
+    button.parentNode.appendChild(buttonDiv);
 
     await DisconnectFromMqtt(mqttRequest);
   } else {
     infoText.textContent = "Verbindung zum Mqtt-Client nicht möglich";
     infoText.style.color = "red";
+  }
+}
+
+function removeExistingButtons(parent) {
+  const existingButtonGroup = parent.querySelector(".button-group");
+  if (existingButtonGroup) {
+    existingButtonGroup.remove();
   }
 }
 
@@ -281,3 +300,91 @@ async function ConnectToMqtt(mqttRequest) {
 function goToMainMenu() {
   window.location.href = "../Hauptmenu/hauptmenu.html";
 }
+async function sendGameRequest(receiverId) {
+  const localStorageUser = JSON.parse(localStorage.getItem("user"));
+  const request = {
+    SenderId: localStorageUser.id,
+    ReceiverId: receiverId,
+  };
+
+  const response = await fetch(`${endpoint}/GameRequest/SendRequest`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    mode: "cors",
+    body: JSON.stringify(request),
+  });
+
+  const responseData = await response.json();
+
+  if (response.ok && responseData.success) {
+    alert(responseData.message);
+  } else {
+    alert("Fehler beim Senden der Spielanfrage.");
+  }
+}
+function displayGameAcceptButton(senderId, senderEmail) {
+  const invitationsList = document.getElementById("invitations-list");
+  const invitationDiv = document.createElement("div");
+  invitationDiv.className = "invitation";
+
+  const message = document.createElement("p");
+  message.textContent = `Spieleinladung von ${senderEmail}`;
+
+  const acceptButton = document.createElement("button");
+  acceptButton.id = "accept-game-button";
+  acceptButton.innerHTML = "Spiel annehmen";
+  acceptButton.onclick = () => acceptGameRequest(senderId);
+
+  invitationDiv.appendChild(message);
+  invitationDiv.appendChild(acceptButton);
+  invitationsList.appendChild(invitationDiv);
+}
+
+async function checkForGameRequest() {
+  const localStorageUser = JSON.parse(localStorage.getItem("user"));
+  const response = await fetch(
+    `${endpoint}/GameRequest/CheckRequest/${localStorageUser.id}`,
+    {
+      method: "GET",
+      mode: "cors",
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+    if (data.success) {
+      const senderEmail = await fetchUserEmailById(data.senderId); // Funktion zum Abrufen der E-Mail des Senders
+      displayGameAcceptButton(data.senderId, senderEmail);
+    } else {
+      console.log(data.message);
+    }
+  } else {
+    const errorData = await response.json();
+    console.error("Error:", errorData.message);
+  }
+}
+
+async function fetchUserEmailById(userId) {
+  const response = await fetch(`${endpoint}/User/${userId}`, {
+    method: "GET",
+    mode: "cors",
+  });
+
+  if (response.ok) {
+    const user = await response.json();
+    return user.email;
+  } else {
+    console.error("Failed to fetch user email:", response.statusText);
+    return "unbekannt";
+  }
+}
+
+async function acceptGameRequest(senderId) {
+  // Logik zum Akzeptieren der Spielanfrage
+  console.log(`Spielanfrage von ${senderId} angenommen`);
+}
+
+// Wiederholtes Überprüfen auf eingehende Spielanfragen
+setInterval(checkForGameRequest, 5000); // Überprüfe alle 5 Sekunden

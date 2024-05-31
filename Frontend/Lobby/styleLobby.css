@@ -15,11 +15,19 @@ body {
   padding: 20px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
 }
 
 .user-section,
-.opponents-section {
-  margin-bottom: 20px;
+.opponents-section,
+.invitations-section {
+  width: 30%;
+}
+
+.invitations-section {
+  border-left: 2px solid #ddd;
+  padding-left: 20px;
 }
 
 .user-info,
@@ -48,4 +56,76 @@ body {
 
 .opponent-info:hover {
   background-color: #f9f9f9;
+}
+
+.invitation {
+  background-color: #ffe0e0; /* Heller roter Hintergrund */
+  border: 2px solid red; /* Roter Rahmen */
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+#accept-game-button {
+  background-color: red; /* Roter Hintergrund */
+  border: 2px solid red; /* Roter Rahmen */
+  color: white; /* Weißer Text */
+  padding: 10px 20px; /* Innenabstand */
+  font-size: 16px; /* Schriftgröße */
+  cursor: pointer; /* Zeiger-Cursor beim Hover */
+  margin-top: 10px;
+  width: 100%; /* Vollständige Breite des Elterncontainers */
+  box-sizing: border-box; /* Box-Größenanpassung */
+}
+
+button {
+  margin-top: 10px;
+}
+
+#back-button {
+  position: fixed; /* Fixierte Position */
+  top: 10px; /* Abstand vom oberen Rand */
+  left: 10px; /* Abstand vom linken Rand */
+  background-color: white; /* Weißer Hintergrund */
+  border: 2px solid red; /* Rote Umrandung */
+  color: black; /* Schwarzer Text */
+  padding: 10px 20px; /* Innenabstand */
+  font-size: 16px; /* Schriftgröße */
+  cursor: pointer; /* Zeiger-Cursor beim Hover */
+  z-index: 1000; /* Hoher Z-Index, um sicherzustellen, dass er oben liegt */
+}
+
+.subtle-button .icon {
+  margin-right: 5px; /* Abstand zwischen Icon und Text */
+}
+
+/* Neue CSS-Klassen für MQTT-Buttons */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Abstand zwischen den Buttons */
+  margin-top: 10px;
+}
+
+.mqtt-button {
+  background-color: white;
+  border: 2px solid red; /* Rote Umrandung */
+  color: black; /* Schwarzer Text */
+  padding: 10px 20px; /* Innenabstand */
+  font-size: 14px; /* Schriftgröße */
+  cursor: pointer; /* Zeiger-Cursor beim Hover */
+  transition: background-color 0.3s;
+}
+
+.mqtt-button:hover {
+  background-color: #ffe0e0; /* Heller roter Hintergrund beim Hover */
+}
+
+.full-width {
+  width: 100%; /* Volle Breite des Containers */
+  box-sizing: border-box; /* Box-Größenanpassung */
+}
+
+.info-text {
+  padding: 10px; /* Padding hinzufügen */
 }
