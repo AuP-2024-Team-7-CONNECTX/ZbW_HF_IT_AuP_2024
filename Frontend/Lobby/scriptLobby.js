@@ -317,7 +317,7 @@ async function sendGameRequest(receiverId) {
   if (response.ok && responseData.success) {
     alert(responseData.message);
     // Wiederholtes Überprüfen auf eingehende Spielanfragen
-    setInterval(checkForGameAcceptRequest, 5000); // Überprüfe alle 5 Sekunden
+    setInterval(checkForGameAcceptRequest, 2000); // Überprüfe alle 5 Sekunden
   } else {
     alert("Fehler beim Senden der Spielanfrage.");
   }
@@ -342,7 +342,6 @@ async function sendGameAcceptRequest(receiverId) {
   let responseData = await response.json();
 
   if (response.ok && responseData.success) {
-    alert(responseData.message);
     // Wiederholtes Überprüfen auf eingehende Spielanfragen
     setInterval(checkForGameAcceptRequest, 2000); // Überprüfe alle 5 Sekunden
   } else {
@@ -433,11 +432,15 @@ async function fetchUserEmailById(userId) {
 
 async function acceptGameRequest(senderId) {
   // Logik zum Akzeptieren der Spielanfrage
-  let localStorageUser = JSON.parse(localStorage.getItem("user"));
   await sendGameAcceptRequest(senderId);
   await SetOpponentsForLocalStorage(senderId);
-  await setTimeout(1000);
+  await sleep(500); // Hier wird die Pause eingefügt
   window.location.href = "../Spielfeld/spielfeld.html";
+}
+
+// Die sleep-Funktion, die oben definiert wurde
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // Wiederholtes Überprüfen auf eingehende Spielanfragen
