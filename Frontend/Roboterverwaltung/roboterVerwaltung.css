@@ -7,188 +7,177 @@
   font-family: "Poppins", sans-serif;
 }
 
-body,
-html {
-  height: 100%;
-  margin: 0;
-  font-family: "Poppins", sans-serif;
+body {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   background: url("../Bilder/Logo_ConnectX.png") no-repeat center center fixed;
   background-size: cover;
 }
 
-section {
-  width: 100%;
-  max-width: 800px;
+#user-info {
+  margin: 20px 0;
+  font-size: 1.2em;
+  color: #fff;
 }
 
-.verwaltung-box {
-  position: relative;
-  width: 500px; /* Adjusted width for better readability */
-  background: rgba(
-    255,
-    255,
-    255,
-    0.8
-  ); /* Slightly opaque white background for better readability */
+#robots-container {
+  width: 90%;
+  max-width: 800px;
+  background: rgba(255, 255, 255, 0.8);
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(15px);
-  padding: 40px; /* Added padding for aesthetics */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Added shadow for better visibility */
 }
 
-h2 {
-  font-size: 2em;
-  color: #d32f2f; /* Dark red to match the background */
-  text-align: center;
-  margin-bottom: 20px; /* Added margin for spacing */
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.input-group input {
-  margin-bottom: 10px;
-  padding: 10px;
-  font-size: 1em;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.input-group button {
-  width: 100%;
-  padding: 10px;
-  background: #d32f2f; /* Dark red */
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.input-group button:hover {
-  background: #b71c1c; /* Slightly darker red for hover effect */
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-  width: 100%;
-}
-
-ul li {
-  background: #e2e2e2;
-  margin: 10px 0;
-  padding: 10px;
-  font-size: 1em;
-  display: flex;
-  flex-direction: column;
-  border-radius: 5px;
+.robot {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  margin-bottom: 15px;
+  padding: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  word-wrap: break-word; /* Ensure long text wraps */
 }
 
-ul li span {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+.robot h3 {
+  color: #d32f2f;
   margin-bottom: 10px;
 }
 
-.button-group {
+.robot p {
+  margin: 5px 0;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #d32f2f;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1em;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s, transform 0.3s;
+}
+
+button:hover {
+  background-color: #b71c1c;
+  transform: scale(1.05);
+}
+
+#edit-robot-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(15px);
+  display: none;
+}
+
+#edit-robot-form {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
 }
 
-.edit-button,
-.delete-button {
-  background: #4caf50; /* Green */
-  border: none;
-  color: white;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background 0.3s;
-  flex: 1;
-  margin: 0 5px;
+#edit-robot-form label {
+  margin: 10px 0 5px;
 }
 
-.edit-button:hover {
-  background: #388e3c; /* Darker green for hover effect */
-}
-
-.delete-button {
-  background: #f44336; /* Red */
-}
-
-.delete-button:hover {
-  background: #d32f2f; /* Darker red for hover effect */
-}
-
-.save-button {
-  background: #4caf50; /* Green */
-  border: none;
-  color: white;
+#edit-robot-form input {
   padding: 10px;
-  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  transition: background 0.3s;
-  width: 100%;
+  margin-bottom: 10px;
+}
+
+#save-button,
+#cancel-button {
+  padding: 10px 15px;
   margin-top: 10px;
 }
 
-.save-button:hover {
-  background: #388e3c; /* Darker green for hover effect */
+#save-button {
+  background-color: #d32f2f;
 }
 
-.edit-input-group {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+#cancel-button {
+  background-color: #757575;
 }
 
-.edit-input-group input {
-  margin-bottom: 10px;
-  padding: 10px;
-  font-size: 1em;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+#back-button {
+  margin: 20px 0;
 }
 
 .menu-option {
-  margin-top: 20px;
-}
-
-.subtle-button {
-  padding: 10px;
-  font-size: 1.5em;
   width: 100%;
-  background-color: transparent;
-  color: #d32f2f;
-  border: none;
+  margin: 20px 0;
+}
+
+.menu-option button {
+  width: 100%;
+  height: 60px;
+  background: #d32f2f;
+  border: 2px solid #fff;
+  border-radius: 30px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
+  font-size: 1.2em;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  transition: background 0.3s, transform 0.3s;
 }
 
-.subtle-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+.menu-option button .icon {
+  margin-right: 10px;
+  font-size: 1.5em;
+  color: #fff;
 }
 
-.subtle-button .icon {
-  margin-right: 8px;
+.menu-option button:hover {
+  background: #b71c1c;
+  transform: scale(1.05);
+}
+
+.robot.connected {
+  background-color: #e8f5e9; /* Light green background */
+  border-color: #81c784; /* Green border */
+}
+
+.robot.connected button {
+  background-color: #4caf50; /* Green buttons */
+}
+
+.robot.connected button:hover {
+  background-color: #388e3c; /* Darker green on hover */
+}
+
+@media (max-width: 360px) {
+  #robots-container {
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    padding: 10px;
+  }
+
+  #edit-robot-modal {
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    padding: 10px;
+  }
+
+  .menu-option button {
+    height: 50px;
+  }
 }

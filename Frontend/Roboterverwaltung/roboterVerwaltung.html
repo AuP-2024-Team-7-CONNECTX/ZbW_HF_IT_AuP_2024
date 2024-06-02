@@ -5,179 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Roboterverwaltung</title>
     <link rel="stylesheet" href="roboterVerwaltung.css" />
-    <script src="roboterVerwatlung.js"></script>
+    <script src="roboterVerwaltung.js" defer></script>
     <script src="../localStorage.js"></script>
     <link rel="stylesheet" href="../localStorage.css" />
+    <script src="../config.js"></script>
   </head>
   <body>
     <div id="user-info"></div>
-    <section>
-      <div class="verwaltung-box">
-        <h2>Roboterverwaltung</h2>
-        <div class="input-group">
-          <input type="text" id="robotName" placeholder="Name" />
-          <input type="text" id="robotAddress" placeholder="Adresse" />
-          <input type="text" id="robotPort" placeholder="Port" />
-          <button onclick="addItem()">Hinzufügen</button>
-        </div>
-        <ul id="robotList">
-          <!-- Initial keine Einträge -->
-        </ul>
-        <div class="menu-option">
-          <button
-            id="back-button"
-            class="subtle-button"
-            type="button"
-            onclick="goToMainMenu()"
-          >
-            <span class="icon"
-              ><ion-icon name="arrow-back-outline"></ion-icon
-            ></span>
-            Zurück zum Hauptmenü
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <script>
-      function addItem() {
-        // Die Werte der Eingabefelder erhalten
-        var name = document.getElementById("robotName").value;
-        var address = document.getElementById("robotAddress").value;
-        var port = document.getElementById("robotPort").value;
-
-        // Wenn die Eingabefelder nicht leer sind, dann den neuen Eintrag hinzufügen
-        if (name.trim() !== "" && address.trim() !== "" && port.trim() !== "") {
-          // Neues Listenelement erstellen
-          var li = document.createElement("li");
-          li.innerHTML = `<span>${name}, ${address}, ${port}</span>`;
-
-          // Bearbeiten-Button erstellen
-          var editButton = document.createElement("button");
-          editButton.textContent = "Bearbeiten";
-          editButton.className = "edit-button";
-          editButton.onclick = function () {
-            editItem(editButton);
-          };
-
-          // Löschen-Button erstellen
-          var deleteButton = document.createElement("button");
-          deleteButton.textContent = "Löschen";
-          deleteButton.className = "delete-button";
-          deleteButton.onclick = function () {
-            deleteItem(deleteButton);
-          };
-
-          // Button-Gruppe erstellen
-          var buttonGroup = document.createElement("div");
-          buttonGroup.className = "button-group";
-          buttonGroup.appendChild(editButton);
-          buttonGroup.appendChild(deleteButton);
-
-          // Bearbeiten- und Löschen-Buttons zur Button-Gruppe hinzufügen
-          li.appendChild(buttonGroup);
-
-          // Das neue Listenelement zur Liste hinzufügen
-          document.getElementById("robotList").appendChild(li);
-
-          // Die Eingabefelder leeren
-          document.getElementById("robotName").value = "";
-          document.getElementById("robotAddress").value = "";
-          document.getElementById("robotPort").value = "";
-        } else {
-          alert("Bitte füllen Sie alle Felder aus.");
-        }
-      }
-
-      function deleteItem(button) {
-        // Das Listenelement entfernen, das den Button enthält
-        var li = button.parentNode.parentNode;
-        li.parentNode.removeChild(li);
-      }
-
-      function editItem(button) {
-        // Das Listenelement, das den Button enthält
-        var li = button.parentNode.parentNode;
-
-        // Der aktuelle Text des Listenelements
-        var currentText = li.firstChild.textContent;
-        var parts = currentText.split(", ");
-        var name = parts[0];
-        var address = parts[1];
-        var port = parts[2];
-
-        // Eingabefelder und einen Speichern-Button erstellen
-        var inputName = document.createElement("input");
-        inputName.type = "text";
-        inputName.value = name;
-
-        var inputAddress = document.createElement("input");
-        inputAddress.type = "text";
-        inputAddress.value = address;
-
-        var inputPort = document.createElement("input");
-        inputPort.type = "text";
-        inputPort.value = port;
-
-        var saveButton = document.createElement("button");
-        saveButton.textContent = "Speichern";
-        saveButton.className = "save-button";
-        saveButton.onclick = function () {
-          // Den neuen Text speichern und das Eingabefeld und den Speichern-Button entfernen
-          var newName = inputName.value;
-          var newAddress = inputAddress.value;
-          var newPort = inputPort.value;
-          if (
-            newName.trim() !== "" &&
-            newAddress.trim() !== "" &&
-            newPort.trim() !== ""
-          ) {
-            li.innerHTML = `<span>${newName}, ${newAddress}, ${newPort}</span>`;
-
-            // Bearbeiten-Button neu erstellen
-            var editButton = document.createElement("button");
-            editButton.textContent = "Bearbeiten";
-            editButton.className = "edit-button";
-            editButton.onclick = function () {
-              editItem(editButton);
-            };
-
-            // Löschen-Button neu erstellen
-            var deleteButton = document.createElement("button");
-            deleteButton.textContent = "Löschen";
-            deleteButton.className = "delete-button";
-            deleteButton.onclick = function () {
-              deleteItem(deleteButton);
-            };
-
-            // Button-Gruppe neu erstellen
-            var buttonGroup = document.createElement("div");
-            buttonGroup.className = "button-group";
-            buttonGroup.appendChild(editButton);
-            buttonGroup.appendChild(deleteButton);
-
-            // Bearbeiten- und Löschen-Buttons zur Button-Gruppe hinzufügen
-            li.appendChild(buttonGroup);
-          } else {
-            alert("Bitte füllen Sie alle Felder aus.");
-          }
-        };
-
-        // Das Listenelement leeren und die Eingabefelder und den Speichern-Button hinzufügen
-        li.innerHTML = "";
-        var editGroup = document.createElement("div");
-        editGroup.className = "edit-input-group";
-        editGroup.appendChild(inputName);
-        editGroup.appendChild(inputAddress);
-        editGroup.appendChild(inputPort);
-        editGroup.appendChild(saveButton);
-        li.appendChild(editGroup);
-      }
-
-      function goToMainMenu() {
-        window.location.href = "../Hauptmenu/hauptmenu.html";
-      }
-    </script>
+    <button id="create-robot-button">Neuen Roboter erstellen</button>
+    <div id="robots-container"></div>
+    <!-- Einfügen des Modals zum Bearbeiten von Robotern -->
+    <div id="edit-robot-modal" style="display: none">
+      <h2 id="modal-title">Roboter bearbeiten</h2>
+      <form id="edit-robot-form">
+        <input type="hidden" id="edit-robot-id" />
+        <label for="edit-robot-name">Name:</label>
+        <input type="text" id="edit-robot-name" />
+        <label for="edit-robot-address">Broker Address:</label>
+        <input type="text" id="edit-robot-address" />
+        <label for="edit-robot-port">Broker Port:</label>
+        <input type="number" id="edit-robot-port" />
+        <label for="edit-robot-topic">Broker Topic:</label>
+        <input type="text" id="edit-robot-topic" />
+        <button type="submit" id="save-button">Speichern</button>
+        <button type="button" id="cancel-button" onclick="closeEditModal()">
+          Abbrechen
+        </button>
+      </form>
+    </div>
+    <div class="menu-option">
+      <button
+        id="back-button"
+        class="subtle-button"
+        type="button"
+        onclick="goToMainMenu()"
+      >
+        <span class="icon"
+          ><ion-icon name="arrow-back-outline"></ion-icon
+        ></span>
+        Zurück zum Hauptmenü
+      </button>
+    </div>
     <script
       type="module"
       src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
@@ -188,3 +56,9 @@
     ></script>
   </body>
 </html>
+
+<script>
+  function goToMainMenu() {
+    window.location.href = "../Hauptmenu/hauptmenu.html";
+  }
+</script>
