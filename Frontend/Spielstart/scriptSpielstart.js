@@ -9,3 +9,11 @@ function navigateToSpielfeld() {
 function goToLobby() {
   window.location.href = "../Lobby/lobby.html";
 }
+
+function setLocalStorageGameMode(gameMode) {
+  localStorage.setItem("game-mode", gameMode);
+}
+
+function removeLocalStorageGameMode() {
+  localStorage.removeItem("game-mode");
+}

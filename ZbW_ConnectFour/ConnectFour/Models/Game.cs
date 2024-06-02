@@ -31,6 +31,13 @@ namespace ConnectFour.Models
 
 		public bool ManualTurnIsAllowed { get; set; } = false;
 
+		public GameMode GameMode { get;set; }
+
+		[NotMapped]
+		public bool? NewTurnForFrontend { get; init; }
+		[NotMapped]
+		public string? NewTurnForFrontendRowColumn { get; init; }
+
 		// Spielfeld als JSON in der Datenbank speichern
 		public string GameFieldJson
 		{

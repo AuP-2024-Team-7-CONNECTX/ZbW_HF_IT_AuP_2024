@@ -9,6 +9,11 @@
     <script src="../config.js"></script>
     <script src="../localStorage.js"></script>
     <link rel="stylesheet" href="../localStorage.css" />
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        removeLocalStorageGameMode();
+      });
+    </script>
   </head>
   <body>
     <div id="user-info"></div>
@@ -25,7 +30,10 @@
                 alt="Bild 1"
                 class="button-side-image"
               />
-              <button type="button" onclick="goToLobby()">
+              <button
+                type="button"
+                onclick="setLocalStorageGameMode('RobotVsRobot'); goToLobby();"
+              >
                 Roboter vs. Roboter
               </button>
               <img
@@ -40,7 +48,10 @@
                 alt="Bild 3"
                 class="button-side-image"
               />
-              <button type="button" onclick="goToLobby()">
+              <button
+                type="button"
+                onclick="setLocalStorageGameMode('PlayerVsRobot'); goToLobby();"
+              >
                 Mensch vs. Roboter
               </button>
               <img
@@ -55,7 +66,10 @@
                 alt="Bild 5"
                 class="button-side-image"
               />
-              <button type="button" onclick="goToLobby()">
+              <button
+                type="button"
+                onclick="setLocalStorageGameMode('PlayerVsPlayer'); goToLobby();"
+              >
                 Mensch vs. Mensch
               </button>
               <img
@@ -69,7 +83,7 @@
                 id="back-button"
                 class="subtle-button"
                 type="button"
-                onclick="goToMainMenu()"
+                onclick="goToMainMenu(); removeLocalStorageGameMode();"
               >
                 <span class="icon"
                   ><ion-icon name="arrow-back-outline"></ion-icon

@@ -11,5 +11,12 @@
 
         public enum ConnectFourColor { Red, Blue }
 
+		public enum GameMode
+		{
+			PlayerVsPlayer,
+			PlayerVsRobot,
+			RobotVsRobot
+		}
+
 	}
 }

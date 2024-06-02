@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const redSound = new Audio("../Sounds/red.m4a");
   const blueSound = new Audio("../Sounds/blue.m4a");
 
@@ -177,11 +177,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  function initializeGame() {
+  async function initializeGame() {
+    const playerOne = JSON.parse(localStorage.getItem("user"));
+
+    await CreateNewGame();
     columns.forEach(initializeColumn);
     updateTimeDisplay();
     updatePlayerInfo();
   }
 
-  initializeGame();
+  await initializeGame();
 });

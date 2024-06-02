@@ -1,4 +1,5 @@
-﻿using ConnectFour.Models;
+﻿using ConnectFour.Api.User;
+using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
@@ -17,48 +18,130 @@ namespace ConnectFour.Controllers
 		private readonly IRobotRepository _robotRepository;
 		private readonly ILogger<GameController> _logger;
 
-
-		public GameController(IGameRepository gameRepository, IUserRepository UserRepository, IRobotRepository robotRepository, ILogger<GameController> logger)
+		public GameController(IGameRepository gameRepository, IUserRepository userRepository, IRobotRepository robotRepository, ILogger<GameController> logger)
 		{
 			_gameRepository = gameRepository ?? throw new ArgumentNullException(nameof(gameRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
-			_userRepository = UserRepository;
+			_userRepository = userRepository;
 			_robotRepository = robotRepository;
 		}
 
 		// GET: api/games
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Game>>> GetAll()
+		public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll()
 		{
 			try
 			{
 				var games = await _gameRepository.GetAllAsync();
-				return Ok(games);
+				var gameResponses = games.Select(game => new GameResponse
+				{
+					Id = game.Id,
+					Users = game.Users.Select(u => new UserResponse(
+						u.Id,
+						u.Name,
+						u.Email,
+						u.Password,
+						u.Authenticated,
+						u.IsIngame
+					)),
+					Robots = game.Robots.Select(r => new RobotResponse
+					{
+						Id = r.Id,
+						Name = r.Name,
+						// Fill other properties as needed
+					}),
+					CurrentMoveId = game.CurrentMoveId,
+					WinnerUser = game.WinnerUser != null ? new UserResponse(
+						game.WinnerUser.Id,
+						game.WinnerUser.Name,
+						game.WinnerUser.Email,
+						game.WinnerUser.Password,
+						game.WinnerUser.Authenticated,
+						game.WinnerUser.IsIngame
+					) : null,
+					WinnerRobot = game.WinnerRobot != null ? new RobotResponse
+					{
+						Id = game.WinnerRobot.Id,
+						Name = game.WinnerRobot.Name,
+						// Fill other properties as needed
+					} : null,
+					State = game.State,
+					TotalPointsPlayerOne = game.TotalPointsUserOne,
+					TotalPointsPlayerTwo = game.TotalPointsUserTwo,
+					NewTurnForFrontend = game.NewTurnForFrontend,
+					NewTurnForFrontendRowColumn = game.NewTurnForFrontendRowColumn,
+					GameMode = game.GameMode.ToString(),
+					ManualTurnIsAllowed = game.ManualTurnIsAllowed
+				});
+
+				return Ok(gameResponses);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while fetching all games.{ex.Message}");
-				return StatusCode(500, $"An internal server error has occurred.{ex.Message}");
+				_logger.LogError(ex, $"Ein Fehler ist aufgetreten beim Abrufen aller Spiele. {ex.Message}");
+				return StatusCode(500, new { Message = $"Ein interner Serverfehler ist aufgetreten: {ex.Message}", success = false });
 			}
 		}
 
 		// GET: api/games/{id}
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Game>> Get(string id)
+		public async Task<ActionResult<GameResponse>> Get(string id)
 		{
 			try
 			{
 				var game = await _gameRepository.GetByIdAsync(id);
 				if (game == null)
 				{
-					return NotFound("Game not found.");
+					return Ok(new { Message = "Spiel nicht gefunden.", success = false });
 				}
-				return Ok(game);
+
+				var gameResponse = new GameResponse
+				{
+					Id = game.Id,
+					Users = game.Users.Select(u => new UserResponse(
+						u.Id,
+						u.Name,
+						u.Email,
+						u.Password,
+						u.Authenticated,
+						u.IsIngame
+					)),
+					Robots = game.Robots.Select(r => new RobotResponse
+					{
+						Id = r.Id,
+						Name = r.Name,
+						// Fill other properties as needed
+					}),
+					CurrentMoveId = game.CurrentMoveId,
+					WinnerUser = game.WinnerUser != null ? new UserResponse(
+						game.WinnerUser.Id,
+						game.WinnerUser.Name,
+						game.WinnerUser.Email,
+						game.WinnerUser.Password,
+						game.WinnerUser.Authenticated,
+						game.WinnerUser.IsIngame
+					) : null,
+					WinnerRobot = game.WinnerRobot != null ? new RobotResponse
+					{
+						Id = game.WinnerRobot.Id,
+						Name = game.WinnerRobot.Name,
+						// Fill other properties as needed
+					} : null,
+					State = game.State,
+					TotalPointsPlayerOne = game.TotalPointsUserOne,
+					TotalPointsPlayerTwo = game.TotalPointsUserTwo,
+					NewTurnForFrontend = game.NewTurnForFrontend,
+					NewTurnForFrontendRowColumn = game.NewTurnForFrontendRowColumn,
+					GameMode = game.GameMode.ToString(),
+					ManualTurnIsAllowed = game.ManualTurnIsAllowed
+				};
+
+				return Ok(gameResponse);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while fetching the game with ID {id}.{ex.Message}");
-				return StatusCode(500, $"An internal server error has occurred.{ex.Message}");
+				_logger.LogError(ex, $"Ein Fehler ist aufgetreten beim Abrufen des Spiels mit ID {id}. {ex.Message}");
+				return StatusCode(500, new { Message = $"Ein interner Serverfehler ist aufgetreten: {ex.Message}", success = false });
 			}
 		}
 
@@ -68,6 +151,16 @@ namespace ConnectFour.Controllers
 		{
 			try
 			{
+				var games = await _gameRepository.GetAllAsync();
+				var gameInProgress = games.First(g =>
+									g.Users.All(u => request.RobotIds.Contains(u.Id)) &&
+									g.Robots.All(r => request.RobotIds.Contains(r.Id)) &&
+									g.State == GameState.InProgress);
+
+				if (gameInProgress != null)
+				{
+					CreatedAtAction(nameof(Get), new { id = gameInProgress.Id }, new { Message = "Spiel bereits durch anderen Benutzer erstellt", success = true, data = gameInProgress });
+				}
 
 				var allRobots = await _robotRepository.GetAllAsync();
 				var listRobots = allRobots.ToList();
@@ -75,14 +168,14 @@ namespace ConnectFour.Controllers
 
 				if (robots.Count() != 2)
 				{
-					throw new Exception("Too many/few Robots in List. Couldnt create game");
+					throw new Exception("Zu viele/wenige Roboter in der Liste. Spiel konnte nicht erstellt werden.");
 				}
 
 				var Users = robots.Select(r => r.CurrentUser).ToList();
 
-				if (Users.Count() != 2)
+				if (request.GameMode != "UserVsUser" && Users.Count() != 2)
 				{
-					throw new Exception("Too many/few Users in List. Couldnt create game");
+					throw new Exception("Zu viele/wenige Benutzer in der Liste. Spiel konnte nicht erstellt werden.");
 				}
 
 				var gameField = new GameField();
@@ -103,14 +196,13 @@ namespace ConnectFour.Controllers
 					GameFieldJson = gameFieldJson
 				};
 
-
 				await _gameRepository.CreateOrUpdateAsync(game);
-				return CreatedAtAction(nameof(Get), new { id = game.Id }, game);
+				return CreatedAtAction(nameof(Get), new { id = game.Id }, new { Message = "Spiel erfolgreich erstellt", success = true, data = game });
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while creating a new game.{ex.Message}");
-				return StatusCode(500, $"An internal server error has occurred. {ex.Message}");
+				_logger.LogError(ex, $"Ein Fehler ist aufgetreten beim Erstellen eines neuen Spiels. {ex.Message}");
+				return StatusCode(500, new { Message = $"Ein interner Serverfehler ist aufgetreten: {ex.Message}", success = false });
 			}
 		}
 
@@ -123,49 +215,54 @@ namespace ConnectFour.Controllers
 				var game = await _gameRepository.GetByIdAsync(id);
 				if (game == null)
 				{
-					return NotFound("Game not found.");
+					return Ok(new { Message = "Spiel nicht gefunden.", success = false });
 				}
 
 				if (!Enum.TryParse<GameState>(request.State, out var state))
 				{
-					return StatusCode(500, "Invalid value for Color");
+					return Ok(new { Message = "Ungültiger Wert für Status", success = false });
 				}
 
+				if (!Enum.TryParse<GameMode>(request.GameMode, out var gameMode))
+				{
+					return Ok(new { Message = "Ungültiger Wert für Spielmodus", success = false });
+				}
+
+				game.GameMode = gameMode;
 				game.State = state;
 				game.CurrentMoveId = request.CurrentMoveId;
-				game.GameFieldJson = request.GameFieldJson;
 
 				await _gameRepository.CreateOrUpdateAsync(game);
 
-				return NoContent();
+				return Ok(new { Message = "Spiel erfolgreich aktualisiert", success = true });
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"An error occurred while updating the game with ID {id}.{ex.Message}");
-				return StatusCode(500, $"An internal server error has occurred.{ex.Message}");
+				_logger.LogError(ex, $"Ein Fehler ist aufgetreten beim Aktualisieren des Spiels mit ID {id}. {ex.Message}");
+				return StatusCode(500, new { Message = $"Ein interner Serverfehler ist aufgetreten: {ex.Message}", success = false });
 			}
 		}
 
-		// DELETE: api/games/{id}
-		[HttpDelete("{id}")]
-		public async Task<IActionResult> Delete(string id)
-		{
-			try
-			{
-				var game = await _gameRepository.GetByIdAsync(id);
-				if (game == null)
-				{
-					return NotFound("Game not found.");
-				}
+		//// DELETE: api/games/{id}
+		//[HttpDelete("{id}")]
+		//public async Task<IActionResult> Delete(string id)
+		//{
+		//	try
+		//	{
+		//		var game = await _gameRepository.GetByIdAsync(id);
+		//		if (game == null)
+		//		{
+		//			return Ok(new { Message = "Spiel nicht gefunden.", success = false });
+		//		}
 
-				await _gameRepository.DeleteAsync<Game>(id);
-				return NoContent();
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"An error occurred while deleting the game with ID {id}.{ex.Message}");
-				return StatusCode(500, $"An internal server error has occurred.{ex.Message}");
-			}
-		}
+		//		await _gameRepository.DeleteAsync<Game>(id);
+		//		return Ok(new { Message = "Spiel erfolgreich gelöscht", success = true });
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		_logger.LogError(ex, $"Ein Fehler ist aufgetreten beim Löschen des Spiels mit ID {id}. {ex.Message}");
+		//		return StatusCode(500, new { Message = "Ein interner Serverfehler ist aufgetreten.", success = false });
+		//	}
+		//}
 	}
 }
