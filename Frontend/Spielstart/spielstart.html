@@ -1,44 +1,93 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Spielstart</title>
-    <link rel="stylesheet" href="styleSpielstart.css">
+    <link rel="stylesheet" href="styleSpielstart.css" />
     <script defer src="scriptSpielstart.js"></script>
-</head>
-<body>
+    <script src="../config.js"></script>
+    <script src="../localStorage.js"></script>
+    <link rel="stylesheet" href="../localStorage.css" />
+  </head>
+  <body>
+    <div id="user-info"></div>
+
     <section>
-        <div>
-            <form class="play-Box">
-                <div class="buttons">
-                        <h2>Spielstart</h2>
-                        <div>
-                            <img src="../Bilder/roboter.png" alt="Bild 1" class="button-side-image">
-                            <button type="submit">Roboter vs. Roboter</button>
-                            <img src="../Bilder/roboter.PNG" alt="Bild 2" class="button-side-image">
-                        </div>
-                        <div>
-                            <img src="../Bilder/mensch.jpg" alt="Bild 3" class="button-side-image">
-                            <button type="submit">Mensch vs. Roboter</button>
-                            <img src="../Bilder/roboter.png" alt="Bild 4" class="button-side-image">
-                        </div>
-                        <div>
-                            <img src="../Bilder/mensch.jpg" alt="Bild 5" class="button-side-image">
-                            <button type="submit">Mensch vs. Mensch</button>
-                            <img src="../Bilder/mensch.jpg" alt="Bild 6" class="button-side-image">
-                        </div>
-                        <div class="menu-option">
-                            <button id="back-button" class="subtle-button" type="button" onclick="goToMainMenu()">
-                                <span class="icon"><ion-icon name="arrow-back-outline"></ion-icon></span>
-                                Zurück zum Hauptmenü
-                            </button>
-                        </div>
-                </div>
-            </form>
-        </div>
+      <div>
+        <form class="play-Box">
+          <div class="buttons">
+            <h2>Spielstart</h2>
+
+            <div>
+              <img
+                src="../Bilder/roboter.png"
+                alt="Bild 1"
+                class="button-side-image"
+              />
+              <button type="button" onclick="goToLobby()">
+                Roboter vs. Roboter
+              </button>
+              <img
+                src="../Bilder/roboter.PNG"
+                alt="Bild 2"
+                class="button-side-image"
+              />
+            </div>
+            <div>
+              <img
+                src="../Bilder/mensch.jpg"
+                alt="Bild 3"
+                class="button-side-image"
+              />
+              <button type="button" onclick="goToLobby()">
+                Mensch vs. Roboter
+              </button>
+              <img
+                src="../Bilder/roboter.png"
+                alt="Bild 4"
+                class="button-side-image"
+              />
+            </div>
+            <div>
+              <img
+                src="../Bilder/mensch.jpg"
+                alt="Bild 5"
+                class="button-side-image"
+              />
+              <button type="button" onclick="goToLobby()">
+                Mensch vs. Mensch
+              </button>
+              <img
+                src="../Bilder/mensch.jpg"
+                alt="Bild 6"
+                class="button-side-image"
+              />
+            </div>
+            <div class="menu-option">
+              <button
+                id="back-button"
+                class="subtle-button"
+                type="button"
+                onclick="goToMainMenu()"
+              >
+                <span class="icon"
+                  ><ion-icon name="arrow-back-outline"></ion-icon
+                ></span>
+                Zurück zum Hauptmenü
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </section>
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-</body>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+  </body>
 </html>

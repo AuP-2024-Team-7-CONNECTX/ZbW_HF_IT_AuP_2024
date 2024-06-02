@@ -1,3 +1,3 @@
 function goToMainMenu() {
-    window.location.href = '../Hauptmenu/hauptmenu.html';
+  window.location.href = "../Hauptmenu/hauptmenu.html";
 }

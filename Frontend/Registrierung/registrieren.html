@@ -1,31 +1,45 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registrieren</title>
-    <link rel="stylesheet" href="styleRegistrieren.css">
+    <link rel="stylesheet" href="styleRegistrieren.css" />
     <script defer src="scriptRegistrieren.js"></script>
-</head>
-<body>
+    <script src="../config.js"></script>
+  </head>
+  <body>
     <section>
-        <div class="register-box">
-            <form id="register-form" action="">
-                <h2>Registrieren</h2>
-                <div class="input-box">
-                    <input type="email" id="email" required>
-                    <label for="email">E-Mail</label>
-                </div>
-                <div class="input-box">
-                    <input type="password" id="password" required>
-                    <label for="password">Passwort</label>
-                </div>
-                <button type="submit">Registrieren</button>
-                <div class="register-link">
-                    <p>Bereits registriert? <a href="../Login/Login.html">Einloggen</a></p>
-                </div>
-            </form>
-        </div>
+      <div class="register-box">
+        <form id="register-form" action="">
+          <h2>Registrieren</h2>
+          <div class="input-box">
+            <input type="email" id="email" required />
+            <label for="email">E-Mail</label>
+          </div>
+          <div class="input-box">
+            <input type="password" id="password" required />
+            <label for="password">Passwort</label>
+          </div>
+          <button type="submit">Registrieren</button>
+          <button type="verificate" id="resend-email">
+            Mail erneut senden
+          </button>
+
+          <div class="register-link">
+            <p>
+              Bereits registriert? <a href="../Login/Login.html">Einloggen</a>
+            </p>
+          </div>
+          <div class="register-link">
+            <p>
+              Fehler beim Mailversand (Service offline oder Ähnliches)? Hier
+              manuell verifizieren!
+              <a href="../Bestatigung/bestatigung.html">Verifizieren</a>
+            </p>
+          </div>
+        </form>
+      </div>
     </section>
-</body>
+  </body>
 </html>
