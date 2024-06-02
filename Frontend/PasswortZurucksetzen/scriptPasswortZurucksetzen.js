@@ -3,39 +3,58 @@ document
   .addEventListener("submit", async function (event) {
     event.preventDefault(); // Verhindert das Standardverhalten des Formulars, also das Neuladen der Seite.
 
-    var email = document.getElementById("email").value;
+    const newPassword = document.getElementById("password").value;
 
     try {
-      const response = await fetch(`${endpoint}/User/${email}`, {
-        // Setze hier deinen API-Endpunkt ein
-        method: "GET",
-        mode: "cors",
-      });
+      let user = JSON.parse(localStorage.getItem("user"));
 
-      if (response.ok) {
-        const users = await response.json();
-        console.log("Fetched users:", users);
+      if (!user) {
+        alert("User information not found. Please log in again.");
+        return;
+      }
 
-        const hashedPassword = await hashPassword(password);
-
-        const user = users.find(
-          (user) => user.email === email && user.password === hashedPassword
-        );
-
-        if (user && user.authenticated) {
-          console.log("Erfolg:", user);
-          window.location.href = "../Hauptmenu/hauptmenu.html"; // Anpassen an Ihre tatsächliche Zielseite
-        } else if (user && !user.authenticated) {
-          alert("Login fehlgeschlagen: Benutzer nicht authentifiziert");
-        } else {
-          alert(
-            "Login fehlgeschlagen: Benutzer nicht gefunden oder falsches Passwort"
-          );
+      let hashedPassword = await hashPassword(newPassword);
+      const changePasswordResponse = await fetch(
+        `${endpoint}/User/changepassword/?email=${user.email}&newPassword=${hashedPassword}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          mode: "cors",
         }
+      );
+
+      if (changePasswordResponse.ok) {
+        console.log("Passwort konnte erfolgreich zurückgesetzt werden");
+        alert(
+          "Passwort konnte erfolgreich zurückgesetzt werden. Sie werden nun abgemeldet!"
+        );
+        localStorage.removeItem("user");
+        localStorage.removeItem("robot");
+        window.location.href = "../Login/login.html";
       } else {
-        console.error("Failed to fetch users:", response.statusText);
+        const error = await changePasswordResponse.json();
+        alert(error.message);
       }
     } catch (error) {
       console.error("Error:", error.message);
+      alert("Ein Fehler ist aufgetreten: " + error.message);
     }
   });
+
+document.getElementById("logout-button").addEventListener("click", function () {
+  localStorage.removeItem("user");
+  localStorage.removeItem("robot");
+  window.location.href = "../Login/login.html";
+});
+
+async function hashPassword(password) {
+  const msgUint8 = new TextEncoder().encode(password); // encode as (utf-8) Uint8Array
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8); // hash the message
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(""); // convert bytes to hex string
+  return hashHex;
+}

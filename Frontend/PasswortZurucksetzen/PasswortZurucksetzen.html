@@ -16,23 +16,37 @@
       <div class="login-box">
         <form id="reset-password-form" action="">
           <h2>Passwort zurücksetzen</h2>
+
           <div class="input-box">
-            <span class="icon"><ion-icon name="mail"></ion-icon></span>
-            <input type="email" id="email" required />
-            <label for="email">E-Mail</label>
+            <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+            <input type="password" id="password" required />
+            <label for="password">Passwort</label>
           </div>
-          <button type="submit">Link zum Zurücksetzen erhalten</button>
-          <div class="register-link">
-            <p>
-              Neu hier?
-              <a href="../Registrierung/registrieren.html">Registrieren</a>
-            </p>
-          </div>
+          <button type="submit">Passwort ändern</button>
         </form>
+        <div class="menu-option">
+          <button
+            id="back-button"
+            class="subtle-button"
+            type="button"
+            onclick="goToMainMenu()"
+          >
+            <span class="icon"
+              ><ion-icon name="arrow-back-outline"></ion-icon
+            ></span>
+            Zurück zum Hauptmenü
+          </button>
+        </div>
+        <div class="menu-option">
+          <button id="logout-button">
+            <span class="icon"
+              ><ion-icon name="construct-outline"></ion-icon
+            ></span>
+            Abmelden
+          </button>
+        </div>
       </div>
-      <div id="user-info"></div>
     </section>
-    <!-- Skripte für Ionicons (Icon-Set) -->
     <script
       type="module"
       src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
@@ -43,3 +57,9 @@
     ></script>
   </body>
 </html>
+
+<script>
+  function goToMainMenu() {
+    window.location.href = "../Hauptmenu/hauptmenu.html";
+  }
+</script>

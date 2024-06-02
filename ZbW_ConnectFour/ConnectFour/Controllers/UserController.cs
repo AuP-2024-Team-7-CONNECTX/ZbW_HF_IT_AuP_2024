@@ -247,25 +247,22 @@ namespace ConnectFour.Controllers
 			{
 				var users = await _repository.GetAllAsync();
 
-
 				var existingUser = users.FirstOrDefault(x => x.Email == email);
 
 				if (existingUser == null)
 				{
-					_responseJson.Message = $"Kein Benutzer mit Mail: {email} gefunden";
-					return StatusCode(400, _responseJson);
+					_logger.LogError($"no existing user with mail {email}");
+					return BadRequest($"no existing user with mail  {email}");
 				}
 
 				existingUser.Password = newPassword;
 				await _repository.CreateOrUpdateAsync(existingUser);
 
-				_responseJson.Message = "Passwort konnte erfolgreich geändert werden";
-				return StatusCode(200, _responseJson);
+				return Ok("Password changed.");
 			}
 			catch (Exception ex)
 			{
-				_responseJson.Message = ex.Message;
-				return StatusCode(500, _responseJson);
+				return StatusCode(500, $"Internal server error: {ex.Message}");
 			}
 		}
 
