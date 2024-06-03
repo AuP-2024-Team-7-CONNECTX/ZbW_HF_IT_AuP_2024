@@ -87,9 +87,14 @@ namespace ConnectFour.Controllers
 		{
 			try
 			{
-				await _mqttService.PublishAsync(request.BrokerAddress, request.Port, request.Topic, "ConnectX - Test Publish");
+				// Generate a random number between 1 and 7
+				Random random = new Random();
+				int randomNumber = random.Next(1, 8); // Next is exclusive of the upper bound, so use 8 to include 7
 
-				_responseJson.Message = $"Nachricht erfolgreich im MQTT-Topic '{request.Topic}' bei Broker {request.BrokerAddress}:{request.Port} veröffentlicht.";
+				// Publish the random number as a string
+				await _mqttService.PublishAsync(request.BrokerAddress, request.Port, request.Topic, randomNumber.ToString());
+
+				_responseJson.Message = $"Nachricht '{randomNumber}' erfolgreich im MQTT-Topic '{request.Topic}' bei Broker {request.BrokerAddress}:{request.Port} veröffentlicht.";
 				return StatusCode(200, _responseJson);
 			}
 			catch (Exception ex)
@@ -98,6 +103,7 @@ namespace ConnectFour.Controllers
 				return StatusCode(500, _responseJson);
 			}
 		}
+
 
 		[HttpPost("MqttUnsubscribe")]
 		public async Task<IActionResult> MqttUnsubscribe([FromBody] MqttRequest request)
