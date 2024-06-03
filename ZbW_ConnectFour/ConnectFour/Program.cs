@@ -159,7 +159,7 @@ namespace ConnectFour
 						logger.LogInformation("Datenbank wurde erfolgreich verbunden!");
 					}
 
-					context.Database.EnsureCreated(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+					context.Database.EnsureCreated(); 
 					logger.LogInformation("Datenbank wurde erfolgreich angelegt!");
 
 

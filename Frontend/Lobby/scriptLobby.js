@@ -90,20 +90,35 @@ document.addEventListener("DOMContentLoaded", () => {
       robotDiv.appendChild(robotBrokerTopic);
 
       // Erstelle den "Verbindung testen"-Button
-      const testConnectionButton = document.createElement("button");
-      testConnectionButton.className = "mqtt-button full-width";
-      testConnectionButton.textContent = "Verbindung testen";
-      testConnectionButton.onclick = () => {
-        ConnectToMqttWithRobot(robot, testConnectionButton);
-      };
+      // const testConnectionButton = document.createElement("button");
+      // testConnectionButton.className = "mqtt-button full-width";
+      // testConnectionButton.textContent = "Verbindung testen";
+      // testConnectionButton.onclick = () => {
+      //   ConnectToMqttWithRobot(robot, testConnectionButton);
+      // };
 
-      // Create a div to hold the buttons and add some margin-top
+      // // Create a div to hold the buttons and add some margin-top
+      // const buttonDiv = document.createElement("div");
+      // buttonDiv.style.marginTop = "10px";
+
+      // buttonDiv.appendChild(testConnectionButton);
+
+      // robotDiv.appendChild(buttonDiv);
+
+      // Erstelle den Button-Div
       const buttonDiv = document.createElement("div");
-      buttonDiv.style.marginTop = "10px";
+      buttonDiv.className = "button-group"; // Klasse für Styling
 
-      buttonDiv.appendChild(testConnectionButton);
+      // Erstelle den "Spielanfrage senden"-Button, wenn die Verbindung erfolgreich ist
+      const sendGameRequestButton = document.createElement("button");
+      sendGameRequestButton.className = "mqtt-button";
+      sendGameRequestButton.textContent = "Spielanfrage senden";
+      sendGameRequestButton.onclick = () => {
+        sendGameRequest(robot.currentUserId);
+      };
+      buttonDiv.appendChild(sendGameRequestButton);
 
-      robotDiv.appendChild(buttonDiv);
+      robotDiv.appendChild(sendGameRequestButton);
       robotInfoLobby.appendChild(robotDiv);
     }
   }

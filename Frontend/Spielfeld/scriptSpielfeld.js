@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const blueSound = new Audio("../Sounds/blue.m4a");
 
   // Broadcast Channel initialisieren
-  const broadcast = new BroadcastChannel("vier_gewinnt_channel");
 
   const playerOne = JSON.parse(localStorage.getItem("user"));
   const playerTwo = JSON.parse(localStorage.getItem("opponent-user"));
@@ -178,9 +177,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   async function initializeGame() {
-    const playerOne = JSON.parse(localStorage.getItem("user"));
+    let localStorageUser = JSON.parse(localStorage.getItem("user"));
 
-    await CreateNewGame();
+    if (playerOne.id === localStorageUser.id) {
+      await CreateNewGame();
+    }
+
     columns.forEach(initializeColumn);
     updateTimeDisplay();
     updatePlayerInfo();

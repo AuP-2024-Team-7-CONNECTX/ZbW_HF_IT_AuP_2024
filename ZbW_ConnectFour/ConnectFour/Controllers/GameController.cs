@@ -152,15 +152,20 @@ namespace ConnectFour.Controllers
 			try
 			{
 				var games = await _gameRepository.GetAllAsync();
-				var gameInProgress = games.First(g =>
+
+				if (games.Any() )
+				{
+					var gameInProgress = games.First(g =>
 									g.Users.All(u => request.RobotIds.Contains(u.Id)) &&
 									g.Robots.All(r => request.RobotIds.Contains(r.Id)) &&
 									g.State == GameState.InProgress);
 
-				if (gameInProgress != null)
-				{
-					CreatedAtAction(nameof(Get), new { id = gameInProgress.Id }, new { Message = "Spiel bereits durch anderen Benutzer erstellt", success = true, data = gameInProgress });
+					if (gameInProgress != null)
+					{
+						CreatedAtAction(nameof(Get), new { id = gameInProgress.Id }, new { Message = "Spiel bereits durch anderen Benutzer erstellt", success = true, data = gameInProgress });
+					}
 				}
+								
 
 				var allRobots = await _robotRepository.GetAllAsync();
 				var listRobots = allRobots.ToList();

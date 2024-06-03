@@ -34,7 +34,6 @@ async function GetRobots() {
   }
 }
 
-// Display robots in the container
 async function displayRobots(robots) {
   const robotsContainer = document.getElementById("robots-container");
   robotsContainer.innerHTML = ""; // Leere den Container
@@ -47,61 +46,54 @@ async function displayRobots(robots) {
     let user = await getUserByIdOrNull(robot.currentUserId);
     let userMail = user ? user.email : "Kein User verbunden";
 
-    const robotInfo = `
-            <h3>${robot.name}</h3>
-            <p>Aktueller Benutzer: ${userMail}</p>
-            <p>Im Spiel: ${robot.isIngame}</p>
-            <p>Broker Address: ${robot.brokerAddress}</p>
-            <p>Broker Port: ${robot.brokerPort}</p>
-            <p>Broker Topic: ${robot.brokerTopic}</p>
-            <button class="action-button" onclick="editRobot('${robot.id}', '${
-      robot.name
-    }', '${robot.brokerAddress}', ${robot.brokerPort}, '${
-      robot.brokerTopic
-    }')">Bearbeiten</button>
-            <button class="action-button" onclick='ConnectToMqtt(${JSON.stringify(
-              robot
-            )})'>MQTT - Verbinden</button>
-          `;
+    let robotInfo = `
+      <h3>${robot.name}</h3>
+      <p>Aktueller Benutzer: ${userMail}</p>
+      <p>Im Spiel: ${robot.isIngame}</p>
+      <p>Verbunden: ${robot.isConnected}</p>
+      <p>Broker Address: ${robot.brokerAddress}</p>
+      <p>Broker Port: ${robot.brokerPort}</p>
+      <p>Broker Topic: ${robot.brokerTopic}</p>
+      <button class="action-button" onclick="editRobot('${robot.id}', '${robot.name}', '${robot.brokerAddress}', ${robot.brokerPort}, '${robot.brokerTopic}')">Bearbeiten</button>
+    `;
+
+    if (!robot.isConnected) {
+      robotInfo += `
+        <button class="action-button" onclick='ConnectToMqtt(${JSON.stringify(
+          robot
+        )})'>MQTT - Verbinden</button>
+      `;
+    }
 
     robotElement.innerHTML = robotInfo;
-    robotsContainer.appendChild(robotElement);
-  }
-}
+    let localStorageUser = JSON.parse(localStorage.getItem("user"));
 
-// Create a new robot
-async function createRobot(robot) {
-  try {
-    const response = await fetch(`${endpoint}/Robot`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        currentUserId: robot.currentUserId,
-        isConnected: robot.isConnected,
-        isIngame: robot.isIngame,
-        color: robot.color,
-        name: robot.name,
-        brokerAddress: robot.brokerAddress,
-        brokerPort: robot.brokerPort,
-        brokerTopic: robot.brokerTopic,
-      }),
-    });
+    if (robot.isConnected && robot.currentUserId === localStorageUser.id) {
+      if (!robotElement.querySelector(".connected-info")) {
+        const connectedInfo = document.createElement("p");
+        connectedInfo.innerText = "Verbunden";
+        connectedInfo.style.color = "green";
+        connectedInfo.style.fontWeight = "bold";
+        connectedInfo.classList.add("connected-info");
 
-    if (response.ok) {
-      const result = await response.json();
-      console.log("Roboter erfolgreich hinzugefügt:", result);
-      alert("Roboter erfolgreich hinzugefügt!");
-      await GetRobots(); // Refresh the list of robots
-    } else {
-      const error = await response.json();
-      console.error("Fehler beim Hinzufügen des Roboters:", error.message);
-      alert(`Fehler beim Hinzufügen des Roboters: ${error.message}`);
+        const publishButton = document.createElement("button");
+        publishButton.innerText = "Publish Test";
+        publishButton.onclick = () => publishTest(robot);
+        publishButton.classList.add("publish-button");
+
+        const subscribeButton = document.createElement("button");
+        subscribeButton.innerText = "Subscribe Test";
+        subscribeButton.onclick = () => subscribeTest(robot);
+        subscribeButton.classList.add("subscribe-button");
+
+        robotElement.appendChild(connectedInfo);
+        robotElement.appendChild(publishButton);
+        robotElement.appendChild(subscribeButton);
+        robotElement.classList.add("connected");
+      }
     }
-  } catch (error) {
-    console.error("Fehler:", error.message);
-    alert(`Ein Fehler ist aufgetreten: ${error.message}`);
+
+    robotsContainer.appendChild(robotElement);
   }
 }
 
@@ -167,40 +159,18 @@ async function saveRobot(event) {
   event.preventDefault();
 
   const id = document.getElementById("edit-robot-id").value;
+  let robot = await getRobotById(id);
   const name = document.getElementById("edit-robot-name").value;
   const brokerAddress = document.getElementById("edit-robot-address").value;
   const brokerPort = document.getElementById("edit-robot-port").value;
   const brokerTopic = document.getElementById("edit-robot-topic").value;
 
-  const robot = {
-    name,
-    brokerAddress,
-    brokerPort,
-    brokerTopic,
-  };
-
-  try {
-    const response = await fetch(`${endpoint}/Robot/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(robot),
-    });
-
-    if (response.ok) {
-      alert("Roboter erfolgreich aktualisiert!");
-      closeEditModal();
-      await GetRobots(); // Refresh the list of robots
-    } else {
-      const error = await response.json();
-      console.error("Fehler beim Aktualisieren des Roboters:", error.Message);
-      alert(`Fehler beim Aktualisieren des Roboters: ${error.Message}`);
-    }
-  } catch (error) {
-    console.error("Fehler:", error.Message);
-    alert(`Ein Fehler ist aufgetreten: ${error.Message}`);
-  }
+  robot.name = name;
+  robot.brokerAddress = brokerAddress;
+  robot.brokerPort = brokerPort;
+  robot.brokerTopic = brokerTopic;
+  closeEditModal();
+  await UpdateRobot(robot);
 }
 
 // Dummy function for getUserByIdOrNull for the purpose of this example
@@ -215,8 +185,24 @@ async function getUserByIdOrNull(userId) {
     const user = await response.json();
     return user;
   } else {
-    console.error("Failed to fetch user email:", response.statusText);
+    console.error("Failed to fetch user:", response.statusText);
     return null;
+  }
+}
+
+// Dummy function for getUserByIdOrNull for the purpose of this example
+async function getRobotById(robotId) {
+  const response = await fetch(`${endpoint}/Robot/${robotId}`, {
+    method: "GET",
+    mode: "cors",
+  });
+
+  if (response.ok) {
+    let robot = await response.json();
+    return robot;
+  } else {
+    console.error("Failed to fetch Robot:", response.statusText);
+    alert.apply("Fehler beim Ermitteln des Roboters");
   }
 }
 
@@ -225,7 +211,14 @@ async function ConnectToMqtt(robot) {
   // Check if there is already a connected robot and disconnect it
   const connectedRobot = document.querySelector(".robot.connected");
   if (connectedRobot) {
-    // Disconnect from Mqtt einbauen
+    let localStorageRobot = JSON.parse(localStorage.getItem("robot"));
+    if (localStorageRobot !== null) {
+      localStorageRobot.currentUserId = null;
+      localStorageRobot.isConnected = false;
+      await DisconnectFromMqtt(localStorageRobot);
+      await UpdateRobot(localStorageRobot);
+    }
+
     connectedRobot.classList.remove("connected");
     connectedRobot.querySelectorAll(".action-button").forEach((button) => {
       button.style.backgroundColor = "#d32f2f"; // Reset button color
@@ -256,35 +249,109 @@ async function ConnectToMqtt(robot) {
       console.log(jsonResponse.Message);
       localStorage.setItem("robot", JSON.stringify(robot));
       alert(`Verbindung mit MQTT-Broker konnte hergestellt werden!`);
-
+      let localStorageUser = JSON.parse(localStorage.getItem("user"));
+      robot.currentUserId = localStorageUser.id;
+      robot.isConnected = true;
+      await UpdateRobot(robot);
       // Update robot element to show connection status and new buttons
       const robotElement = document.getElementById(`robot-${robot.id}`);
-      const connectedInfo = document.createElement("p");
-      connectedInfo.innerText = "Verbunden";
-      connectedInfo.style.color = "green";
-      connectedInfo.style.fontWeight = "bold";
-      connectedInfo.classList.add("connected-info");
+      if (!robotElement.querySelector(".connected-info")) {
+        const connectedInfo = document.createElement("p");
+        connectedInfo.innerText = "Verbunden";
+        connectedInfo.style.color = "green";
+        connectedInfo.style.fontWeight = "bold";
+        connectedInfo.classList.add("connected-info");
 
-      const publishButton = document.createElement("button");
-      publishButton.innerText = "Publish Test";
-      publishButton.onclick = () => publishTest(robot);
-      publishButton.classList.add("publish-button");
+        const publishButton = document.createElement("button");
+        publishButton.innerText = "Publish Test";
+        publishButton.onclick = () => publishTest(robot);
+        publishButton.classList.add("publish-button");
 
-      const subscribeButton = document.createElement("button");
-      subscribeButton.innerText = "Subscribe Test";
-      subscribeButton.onclick = () => subscribeTest(robot);
-      subscribeButton.classList.add("subscribe-button");
+        const subscribeButton = document.createElement("button");
+        subscribeButton.innerText = "Subscribe Test";
+        subscribeButton.onclick = () => subscribeTest(robot);
+        subscribeButton.classList.add("subscribe-button");
 
-      robotElement.appendChild(connectedInfo);
-      robotElement.appendChild(publishButton);
-      robotElement.appendChild(subscribeButton);
-      robotElement.classList.add("connected");
+        robotElement.appendChild(connectedInfo);
+        robotElement.appendChild(publishButton);
+        robotElement.appendChild(subscribeButton);
+        robotElement.classList.add("connected");
+      }
+
+      // Entfernen Sie den "MQTT - Verbinden" Button
+      const connectButton = robotElement.querySelector(
+        "button[onclick*='ConnectToMqtt']"
+      );
+      if (connectButton) {
+        connectButton.remove();
+      }
     } else {
       const errorResponse = await response.json();
       alert(`Fehler beim Verbinden mit Mqtt-Broker: ${errorResponse.message}`);
     }
   } catch (error) {
     console.error("Fehler beim Verbinden mit Mqtt-Broker:", error.message);
+    alert(`Ein Fehler ist aufgetreten: ${error.Message}`);
+  }
+}
+
+async function DisconnectFromMqtt(robot) {
+  let mqttRequest = {
+    BrokerAddress: robot.brokerAddress,
+    Port: String(robot.brokerPort),
+    Topic: robot.brokerTopic,
+  };
+
+  const response = await fetch(`${endpoint}/MqttTest/MqttDisconnect`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    mode: "cors",
+    body: JSON.stringify(mqttRequest),
+  });
+
+  if (response.ok) {
+    const jsonResponse = await response.json();
+    console.log(jsonResponse.Message);
+  } else {
+    const errorResponse = await response.json();
+    alert(
+      `Fehler beim Trennen der Verbindung zu Mqtt-Broker: ${errorResponse.Message}`
+    );
+  }
+}
+
+async function UpdateRobot(robot) {
+  let robotRequest = {
+    currentUserId: robot.currentUserId,
+    isConnected: robot.isConnected,
+    isIngame: robot.isIngame,
+    color: robot.color,
+    name: robot.name,
+    brokerAddress: robot.brokerAddress,
+    brokerPort: String(robot.brokerPort),
+    brokerTopic: robot.brokerTopic,
+  };
+
+  try {
+    const response = await fetch(`${endpoint}/Robot/${robot.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(robotRequest),
+    });
+
+    if (response.ok) {
+      await GetRobots(); // Refresh the list of robots
+    } else {
+      const error = await response.json();
+      console.error("Fehler beim Aktualisieren des Roboters:", error.Message);
+      alert(`Fehler beim Aktualisieren des Roboters: ${error.Message}`);
+    }
+  } catch (error) {
+    console.error("Fehler:", error.Message);
     alert(`Ein Fehler ist aufgetreten: ${error.Message}`);
   }
 }

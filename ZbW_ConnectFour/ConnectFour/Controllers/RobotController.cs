@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ConnectFour.Controllers
 {
@@ -161,14 +162,25 @@ namespace ConnectFour.Controllers
 				robotToUpdate.IsConnected = robotRequest.IsConnected;
 				robotToUpdate.IsIngame = robotRequest.IsIngame;
 
-				if (!Enum.TryParse<ConnectFourColor>(robotRequest.Color, out var color))
+				if (string.IsNullOrEmpty(robotRequest.Color))
+				{
+					robotToUpdate.Color = null;
+				}
+				else if (!string.IsNullOrEmpty(robotRequest.Color) && Enum.TryParse<ConnectFourColor>(robotRequest.Color, out var color))
+				{
+					robotToUpdate.Color = color;
+				}
+				else
 				{
 					_responseJson.Message = "Invalid value for Color";
 					return StatusCode(500, _responseJson);
 				}
 
-				robotToUpdate.Color = color;
 				robotToUpdate.Name = robotRequest.Name;
+				robotToUpdate.BrokerAddress = robotRequest.BrokerAddress;
+				robotToUpdate.BrokerPort = robotRequest.BrokerPort;
+				robotToUpdate.BrokerTopic = robotRequest.BrokerTopic;
+
 
 				await _repository.CreateOrUpdateAsync(robotToUpdate);
 

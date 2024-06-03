@@ -50,7 +50,8 @@ h2 {
   margin: 20px 0; /* Adjusted margin for spacing */
 }
 
-.menu-option a {
+.menu-option a,
+.menu-option button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,13 +69,15 @@ h2 {
   transition: background 0.3s, transform 0.3s; /* Added transition for smooth hover effect */
 }
 
-.menu-option a .icon {
+.menu-option a .icon,
+.menu-option button .icon {
   margin-right: 10px;
   font-size: 1.5em;
   color: #fff; /* Updated icon color */
 }
 
-.menu-option a:hover {
+.menu-option a:hover,
+.menu-option button:hover {
   background: #b71c1c; /* Slightly darker red for hover effect */
   transform: scale(1.05); /* Slightly increase size on hover */
 }
@@ -88,7 +91,8 @@ h2 {
     padding: 20px; /* Adjust padding for smaller screens */
   }
 
-  .menu-option a {
+  .menu-option a,
+  .menu-option button {
     height: 50px; /* Adjusted height for smaller screens */
   }
 }
