@@ -139,13 +139,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       gameState[column.dataset.column][rowIndex] =
         currentPlayer === playerOne ? "rot" : "blau";
 
-      broadcast.postMessage({
-        type: "move",
-        column: column.dataset.column,
-        rowIndex: rowIndex,
-        player: currentPlayer === playerOne ? "rot" : "blau",
-      });
-
       currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
       updatePlayerInfo();
       if (gameStarted) startGameTimer();
@@ -159,22 +152,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   columns.forEach((column) => {
     column.addEventListener("click", handleColumnClick);
   });
-
-  broadcast.onmessage = (event) => {
-    if (event.data.type === "move") {
-      const column = columns[event.data.column];
-      const cells = Array.from(column.children).reverse();
-      const emptyCell = cells[event.data.rowIndex];
-
-      if (emptyCell) {
-        emptyCell.classList.add(event.data.player);
-        gameState[event.data.column][event.data.rowIndex] = event.data.player;
-      }
-
-      currentPlayer = event.data.player === "rot" ? playerTwo : playerOne;
-      updatePlayerInfo();
-    }
-  };
 
   async function initializeGame() {
     let localStorageUser = JSON.parse(localStorage.getItem("user"));

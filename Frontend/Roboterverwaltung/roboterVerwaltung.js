@@ -111,8 +111,16 @@ async function displayRobots(robots) {
         disconnectButton.innerText = "Verbindung trennen";
         disconnectButton.style.backgroundColor = "red";
         disconnectButton.onclick = async () => {
+          let localStorageUser = JSON.parse(localStorage.getItem("user"));
+          if (
+            robot.currentUserId &&
+            robot.currentUserId === localStorageUser.id
+          ) {
+            localStorage.removeItem("robot");
+          }
           robot.currentUserId = null;
           robot.isConnected = false;
+
           await DisconnectFromMqtt(robot);
           await UpdateRobot(robot);
         };
@@ -161,20 +169,10 @@ async function displayRobots(robots) {
         subscribeButton.classList.add("subscribe-button");
 
         const disconnectButton = document.createElement("button");
-        disconnectButton.innerText = "Verbindung trennen";
-        disconnectButton.style.backgroundColor = "red";
-        disconnectButton.onclick = async () => {
-          robot.currentUserId = null;
-          robot.isConnected = false;
-          await DisconnectFromMqtt(robot);
-          await UpdateRobot(robot);
-        };
-        disconnectButton.classList.add("disconnect-button");
 
         robotElement.appendChild(connectedInfo);
         robotElement.appendChild(publishButton);
         robotElement.appendChild(subscribeButton);
-        robotElement.appendChild(disconnectButton);
         robotElement.classList.add("connected-by-other");
 
         // Remove the "MQTT - Verbinden" button
@@ -290,8 +288,14 @@ async function ConnectToMqtt(robot) {
   if (connectedRobot) {
     let localStorageRobot = JSON.parse(localStorage.getItem("robot"));
     if (localStorageRobot !== null) {
+      let localStorageUser = JSON.parse(localStorage.getItem("user"));
+      if (robot.currentUserId && robot.currentUserId === localStorageUser.id) {
+        localStorage.removeItem("robot");
+      }
+
       localStorageRobot.currentUserId = null;
       localStorageRobot.isConnected = false;
+
       await DisconnectFromMqtt(localStorageRobot);
       await UpdateRobot(localStorageRobot);
     }
@@ -354,10 +358,19 @@ async function ConnectToMqtt(robot) {
         disconnectButton.style.backgroundColor = "red";
         disconnectButton.onclick = async () => {
           // aktueller roboter kicken
+          let localStorageUser = JSON.parse(localStorage.getItem("user"));
+          if (
+            robot.currentUserId &&
+            robot.currentUserId === localStorageUser.id
+          ) {
+            localStorage.removeItem("robot");
+          }
           robot.currentUserId = null;
           robot.isConnected = false;
           await DisconnectFromMqtt(robot);
           await UpdateRobot(robot);
+
+          localStorage.removeItem("robot");
 
           localStorageRobot.currentUserId = null;
           localStorageRobot.isConnected = false;

@@ -2,6 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const localStorageUser = JSON.parse(localStorage.getItem("user"));
   const localStorageRobot = JSON.parse(localStorage.getItem("robot"));
 
+  if (!localStorageRobot) {
+    alert("Kein Roboter verbunden. Bitte Roboter in der Verwaltung auswählen!");
+    goToMainMenu();
+  }
   function displayRobotInfo(robot) {
     const robotInfoLobby = document.getElementById("robot-info-lobby-own");
     robotInfoLobby.innerHTML = "";
