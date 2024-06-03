@@ -163,12 +163,33 @@ button:hover {
   background-color: #388e3c; /* Darker green on hover */
 }
 
+.robot.connected-by-other {
+  background-color: #f3e5f5; /* Light violet background */
+  border-color: #ce93d8; /* Violet border */
+}
+
+.robot.connected-by-other button {
+  background-color: #ba68c8; /* Violet buttons */
+}
+
+.robot.connected-by-other button:hover {
+  background-color: #8e24aa; /* Darker violet on hover */
+}
+
 .connected-info {
   position: absolute;
   top: 10px;
   right: 10px;
   color: green;
   font-weight: bold;
+}
+
+button.disconnect-button {
+  background-color: red;
+}
+
+button.disconnect-button:hover {
+  background-color: darkred;
 }
 
 @media (max-width: 360px) {

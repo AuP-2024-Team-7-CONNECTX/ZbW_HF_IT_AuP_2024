@@ -87,7 +87,7 @@ namespace ConnectFour.Controllers
 		{
 			try
 			{
-				await _mqttService.PublishAsync(request.BrokerAddress, request.Port, request.Topic, "5");
+				await _mqttService.PublishAsync(request.BrokerAddress, request.Port, request.Topic, "ConnectX - Test Publish");
 
 				_responseJson.Message = $"Nachricht erfolgreich im MQTT-Topic '{request.Topic}' bei Broker {request.BrokerAddress}:{request.Port} veröffentlicht.";
 				return StatusCode(200, _responseJson);
