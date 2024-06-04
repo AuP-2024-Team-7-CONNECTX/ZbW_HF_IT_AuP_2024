@@ -2,10 +2,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   const redSound = new Audio("../Sounds/red.m4a");
   const blueSound = new Audio("../Sounds/blue.m4a");
 
-  // Broadcast Channel initialisieren
+  // Function to initialize LocalStorage items and create the game
+  async function initializeLocalStorageAndGame() {
+    const localStorageRobot = JSON.parse(localStorage.getItem("robot"));
+    const opponentRobot = JSON.parse(localStorage.getItem("opponent-robot"));
+    const gameMode = localStorage.getItem("game-mode");
 
-  const playerOne = JSON.parse(localStorage.getItem("user"));
-  const playerTwo = JSON.parse(localStorage.getItem("opponent-user"));
+    var gameRequest = {
+      robotIds: [localStorageRobot.id, opponentRobot.id],
+      currentMoveId: null,
+      state: "Active",
+      gameMode: gameMode,
+    };
+
+    let game = await CreateNewGame(gameRequest);
+    const playerOne = await getUserById(game.data.user1Id);
+    const playerTwo = await getUserById(game.data.user2Id);
+
+    const robotOne = await getRobotById(game.data.robot1Id);
+    const robotTwo = await getRobotById(game.data.robot2Id);
+
+    return { playerOne, playerTwo, robotOne, robotTwo };
+  }
+
+  // Await the initialization of LocalStorage items and game creation
+  const { playerOne, playerTwo, robotOne, robotTwo } =
+    await initializeLocalStorageAndGame();
+
+  // Initialize players based on game mode
 
   let currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
   let redTotalTime = 0,
@@ -154,12 +178,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   async function initializeGame() {
-    let localStorageUser = JSON.parse(localStorage.getItem("user"));
-
-    if (playerOne.id === localStorageUser.id) {
-      await CreateNewGame();
-    }
-
     columns.forEach(initializeColumn);
     updateTimeDisplay();
     updatePlayerInfo();

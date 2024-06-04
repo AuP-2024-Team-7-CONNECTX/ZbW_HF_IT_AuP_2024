@@ -94,14 +94,14 @@ namespace ConnectFour.Mqtt
 			_mqttClient1.ApplicationMessageReceivedAsync += e =>
 			{
 				var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
-				CurrentGameHandler.ReceiveInput(payload, false, false);
+				CurrentGameHandler.ReceiveInput(payload, false);
 				return Task.CompletedTask;
 			};
 
 			_mqttClient2.ApplicationMessageReceivedAsync += e =>
 			{
 				var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
-				CurrentGameHandler.ReceiveInput(payload, false, false);
+				CurrentGameHandler.ReceiveInput(payload, false);
 				return Task.CompletedTask;
 			};
 		}

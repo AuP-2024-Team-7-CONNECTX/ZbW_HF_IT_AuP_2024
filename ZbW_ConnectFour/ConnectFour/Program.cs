@@ -1,4 +1,5 @@
-﻿using ConnectFour.Mqtt;
+﻿using ConnectFour.GameControllers;
+using ConnectFour.Mqtt;
 using ConnectFour.Repositories;
 using ConnectFour.Repositories.Implementations;
 using ConnectFour.Repositories.Interfaces;
@@ -85,11 +86,12 @@ namespace ConnectFour
 			builder.Services.AddScoped<IUserRepository, UserRepository>();
 			builder.Services.AddScoped<IRobotRepository, RobotRepository>();
 			builder.Services.AddScoped<IMoveRepository, MoveRepository>();
-			builder.Services.AddScoped<IGameRepository, GameRepository>();
-
 			// Mqtt
 			builder.Services.AddSingleton<IMqttService, MqttService>();
 
+			builder.Services.AddScoped<IGameRepository, GameRepository>();
+
+			builder.Services.AddScoped<IGameHandlerService, GameHandlerService>();
 			// Mail
 			builder.Services.AddSingleton<IEmailSender>(new PostmarkEmailSender("8600a7c6-16a7-4c4f-938e-e144b29f51de", "nick.ponnadu.gmx.ch@zbw-online.ch"));
 
@@ -155,11 +157,11 @@ namespace ConnectFour
 					var connected = context.Database.CanConnect();
 					if (connected)
 					{
-						context.Database.EnsureDeleted(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+						//context.Database.EnsureDeleted(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
 						logger.LogInformation("Datenbank wurde erfolgreich verbunden!");
 					}
 
-					context.Database.EnsureCreated(); 
+					context.Database.EnsureCreated();
 					logger.LogInformation("Datenbank wurde erfolgreich angelegt!");
 
 

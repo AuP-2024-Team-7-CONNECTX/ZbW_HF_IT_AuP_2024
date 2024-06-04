@@ -115,11 +115,16 @@ public class MoveController : ControllerBase
 				Robot = robot,
 				Game = game,
 				User = robot!.CurrentUser,
-				MoveStarted = DateTime.Now,
+				MoveStarted = moveRequest.MoveStarted,
+				MoveFinished = DateTime.Now,
 				MoveDetails = moveRequest.MoveDetails
 			};
-
+			
 			await _moveRepository.CreateOrUpdateAsync(move);
+			game.CurrentMove = move;
+			await _gameRepository.CreateOrUpdateAsync(game);
+
+			game.GameHandler.ReceiveInput(move.MoveDetails, true);
 			// Assuming you want to return the created move as is
 			return CreatedAtAction(nameof(Get), new { id = move.Id }, move);
 		}

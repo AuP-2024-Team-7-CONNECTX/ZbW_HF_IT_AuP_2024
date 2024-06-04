@@ -5,11 +5,15 @@ using System.Text.Json.Serialization;
 using static ConnectFour.Enums.Enum;
 using Microsoft.Identity.Client;
 using System.Collections.Generic;
+using ConnectFour.GameControllers;
 
 namespace ConnectFour.Models
 {
 	public class Game : Entity
 	{
+		[NotMapped]
+		public virtual GameHandler? GameHandler {get; set;}
+
 		public virtual List<User>? Users { get; set; }
 		public virtual List<Robot>? Robots { get; set; }
 
@@ -60,19 +64,6 @@ namespace ConnectFour.Models
 		[NotMapped]
 		public GameField GameField { get; set; } = new GameField();
 
-		// Spielfeld:
-
-		// hier in der spielelogik wird statt Koordination mit Buchstaben mit int gearbeitet.
-		// beim Request verschicken und receiven an / vom Roboter wird das entsprechend gemappt
-
-		// Beispiel für das Spielfeld:
-		//  "1": { "1": 1, "2": 1, "3": 2, "4": 2, "5": 0, "6": 0 },
-		//  "2": { "1": 1, "2": 1, "3": 2, "4": 1, "5": 0, "6": 0 },
-		//  "3": { "1": 1, "2": 2, "3": 1, "4": 2, "5": 0, "6": 0 },
-		//  "4": { "1": 1, "2": 2, "3": 2, "4": 1, "5": 0, "6": 0 },
-		//  "5": { "1": 1, "2": 1, "3": 2, "4": 1, "5": 0, "6": 0 },
-		//  "6": { "1": 1, "2": 1, "3": 1, "4": 2, "5": 0, "6": 0 },
-		//  "7": { "1": 1, "2": 2, "3": 2, "4": 1, "5": 0, "6": 0 }
 	}
 
 	public class GameField

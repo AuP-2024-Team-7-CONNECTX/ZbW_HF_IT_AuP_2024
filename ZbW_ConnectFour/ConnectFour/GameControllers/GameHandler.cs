@@ -17,22 +17,13 @@ namespace ConnectFour.GameControllers
 		private readonly ILogger<GameHandler> _logger;
 
 		private Game _game;
-		private Move _currentMove;
-		private Move? _lastMove;
 
 		private Robot _robot1;
 		private Robot _robot2;
 
-		private User _User1;
-		private User _User2;
-
 		private static Random random = new Random();
 
 		private bool RobotIsReadyForNextTurn = false;
-
-
-		// 7 Horizontal, 6 vertikal Maximal
-		private Dictionary<int, Dictionary<int, int>> _gameField;
 
 		public GameHandler(IGameRepository gameRepository, IUserRepository UserRepository, IRobotRepository robotRepository, Game game, ILogger<GameHandler> logger, IMoveRepository moveRepository, IMqttService mqttService)
 		{
@@ -44,11 +35,6 @@ namespace ConnectFour.GameControllers
 			_logger = logger;
 			_mqttService = mqttService;
 
-			_gameField = new Dictionary<int, Dictionary<int, int>>();
-
-			// Erster Zug zuweisen
-			_currentMove = _game.CurrentMove;
-
 			StartGame();
 
 		}
@@ -56,48 +42,41 @@ namespace ConnectFour.GameControllers
 		{
 			SetUpUsersAndRobots();
 			ConnectWithMqtt();
-			ChangeIsIngameState(true, GameState.InProgress);
+		}
 
-			// First turn is decided randomly
-			//var beginner = _currentMove.User;
+		public async void EndGame()
+		{
+			ChangeIsIngameState(false, GameState.Completed);
+			DisconnectFromMqtt();
+		}
 
-			//if (beginner == 0)
-			//{
-			//	_currentMove.Robot = _robot1;
-			//	_currentMove.User = _User1;
-			//}
-			//else
-			//{
-			//	_currentMove.Robot = _robot2;
-			//	_currentMove.User = _User2;
-			//}
-			await _moveRepository.CreateOrUpdateAsync(_currentMove);
-
+		public void AbortGame()
+		{
+			ChangeIsIngameState(false, GameState.Abandoned);
+			DisconnectFromMqtt();
 		}
 
 
 
 		// Wird von MQTTClient oder CommunicationController(Frontend) angestossen, wenn wir einen Zug erhalten.
-		// Falls kein Spieler steuert, wird der Zug automatisch ausgeführt
-		// Aktualisiertes, neues Spielprett erhalten wird vom frontend per PUT, deshalb ist das _currentGame bereits aktualisiert.
+		// Ist der steurnde User ein Roboter, wird der Zug automatisch (per Algorithmus) ausgeführt
+		
+		// payload = Spalte, an der der Stein gesetzt wird
 
 		// Falls vom Frontend -> neuer Zug soll ausgeführt werden, Roboter wird informiert
 		// Falls vom Roboter -> Zug vom Roboter
-		public void ReceiveInput(string payload, bool isAutomatic, bool IsFromFrontend)
+		public void ReceiveInput(string payload, bool IsFromFrontend)
 		{
-			_currentMove = _game.CurrentMove;
-
 			// Frontend hat Zug gemacht und übermittelt uns den neuen Stand
 			// Es wird nur der nächste Zug an den Roboter ermittelt, mehr machen wir nicht
 			// Falls Zug vom Frontend und nicht algo-gesteuert, ist gamefield bereits aktualisiert und keine Aktion ist mehr nötig
 			if (IsFromFrontend)
 			{
-				if (!RobotIsReadyForNextTurn)
+				if (!_game.ManualTurnIsAllowed)
 				{
 					// hier muss was passieren, damit das backend wartet und den nachfolgenden code erst ausführt, wenn der bool true ist.
 				}
-				_game.ManualTurnIsAllowed = false;
-
+				
 
 				// Algorithmus bestimmt
 
@@ -117,7 +96,7 @@ namespace ConnectFour.GameControllers
 				//}
 
 
-				if (RobotIsReadyForNextTurn)
+				if (_game.ManualTurnIsAllowed)
 				{
 					SendTurnToRobot();
 				}
@@ -184,21 +163,21 @@ namespace ConnectFour.GameControllers
 		// Ansonsten passiert aktualisierung des gameFields mit neuem zug direkt im Frontend
 		public void PlaceNewStoneFromAlgorithm(int column)
 		{
-			var UserNumber = _currentMove.User == _User1 ? 1 : 2;
+
 			// Finde die erste leere Zeile in der angegebenen Spalte
 
 			// hier column zuweisen aufgrund errechneter Wert mit Algorithmus -> muss noch implementiert werden
 
-			for (int zeile = 0; zeile < _gameField[column].Count; zeile++)
-			{
-				if (_gameField[column][zeile] == 0)
-				{
-					// Setze den Stein des Spielers in das Feld
-					_gameField[column][zeile] = UserNumber;
+			//for (int zeile = 0; zeile < _game.GameField.C[column].Count; zeile++)
+			//{
+			//	if (_gameField[column][zeile] == 0)
+			//	{
+			//		// Setze den Stein des Spielers in das Feld
+			//		_gameField[column][zeile] = UserNumber;
 
-					return;
-				}
-			}
+			//		return;
+			//	}
+			//}
 			throw new Exception($"Spalte {column} ist voll.");
 		}
 
@@ -207,26 +186,23 @@ namespace ConnectFour.GameControllers
 		{
 			_robot1 = _game.Robots[0];
 			_robot2 = _game.Robots[1];
-			if (_robot1.CurrentUser != null)
+			if (_robot1.CurrentUser.Name.Contains("KI"))
 			{
-				_User1 = _robot1.CurrentUser;
-				_robot1.ControlledByHuman = true;
-			}
-			else
-			{
-				_User1 = null;
 				_robot1.ControlledByHuman = false;
 			}
-
-			if (_robot2.CurrentUser != null)
+			else
 			{
-				_User2 = _robot2.CurrentUser;
-				_robot2.ControlledByHuman = true;
+				_robot1.ControlledByHuman = true;
+			}
+
+			if (_robot2.CurrentUser.Name.Contains("KI"))
+			{
+
+				_robot2.ControlledByHuman = false;
 			}
 			else
 			{
-				_User2 = null;
-				_robot2.ControlledByHuman = false;
+				_robot2.ControlledByHuman = true;
 			}
 
 
@@ -237,57 +213,21 @@ namespace ConnectFour.GameControllers
 			// implement logic
 		}
 
-		private void ChangeTurn()
-		{
-			_lastMove.MoveFinished = DateTime.Now;
-			_lastMove = _currentMove;
-			_currentMove = _game.CurrentMove;
-			if (_currentMove.User == _User1 && _currentMove.Robot == _robot1)
-			{
-				_currentMove.Robot = _robot2;
-				_currentMove.User = _User2;
-			}
-			else
-			{
-				_currentMove.Robot = _robot1;
-				_currentMove.User = _User1;
-			}
-			_moveRepository.CreateOrUpdateAsync(_lastMove);
-			_moveRepository.CreateOrUpdateAsync(_currentMove);
-			_gameRepository.CreateOrUpdateAsync(_game);
-		}
-
-		public async void EndGame()
-		{
-			ChangeIsIngameState(false, GameState.Completed);
-
-			DisconnectFromMqtt();
-
-		}
-
-		public void AbortGame()
-		{
-			ChangeIsIngameState(false, GameState.Abandoned);
-			DisconnectFromMqtt();
-
-		}
-
 
 		private async void ConnectWithMqtt()
 		{
-			// needed ?
-			//await _mqttService.ConnectToNewBrokerAsync();
-			//await _mqttService.SubscribeAsync($"{_robot1.Topic}/feedback");
-			//await _mqttService.SubscribeAsync($"{_robot2.Topic}/feedback");
+
+			await _mqttService.SubscribeAsync(_robot1.BrokerAddress, _robot1.BrokerPort.ToString(), $"{_robot1.BrokerTopic}/feedback");
+			await _mqttService.SubscribeAsync(_robot2.BrokerAddress, _robot2.BrokerPort.ToString(), $"{_robot2.BrokerTopic}/feedback");
 			await _mqttService.RegisterGameHandler(this);
 		}
 
 
 		private async void DisconnectFromMqtt()
 		{
-			// needed?
-			//await _mqttService.UnsubscribeAsync($"{_robot1.Topic}/feedback");
-			//await _mqttService.UnsubscribeAsync($"{_robot2.Topic}/feedback");
+
+			await _mqttService.SubscribeAsync(_robot1.BrokerAddress, _robot1.BrokerPort.ToString(), $"{_robot1.BrokerTopic}/feedback");
+			await _mqttService.SubscribeAsync(_robot2.BrokerAddress, _robot2.BrokerPort.ToString(), $"{_robot2.BrokerTopic}/feedback");
 			//await _mqttService.DisconnectAsync();
 		}
 
@@ -296,16 +236,16 @@ namespace ConnectFour.GameControllers
 		{
 			try
 			{
-				foreach (var robot in _game.Robots)
-				{
-					robot.IsIngame = isIngame;
-					var currentUser = robot.CurrentUser;
-					currentUser.IsIngame = isIngame;
-					_robotRepository.CreateOrUpdateAsync(robot);
-					_UserRepository.CreateOrUpdateAsync(currentUser);
-				}
-				_game.State = gameState;
-				_gameRepository.CreateOrUpdateAsync(_game);
+				//foreach (var robot in _game.Robots)
+				//{
+				//	robot.IsIngame = isIngame;
+				//	var currentUser = robot.CurrentUser;
+				//	currentUser.IsIngame = isIngame;
+				//	_robotRepository.CreateOrUpdateAsync(robot);
+				//	_UserRepository.CreateOrUpdateAsync(currentUser);
+				////}
+				//_game.State = gameState;
+				//_gameRepository.CreateOrUpdateAsync(_game);
 
 			}
 			catch (Exception ex)
