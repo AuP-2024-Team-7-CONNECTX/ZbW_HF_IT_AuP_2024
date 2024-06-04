@@ -99,6 +99,13 @@ public class GameDbContext : DbContext
 
 		#endregion
 
+		// Initialdaten hinzufügen
+		modelBuilder.Entity<User>().HasData(
+			new User { Id = Guid.NewGuid().ToString(), Email = "KI (Terminator)",Authenticated=true,IsIngame=false,Name="KI (Terminator)",Password="KI1" },
+			new User { Id = Guid.NewGuid().ToString(), Email = "KI (Agent Smith)",Authenticated=true,IsIngame=false,Name="KI (Agent Smith)",Password="KI2" }
+			
+		);
+
 
 	}
 
