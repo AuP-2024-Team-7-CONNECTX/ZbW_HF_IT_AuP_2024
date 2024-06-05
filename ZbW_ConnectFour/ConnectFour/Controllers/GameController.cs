@@ -1,4 +1,5 @@
 ﻿using ConnectFour.Api.User;
+using ConnectFour.GameControllers;
 using ConnectFour.Models;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +19,15 @@ namespace ConnectFour.Controllers
 		private readonly IRobotRepository _robotRepository;
 		private readonly ILogger<GameController> _logger;
 
-		public GameController(IGameRepository gameRepository, IUserRepository userRepository, IRobotRepository robotRepository, ILogger<GameController> logger)
+		private readonly IGameHandlerService _gameHandlerService;
+
+		public GameController(IGameRepository gameRepository, IUserRepository userRepository, IRobotRepository robotRepository, ILogger<GameController> logger, IGameHandlerService gameHandlerService)
 		{
 			_gameRepository = gameRepository ?? throw new ArgumentNullException(nameof(gameRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 			_userRepository = userRepository;
 			_robotRepository = robotRepository;
+			_gameHandlerService = gameHandlerService;
 		}
 
 		// GET: api/games
@@ -204,6 +208,10 @@ namespace ConnectFour.Controllers
 					GameFieldJson = gameFieldJson,
 					StartingUserId = startingUserId
 				};
+
+				var gameHandler = _gameHandlerService.CreateNewGameHandler(game);
+
+				game.GameHandler = gameHandler;
 
 				await _gameRepository.CreateOrUpdateAsync(game);
 				return CreatedAtAction(nameof(Get), new { id = game.Id }, new { Message = "Spiel erfolgreich erstellt", success = true, data = game });

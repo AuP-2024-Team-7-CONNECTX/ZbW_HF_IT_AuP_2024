@@ -26,11 +26,19 @@ namespace ConnectFour.Repositories.Implementations
                     throw new ObjectNotFoundException($"Move mit id {entity.CurrentMoveId} konnte nicht gefunden werden");
                 }
             }
-            entity.Robot1Id = entity.Robots[0].Id;
-			entity.Robot2Id = entity.Robots[1].Id;
+            if (entity.Robots.Count() == 2)
+            {
+				entity.Robot1Id = entity.Robots[0].Id;
+				entity.Robot2Id = entity.Robots[1].Id;
 
-			entity.User1Id = entity.Robots[0].CurrentUserId;
-			entity.User2Id = entity.Robots[1].CurrentUserId;
+			}
+
+            if (entity.Users.Count() == 2)
+            {
+				entity.User1Id = entity.Robots[0].CurrentUserId;
+				entity.User2Id = entity.Robots[1].CurrentUserId;
+
+			}
 
 			await _genericRepository.CreateOrUpdateAsync(entity);
         }

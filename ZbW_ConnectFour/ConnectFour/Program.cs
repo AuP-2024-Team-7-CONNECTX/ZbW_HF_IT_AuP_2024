@@ -91,14 +91,14 @@ namespace ConnectFour
 			builder.Services.AddScoped<IMoveRepository, MoveRepository>();
 			// Mqtt
 			builder.Services.AddSingleton<IMqttService, MqttService>();
-
 			builder.Services.AddScoped<IGameRepository, GameRepository>();
-
-			builder.Services.AddScoped<IGameHandlerService, GameHandlerService>();
 			// Mail
 			builder.Services.AddSingleton<IEmailSender>(new PostmarkEmailSender("8600a7c6-16a7-4c4f-938e-e144b29f51de", "nick.ponnadu.gmx.ch@zbw-online.ch"));
 
 			builder.Services.AddSingleton<ITokenService, TokenService>();
+
+			builder.Services.AddScoped<IGameHandlerService, GameHandlerService>();
+
 
 			builder.Services.AddCors(options =>
 			{
@@ -160,7 +160,7 @@ namespace ConnectFour
 					var connected = context.Database.CanConnect();
 					if (connected)
 					{
-						context.Database.EnsureDeleted(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+						//context.Database.EnsureDeleted(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
 						logger.LogInformation("Datenbank wurde erfolgreich verbunden!");
 					}
 

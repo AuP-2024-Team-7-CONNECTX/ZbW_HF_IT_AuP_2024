@@ -9,8 +9,7 @@ public class MoveRequestExample : IExamplesProvider<MoveRequest>
 		{
 			RobotId = Guid.NewGuid().ToString(),
 			MoveDetails = "Column 3",
-			MoveStarted = DateTime.UtcNow,
-			MoveFinished = DateTime.UtcNow.AddSeconds(5),
+			Duration = 922.4f,	
 			GameId = Guid.NewGuid().ToString()
 		};
 	}

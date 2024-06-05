@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     let game = await CreateNewGame(gameRequest);
+
+    localStorage.setItem("game-id", game.data.id);
     const playerOne = await getUserById(game.data.user1Id);
     const playerTwo = await getUserById(game.data.user2Id);
 
@@ -65,6 +67,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }`;
     document.title = currentPlayerTitle.textContent;
     updateTimeDisplay();
+    updateColumnEvents();
   }
 
   function updateTimeDisplay() {
@@ -144,7 +147,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.reload();
   }
 
-  function handleColumnClick(event) {
+  async function handleColumnClick(event) {
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    if (currentUser.id !== currentPlayer.id) {
+      return;
+    }
+
     if (!gameStarted) {
       startGameTimer();
       gameStarted = true;
@@ -165,8 +173,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       gameState[column.dataset.column][rowIndex] =
         currentPlayer === playerOne ? "rot" : "blau";
 
+      let robot = currentPlayer === playerOne ? robotOne : robotTwo;
+
+      let game = await getCurrentGame();
+
+      let moveRequest = {
+        RobotId: robot.id, // Ersetze durch die tatsächliche Roboter-ID
+        MoveDetails: column.dataset.column, // Ersetze durch die tatsächlichen Bewegungsdetails
+        Duration: 10.5,
+        GameId: game.id, // Ersetze durch die tatsächliche Spiel-ID
+      };
+
+      let move = await createMove(moveRequest);
       currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
+
       updatePlayerInfo();
+
       if (gameStarted) startGameTimer();
     }
   }
@@ -175,9 +197,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "../Spielstart/spielstart.html";
   }
 
-  columns.forEach((column) => {
-    column.addEventListener("click", handleColumnClick);
-  });
+  function updateColumnEvents() {
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    columns.forEach((column) => {
+      if (currentUser.id === currentPlayer.id) {
+        column.style.pointerEvents = "auto";
+        column.addEventListener("click", handleColumnClick);
+      } else {
+        column.style.pointerEvents = "none";
+        column.removeEventListener("click", handleColumnClick);
+      }
+    });
+  }
 
   async function initializeGame() {
     columns.forEach(initializeColumn);
