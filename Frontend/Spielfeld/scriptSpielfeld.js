@@ -19,19 +19,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     const playerOne = await getUserById(game.data.user1Id);
     const playerTwo = await getUserById(game.data.user2Id);
 
+    let startingPlayer =
+      game.startingUserId === playerOne.Id ? playerOne : playerTwo;
     const robotOne = await getRobotById(game.data.robot1Id);
     const robotTwo = await getRobotById(game.data.robot2Id);
 
-    return { playerOne, playerTwo, robotOne, robotTwo };
+    return { playerOne, playerTwo, startingPlayer, robotOne, robotTwo };
   }
 
   // Await the initialization of LocalStorage items and game creation
-  const { playerOne, playerTwo, robotOne, robotTwo } =
+  const { playerOne, playerTwo, startingPlayer, robotOne, robotTwo } =
     await initializeLocalStorageAndGame();
 
   // Initialize players based on game mode
 
-  let currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
+  let currentPlayer = startingPlayer;
   let redTotalTime = 0,
     blueTotalTime = 0;
   let redRemaining = 21,

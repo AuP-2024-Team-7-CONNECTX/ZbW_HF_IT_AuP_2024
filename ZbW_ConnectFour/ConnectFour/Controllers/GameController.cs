@@ -190,6 +190,10 @@ namespace ConnectFour.Controllers
 				};
 				var gameFieldJson = JsonSerializer.Serialize(gameField, options);
 
+				var random = new Random();
+
+				var startingUserId = random.Next(2) == 0 ? Users[0].Id : Users[1].Id;
+
 				var game = new Game
 				{
 					Id = Guid.NewGuid().ToString(),
@@ -197,7 +201,8 @@ namespace ConnectFour.Controllers
 					Robots = robots,
 					CurrentMoveId = request.CurrentMoveId,
 					State = GameState.InProgress,
-					GameFieldJson = gameFieldJson
+					GameFieldJson = gameFieldJson,
+					StartingUserId = startingUserId
 				};
 
 				await _gameRepository.CreateOrUpdateAsync(game);

@@ -12,12 +12,16 @@ namespace ConnectFour.Models
 	public class Game : Entity
 	{
 		[NotMapped]
-		public virtual GameHandler? GameHandler {get; set;}
+		public virtual GameHandler? GameHandler { get; set; }
 
 		public virtual List<User>? Users { get; set; }
 		public virtual List<Robot>? Robots { get; set; }
 
 		public string User1Id { get; set; }
+
+		[NotMapped]
+		public string StartingUserId { get; set; }
+
 		public string User2Id { get; set; }
 
 		public string Robot1Id { get; set; }
