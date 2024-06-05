@@ -76,8 +76,11 @@ namespace ConnectFour
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 
+			var connectionString = configuration.GetConnectionString("ConnectFour");
+
+			Console.WriteLine(connectionString);
 			builder.Services.AddDbContext<GameDbContext>(options =>
-					options.UseSqlServer(configuration.GetConnectionString("ConnectFour")).UseLazyLoadingProxies());
+					options.UseSqlServer(connectionString).UseLazyLoadingProxies());
 
 			// F�ge das Health Check Paket f�r SQL Server hinzu
 			builder.Services.AddHealthChecks();
