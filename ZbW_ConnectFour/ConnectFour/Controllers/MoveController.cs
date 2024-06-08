@@ -129,7 +129,7 @@ namespace ConnectFour.Controllers
 				var gameHandler = _gameHandlerService.GetGameHandlerById(game.Id);
 				gameHandler.ReceiveInput(move.MoveDetails, true);
 
-				return CreatedAtAction(nameof(Get), new { id = move.Id }, move);
+				return Ok(new { Message = "Zug erfolgreich gespeichert.", success = true });
 			}
 			catch (Exception ex)
 			{

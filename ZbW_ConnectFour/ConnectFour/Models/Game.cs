@@ -37,7 +37,7 @@ namespace ConnectFour.Models
 		public decimal? TotalPointsUserOne { get; set; }
 		public decimal? TotalPointsUserTwo { get; set; }
 
-		public bool ManualTurnIsAllowed { get; set; } = false;
+		public bool ManualTurnIsAllowed { get; set; };
 
 		public GameMode GameMode { get;set; }
 

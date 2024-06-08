@@ -116,7 +116,7 @@ namespace ConnectFour.Mqtt
 			}
 
 			await client.SubscribeAsync(topic);
-			_logger.LogInformation($"Subscribed to topic: {topic}");
+			_logger.LogInformation($"Subscribed to broker:{brokerAddress}:{port} topic: {topic}");
 		}
 
 		public async Task PublishAsync(string brokerAddress, string port, string topic, string message, MqttQualityOfServiceLevel qosLevel = MqttQualityOfServiceLevel.AtLeastOnce, bool retainFlag = false)

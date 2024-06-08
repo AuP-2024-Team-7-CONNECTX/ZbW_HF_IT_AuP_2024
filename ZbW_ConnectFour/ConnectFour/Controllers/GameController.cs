@@ -206,7 +206,10 @@ namespace ConnectFour.Controllers
 					CurrentMoveId = request.CurrentMoveId,
 					State = GameState.InProgress,
 					GameFieldJson = gameFieldJson,
-					StartingUserId = startingUserId
+					StartingUserId = startingUserId,
+					NewTurnForFrontend = false,
+					NewTurnForFrontendRowColumn = null,
+					ManualTurnIsAllowed = true
 				};
 
 				var gameHandler = _gameHandlerService.CreateNewGameHandler(game);
