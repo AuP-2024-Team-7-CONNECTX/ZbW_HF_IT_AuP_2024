@@ -90,9 +90,9 @@ namespace ConnectFour.Controllers
 			}
 		}
 
-		// POST api/Moves
+		
 		[HttpPost]
-		public async Task<ActionResult<Move>> Post([FromBody] MoveRequest moveRequest)
+		public async Task<ActionResult<MoveResponse>> Post([FromBody] MoveRequest moveRequest)
 		{
 			try
 			{
@@ -126,10 +126,20 @@ namespace ConnectFour.Controllers
 				game.CurrentMove = move;
 				await _gameRepository.CreateOrUpdateAsync(game);
 
-				var gameHandler = _gameHandlerService.GetGameHandlerById(game.Id);
-				gameHandler.ReceiveInput(move.MoveDetails, true);
+				_gameHandlerService.UpdateGame(game);
+				_gameHandlerService.ReceiveInput(game,move.MoveDetails, true);
 
-				return Ok(new { Message = "Zug erfolgreich gespeichert.", success = true });
+				var moveResponse = new MoveResponse
+				{
+					Id = move.Id,
+					PlayerId = move.User.Id,
+					RobotId = move.Robot.Id,
+					MoveDetails = move.MoveDetails,
+					Duration = move.Duration,
+					GameId = move.Game.Id
+				};
+
+				return CreatedAtAction(nameof(Get), new { id = move.Id }, new { Message = "Zug erfolgreich erstellt", success = true, data = moveResponse });
 			}
 			catch (Exception ex)
 			{

@@ -25,6 +25,35 @@ async function CreateNewGame(gameRequest) {
   }
 }
 
+async function UpdateGame(gameRequest) {
+  try {
+    let game = await getCurrentGame();
+
+    const response = await fetch(`${endpoint}/Game/${game.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+      body: JSON.stringify(gameRequest),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log(result);
+      return result;
+    } else {
+      const error = await response.json();
+
+      alert("Fehler beim Aktualisieren des Spiels: " + error.Message);
+    }
+  } catch (error) {
+    console.error("Fehler beim Aktualisieren des Spiels: ", error.message);
+
+    alert("Ein Fehler ist aufgetreten: " + error.message);
+  }
+}
+
 async function getUserById(userId) {
   const response = await fetch(`${endpoint}/User/${userId}`, {
     method: "GET",
@@ -95,7 +124,7 @@ async function GetKIUser2() {
   }
 }
 
-async function getGame() {
+async function getCurrentGame() {
   const response = await fetch(`${endpoint}/Game//${localStorageUser.id}`, {
     method: "GET",
     mode: "cors",
@@ -132,10 +161,10 @@ async function createMove(moveRequest) {
       return result;
     } else {
       const error = await response.json();
-      alert("Fehler beim Erstellen des Zuges: " + error.Message);
+      alert("Fehler beim Erstellen des Zuges: " + error.message);
     }
   } catch (error) {
-    console.error("Fehler beim Erstellen des Zuges: ", error.message);
+    console.error("Fehler beim Erstellen des Zuges:", error.message);
     alert("Ein Fehler ist aufgetreten: " + error.message);
   }
 }
@@ -157,10 +186,11 @@ async function getCurrentGame() {
       return result;
     } else {
       const error = await response.json();
-      alert("Fehler beim Laden des Spiels: " + error.Message);
+      console.log(error);
+      // alert("Fehler beim Laden des Spiels: " + error.Message);
     }
   } catch (error) {
     console.error("Fehler beim Laden des Spiels: ", error.message);
-    alert("Fehler beim Laden des Spiels: " + error.message);
+    // alert("Fehler beim Laden des Spiels: " + error.message);
   }
 }

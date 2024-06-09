@@ -1,5 +1,4 @@
-﻿using ConnectFour.GameControllers;
-using MQTTnet;
+﻿using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Protocol;
 using System.Text;
@@ -19,14 +18,33 @@ namespace ConnectFour.Mqtt
 
 		public readonly IConfiguration _configuration;
 
-		public GameHandler CurrentGameHandler;
+		public event Func<string, Task> MessageReceived;
 
 		public MqttService(ILogger<MqttService> logger, IConfiguration configuration)
 		{
 			_logger = logger;
 			_configuration = configuration;
+			InitializeClients();
+			
+		}
+
+		private void InitializeClients()
+		{
 			_mqttClient1 = new MqttFactory().CreateMqttClient();
 			_mqttClient2 = new MqttFactory().CreateMqttClient();
+
+			_mqttClient1.ApplicationMessageReceivedAsync += HandleApplicationMessageReceived;
+			_mqttClient2.ApplicationMessageReceivedAsync += HandleApplicationMessageReceived;
+		}
+
+		private async Task HandleApplicationMessageReceived(MqttApplicationMessageReceivedEventArgs e)
+		{
+
+			var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
+			if (MessageReceived != null)
+			{
+				await MessageReceived(payload);
+			}
 		}
 
 		private IMqttClient GetClient(string brokerAddress, string brokerPort)
@@ -87,23 +105,9 @@ namespace ConnectFour.Mqtt
 			}
 		}
 
-		public async Task RegisterGameHandler(GameHandler gameHandler)
+		public async Task RegisterGameHandler()
 		{
-			CurrentGameHandler = gameHandler ?? throw new ArgumentNullException(nameof(gameHandler));
-
-			_mqttClient1.ApplicationMessageReceivedAsync += e =>
-			{
-				var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
-				CurrentGameHandler.ReceiveInput(payload, false);
-				return Task.CompletedTask;
-			};
-
-			_mqttClient2.ApplicationMessageReceivedAsync += e =>
-			{
-				var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
-				CurrentGameHandler.ReceiveInput(payload, false);
-				return Task.CompletedTask;
-			};
+			// This method ensures the event handler is registered only once.
 		}
 
 		public async Task SubscribeAsync(string brokerAddress, string port, string topic)
@@ -119,13 +123,13 @@ namespace ConnectFour.Mqtt
 			_logger.LogInformation($"Subscribed to broker:{brokerAddress}:{port} topic: {topic}");
 		}
 
-		public async Task PublishAsync(string brokerAddress, string port, string topic, string message, MqttQualityOfServiceLevel qosLevel = MqttQualityOfServiceLevel.AtLeastOnce, bool retainFlag = false)
+		public async Task<bool> PublishAsync(string brokerAddress, string port, string topic, string message, MqttQualityOfServiceLevel qosLevel = MqttQualityOfServiceLevel.AtLeastOnce, bool retainFlag = false)
 		{
 			var client = GetClient(brokerAddress, port);
 			if (client == null)
 			{
 				_logger.LogError("No client is connected to the specified broker.");
-				return;
+				return false;
 			}
 
 			var mqttMessage = new MqttApplicationMessageBuilder()
@@ -136,7 +140,9 @@ namespace ConnectFour.Mqtt
 				.Build();
 
 			await client.PublishAsync(mqttMessage);
-			_logger.LogInformation($"Published message to topic '{topic}': {message}");
+			_logger.LogInformation($"Published message to broker:{brokerAddress}:{port}, topic '{topic}': {message}");
+
+			return true;
 		}
 
 		public async Task UnsubscribeAsync(string brokerAddress, string port, string topic)

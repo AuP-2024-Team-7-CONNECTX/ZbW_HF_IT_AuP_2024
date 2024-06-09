@@ -7,4 +7,6 @@ public record GameRequest
 	public string State { get; init; }
 
 	public string GameMode { get; init; }
+
+
 }

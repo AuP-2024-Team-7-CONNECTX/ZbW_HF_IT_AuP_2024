@@ -67,14 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const robotName = document.createElement("div");
       robotName.classList.add("name");
       robotName.textContent = `Roboter-Name: ${robot.name}`;
-
-      // const robotStatus = document.createElement("div");
-      // robotStatus.classList.add("status");
-      // robotStatus.textContent = `Status: ${
-      //   robot.isConnected ? "Verbunden" : "Nicht verbunden"
-      // }`;
-      // robotStatus.style.marginBottom = "15px"; // Add margin-bottom for spacing
-
       const robotBrokerAddress = document.createElement("div");
       robotBrokerAddress.classList.add("robot-broker-address");
       robotBrokerAddress.textContent = `Broker-Adresse: ${robot.brokerAddress}`;
@@ -88,26 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
       robotBrokerTopic.textContent = `Broker-Topic: ${robot.brokerTopic}`;
 
       robotDiv.appendChild(robotName);
-      // robotDiv.appendChild(robotStatus);
       robotDiv.appendChild(robotBrokerAddress);
       robotDiv.appendChild(robotBrokerPort);
       robotDiv.appendChild(robotBrokerTopic);
-
-      // Erstelle den "Verbindung testen"-Button
-      // const testConnectionButton = document.createElement("button");
-      // testConnectionButton.className = "mqtt-button full-width";
-      // testConnectionButton.textContent = "Verbindung testen";
-      // testConnectionButton.onclick = () => {
-      //   ConnectToMqttWithRobot(robot, testConnectionButton);
-      // };
-
-      // // Create a div to hold the buttons and add some margin-top
-      // const buttonDiv = document.createElement("div");
-      // buttonDiv.style.marginTop = "10px";
-
-      // buttonDiv.appendChild(testConnectionButton);
-
-      // robotDiv.appendChild(buttonDiv);
 
       // Erstelle den Button-Div
       const buttonDiv = document.createElement("div");
@@ -424,6 +399,7 @@ async function checkForGameAcceptRequest() {
     const data = await response.json();
     if (data.success) {
       await SetOpponentsForLocalStorage(data.senderId);
+      await sleep(500);
       window.location.href = "../Spielfeld/spielfeld.html";
     } else {
       console.log(data.message);
@@ -453,7 +429,9 @@ async function acceptGameRequest(senderId) {
   // Logik zum Akzeptieren der Spielanfrage
   await sendGameAcceptRequest(senderId);
   await SetOpponentsForLocalStorage(senderId);
-  await sleep(500); // Hier wird die Pause eingefügt
+
+  const localStorageUser = JSON.parse(localStorage.getItem("user"));
+  localStorage.setItem("game-creator", JSON.stringify(localStorageUser));
   window.location.href = "../Spielfeld/spielfeld.html";
 }
 

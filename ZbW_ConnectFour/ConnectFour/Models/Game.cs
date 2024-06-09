@@ -37,14 +37,17 @@ namespace ConnectFour.Models
 		public decimal? TotalPointsUserOne { get; set; }
 		public decimal? TotalPointsUserTwo { get; set; }
 
-		public bool ManualTurnIsAllowed { get; set; };
+		public bool ManualTurnIsAllowed { get; set; }
 
 		public GameMode GameMode { get;set; }
 
 		[NotMapped]
-		public bool? NewTurnForFrontend { get; init; }
+		public bool? NewTurnForFrontend { get; set; }
 		[NotMapped]
-		public string? NewTurnForFrontendRowColumn { get; init; }
+		public string? NewTurnForFrontendRowColumn { get; set; }
+		[NotMapped]
+		public bool? RobotIsReadyForNextTurn { get; set; }
+
 
 		// Spielfeld als JSON in der Datenbank speichern
 		public string GameFieldJson

@@ -5,7 +5,7 @@
         public enum GameState
         {
             Completed,
-            Abandoned,
+            Aborted,
             InProgress
         }
 

@@ -159,9 +159,7 @@ namespace ConnectFour.Controllers
 
 				if (games.Any())
 				{
-					var gameInProgress = games.FirstOrDefault(g =>
-									g.Robots.All(r => request.RobotIds.Contains(r.Id)) &&
-									g.State == GameState.InProgress);
+					var gameInProgress = games.FirstOrDefault(g => g.State == GameState.InProgress);
 
 					if (gameInProgress != null)
 					{
@@ -212,9 +210,8 @@ namespace ConnectFour.Controllers
 					ManualTurnIsAllowed = true
 				};
 
-				var gameHandler = _gameHandlerService.CreateNewGameHandler(game);
-
-				game.GameHandler = gameHandler;
+				game = await _gameHandlerService.CreateNewGame(game);
+				game = await _gameHandlerService.StartGame(game);
 
 				await _gameRepository.CreateOrUpdateAsync(game);
 				return CreatedAtAction(nameof(Get), new { id = game.Id }, new { Message = "Spiel erfolgreich erstellt", success = true, data = game });
@@ -243,16 +240,21 @@ namespace ConnectFour.Controllers
 					return Ok(new { Message = "Ungültiger Wert für Status", success = false });
 				}
 
-				if (!Enum.TryParse<GameMode>(request.GameMode, out var gameMode))
+				game.State = state;
+				if (game.State == GameState.Aborted)
 				{
-					return Ok(new { Message = "Ungültiger Wert für Spielmodus", success = false });
+					await _gameHandlerService.AbortGame(game);
 				}
 
-				game.GameMode = gameMode;
-				game.State = state;
-				game.CurrentMoveId = request.CurrentMoveId;
+				if (game.State == GameState.Completed)
+				{
+					await _gameHandlerService.EndGame(game);
+				}
 
+				game.CurrentMoveId = request.CurrentMoveId;
+				
 				await _gameRepository.CreateOrUpdateAsync(game);
+
 
 				return Ok(new { Message = "Spiel erfolgreich aktualisiert", success = true });
 			}
