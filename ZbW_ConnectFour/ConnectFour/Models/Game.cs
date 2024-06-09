@@ -3,16 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static ConnectFour.Enums.Enum;
-using Microsoft.Identity.Client;
-using System.Collections.Generic;
-using ConnectFour.GameControllers;
+
 
 namespace ConnectFour.Models
 {
 	public class Game : Entity
 	{
-		[NotMapped]
-		public GameHandler? GameHandler { get; set; }
 
 		public virtual List<User>? Users { get; set; }
 		public virtual List<Robot>? Robots { get; set; }
@@ -39,14 +35,16 @@ namespace ConnectFour.Models
 
 		public bool ManualTurnIsAllowed { get; set; }
 
-		public GameMode GameMode { get;set; }
+		public GameMode GameMode { get; set; }
+
+		public bool? NewTurnForFrontend { get; set; }
+		public string? NewTurnForFrontendRowColumn { get; set; }
+		public bool? RobotIsReadyForNextTurn { get; set; }
+		public bool? ShowTurnOnBoard { get; set; }
 
 		[NotMapped]
-		public bool? NewTurnForFrontend { get; set; }
-		[NotMapped]
-		public string? NewTurnForFrontendRowColumn { get; set; }
-		[NotMapped]
-		public bool? RobotIsReadyForNextTurn { get; set; }
+		public bool OverrideDbGameForGet { get; set; }
+
 
 
 		// Spielfeld als JSON in der Datenbank speichern

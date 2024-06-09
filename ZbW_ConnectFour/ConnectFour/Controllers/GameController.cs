@@ -1,9 +1,8 @@
 ﻿using ConnectFour.Api.User;
-using ConnectFour.GameControllers;
 using ConnectFour.Models;
+using ConnectFour.Mqtt;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using static ConnectFour.Enums.Enum;
 
@@ -19,9 +18,9 @@ namespace ConnectFour.Controllers
 		private readonly IRobotRepository _robotRepository;
 		private readonly ILogger<GameController> _logger;
 
-		private readonly IGameHandlerService _gameHandlerService;
+		private readonly IMqttAndGameService _gameHandlerService;
 
-		public GameController(IGameRepository gameRepository, IUserRepository userRepository, IRobotRepository robotRepository, ILogger<GameController> logger, IGameHandlerService gameHandlerService)
+		public GameController(IGameRepository gameRepository, IUserRepository userRepository, IRobotRepository robotRepository, ILogger<GameController> logger, IMqttAndGameService gameHandlerService)
 		{
 			_gameRepository = gameRepository ?? throw new ArgumentNullException(nameof(gameRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -93,12 +92,16 @@ namespace ConnectFour.Controllers
 		{
 			try
 			{
+
+
 				var game = await _gameRepository.GetByIdAsync(id);
 				if (game == null)
 				{
 					return Ok(new { Message = "Spiel nicht gefunden.", success = false });
 				}
 
+				var gameFromMqttService = _gameHandlerService.GetGameById(game.Id);
+			
 				var gameResponse = new GameResponse
 				{
 					Id = game.Id,
@@ -134,10 +137,10 @@ namespace ConnectFour.Controllers
 					State = game.State,
 					TotalPointsPlayerOne = game.TotalPointsUserOne,
 					TotalPointsPlayerTwo = game.TotalPointsUserTwo,
-					NewTurnForFrontend = game.NewTurnForFrontend,
-					NewTurnForFrontendRowColumn = game.NewTurnForFrontendRowColumn,
+					NewTurnForFrontend = gameFromMqttService != null ? gameFromMqttService.NewTurnForFrontend : game.NewTurnForFrontend,
+					NewTurnForFrontendRowColumn = gameFromMqttService != null ? gameFromMqttService.NewTurnForFrontendRowColumn : game.NewTurnForFrontendRowColumn,
 					GameMode = game.GameMode.ToString(),
-					ManualTurnIsAllowed = game.ManualTurnIsAllowed
+					ManualTurnIsAllowed = gameFromMqttService != null ? gameFromMqttService.ManualTurnIsAllowed : game.ManualTurnIsAllowed
 				};
 
 				return Ok(gameResponse);
@@ -159,6 +162,7 @@ namespace ConnectFour.Controllers
 
 				if (games.Any())
 				{
+
 					var gameInProgress = games.FirstOrDefault(g => g.State == GameState.InProgress);
 
 					if (gameInProgress != null)
@@ -252,7 +256,7 @@ namespace ConnectFour.Controllers
 				}
 
 				game.CurrentMoveId = request.CurrentMoveId;
-				
+
 				await _gameRepository.CreateOrUpdateAsync(game);
 
 
@@ -265,26 +269,5 @@ namespace ConnectFour.Controllers
 			}
 		}
 
-		//// DELETE: api/games/{id}
-		//[HttpDelete("{id}")]
-		//public async Task<IActionResult> Delete(string id)
-		//{
-		//	try
-		//	{
-		//		var game = await _gameRepository.GetByIdAsync(id);
-		//		if (game == null)
-		//		{
-		//			return Ok(new { Message = "Spiel nicht gefunden.", success = false });
-		//		}
-
-		//		await _gameRepository.DeleteAsync<Game>(id);
-		//		return Ok(new { Message = "Spiel erfolgreich gelöscht", success = true });
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		_logger.LogError(ex, $"Ein Fehler ist aufgetreten beim Löschen des Spiels mit ID {id}. {ex.Message}");
-		//		return StatusCode(500, new { Message = "Ein interner Serverfehler ist aufgetreten.", success = false });
-		//	}
-		//}
 	}
 }

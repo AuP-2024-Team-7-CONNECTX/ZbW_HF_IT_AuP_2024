@@ -4,8 +4,11 @@
     {
         public enum GameState
         {
+            // 0 
             Completed,
+            // 1
             Aborted,
+            // 2
             InProgress
         }
 

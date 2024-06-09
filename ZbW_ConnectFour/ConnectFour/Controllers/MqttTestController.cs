@@ -11,11 +11,11 @@ namespace ConnectFour.Controllers
 	[Route("[controller]")]
 	public class MqttTestController : ControllerBase
 	{
-		private readonly IMqttService _mqttService;
+		private readonly IMqttAndGameService _mqttService;
 		private readonly ILogger<MqttTestController> _mqttTestController;
 		private JsonResponseMessage _responseJson;
 
-		public MqttTestController(IMqttService mqttService, ILogger<MqttTestController> mqttTestController)
+		public MqttTestController(IMqttAndGameService mqttService, ILogger<MqttTestController> mqttTestController)
 		{
 			_mqttService = mqttService;
 			_mqttTestController = mqttTestController;
@@ -33,8 +33,7 @@ namespace ConnectFour.Controllers
 				string topic = "ConnectX/feedback";
 				await _mqttService.ConnectToNewBrokerAsync(brokerAddress, port, "foo", "foo");
 				await _mqttService.SubscribeAsync(brokerAddress, port, topic);
-				await _mqttService.RegisterTestConsoleLog();
-
+				
 				_responseJson.Message = $"Verbindung und Abonnement zum Broker {brokerAddress}:{port}/{topic} war erfolgreich. Bitte veröffentlichen Sie etwas auf Ihrem Broker.";
 				return StatusCode(200, _responseJson);
 			}
@@ -52,8 +51,7 @@ namespace ConnectFour.Controllers
 			try
 			{
 				await _mqttService.ConnectToNewBrokerAsync(request.BrokerAddress, request.Port, "foo", "foo");
-				await _mqttService.RegisterTestConsoleLog();
-
+				
 				_responseJson.Message = $"Verbindung zu Mqtt-Broker {request.BrokerAddress}:{request.Port}/{request.Topic} war erfolgreich.";
 				return StatusCode(200, _responseJson);
 			}

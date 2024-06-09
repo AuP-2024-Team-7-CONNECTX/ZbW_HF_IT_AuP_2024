@@ -39,6 +39,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const robotOne = await getRobotById(game.data.robot1Id);
     const robotTwo = await getRobotById(game.data.robot2Id);
 
+    if (startingPlayer.id !== localStorageUser.id) {
+      setInterval(RegisterNewIncomingTurnFromBackend, 2000);
+    }
+
     return { playerOne, playerTwo, startingPlayer, robotOne, robotTwo };
   }
 
@@ -81,11 +85,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.title = currentPlayerTitle.textContent;
     updateTimeDisplay();
     updateColumnEvents();
-
-    const localStorageUser = JSON.parse(localStorage.getItem("user"));
-    if (currentPlayer !== localStorageUser.id) {
-      setInterval(RegisterNewIncomingTurnFromBackend, 2000);
-    }
   }
 
   function updateTimeDisplay() {
@@ -228,9 +227,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function handleOpponentColumnClick(columnIndex) {
     const currentUser = JSON.parse(localStorage.getItem("user"));
-    if (currentUser.id !== currentPlayer.id) {
-      return;
-    }
 
     if (!gameStarted) {
       startGameTimer();
@@ -294,6 +290,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     columns.forEach(initializeColumn);
     updateTimeDisplay();
     updatePlayerInfo();
+
+    // let localStorageUser = JSON.parse(localStorage.getItem("user"));
+    // if (currentPlayer !== localStorageUser) {
+    //   setInterval(RegisterNewIncomingTurnFromBackend, 2000);
+    // }
   }
 
   await initializeGame();
@@ -305,7 +306,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       abortGame();
     }
 
-    if (game.state === 2) {
+    if (game.state === 0) {
       // endGame();
     }
 

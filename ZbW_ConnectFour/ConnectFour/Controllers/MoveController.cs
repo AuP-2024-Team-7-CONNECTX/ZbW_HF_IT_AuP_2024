@@ -1,5 +1,5 @@
-﻿using ConnectFour.GameControllers;
-using ConnectFour.Models;
+﻿using ConnectFour.Models;
+using ConnectFour.Mqtt;
 using ConnectFour.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +14,11 @@ namespace ConnectFour.Controllers
 		private readonly IGameRepository _gameRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly IRobotRepository _robotRepository;
-		private readonly IGameHandlerService _gameHandlerService;
+		private readonly IMqttAndGameService _gameHandlerService;
 
 		private JsonResponseMessage _responseJson;
 
-		public MoveController(IMoveRepository moveRepository, ILogger<MoveController> logger, IGameRepository gameRepository, IUserRepository userRepository, IRobotRepository robotRepository, IGameHandlerService gameHandlerService)
+		public MoveController(IMoveRepository moveRepository, ILogger<MoveController> logger, IGameRepository gameRepository, IUserRepository userRepository, IRobotRepository robotRepository, IMqttAndGameService gameHandlerService)
 		{
 			_moveRepository = moveRepository ?? throw new ArgumentNullException(nameof(moveRepository));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));

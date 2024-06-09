@@ -329,7 +329,6 @@ async function ConnectToMqtt(robot) {
       const jsonResponse = await response.json();
       console.log(jsonResponse.Message);
       localStorage.setItem("robot", JSON.stringify(robot));
-      alert(`Verbindung mit MQTT-Broker konnte hergestellt werden!`);
       let localStorageUser = JSON.parse(localStorage.getItem("user"));
       robot.currentUserId = localStorageUser.id;
       robot.isConnected = true;

@@ -399,7 +399,7 @@ async function checkForGameAcceptRequest() {
     const data = await response.json();
     if (data.success) {
       await SetOpponentsForLocalStorage(data.senderId);
-      await sleep(500);
+      await sleep(1500);
       window.location.href = "../Spielfeld/spielfeld.html";
     } else {
       console.log(data.message);
