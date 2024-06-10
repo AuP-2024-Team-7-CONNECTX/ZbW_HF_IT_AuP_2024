@@ -121,8 +121,12 @@ namespace ConnectFour.Controllers
 					Game = game,
 					User = robot!.CurrentUser,
 					Duration = moveRequest.Duration,
-					MoveDetails = moveRequest.MoveDetails
+					MoveDetails = moveRequest.MoveDetails,
+					TurnWithAlgorithm = moveRequest.TurnWithAlgorithm
 				};
+
+				game.TurnWithAlgorithm = moveRequest.TurnWithAlgorithm;
+				game.CurrentUserId = move.User.Id;
 
 				await _moveRepository.CreateOrUpdateAsync(move);
 				await _gameRepository.CreateOrUpdateAsync(game);

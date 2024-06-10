@@ -63,8 +63,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const redInfoRemaining = document.getElementById("red-remaining");
   const blueInfoRemaining = document.getElementById("blue-remaining");
   const columns = document.querySelectorAll(".column");
-  const restartButton = document.getElementById("restart-button");
-  const newOpponentButton = document.getElementById("new-opponent-button");
   const redPlayerName = document.getElementById("red-player-name");
   const bluePlayerName = document.getElementById("blue-player-name");
 
@@ -149,6 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let gameRequest = {
       state: "Aborted",
       gameMode: gameMode,
+      currentUserId: null,
     };
 
     await UpdateGame(gameRequest);
@@ -191,17 +190,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         RobotId: robot.id, // Ersetze durch die tatsächliche Roboter-ID
         MoveDetails: column.dataset.column, // Ersetze durch die tatsächlichen Bewegungsdetails
         Duration: moveDuration,
-        GameId: game.id, // Ersetze durch die tatsächliche Spiel-ID
+        GameId: game.id, // Ersetze durch die tatsächliche Spiel-ID,
+        TurnWithAlgorithm: false,
       };
 
-      let move = await createMove(moveRequest);
-      currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
+      await createMove(moveRequest);
 
       let gameMode = localStorage.getItem("game-mode");
       let gameRequest = {
         state: "InProgress",
         gameMode: gameMode,
       };
+
+      currentPlayer = currentPlayer.id === playerOne.id ? playerTwo : playerOne;
 
       await UpdateGame(gameRequest);
       await updatePlayerInfo();
@@ -216,6 +217,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function handleOpponentColumnClick(columnIndex) {
+    let localStorageUser = JSON.parse(localStorage.getItem("user"));
+
     if (!gameStarted) {
       await startGameTimer();
       gameStarted = true;
@@ -232,19 +235,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     const emptyCell = cells[rowIndex];
 
     if (emptyCell) {
-      emptyCell.classList.add(currentPlayer === playerOne ? "rot" : "blau");
+      emptyCell.classList.add(
+        localStorageUser.id === playerOne.id ? "blau" : "rot"
+      );
       gameState[column.dataset.column][rowIndex] =
-        currentPlayer === playerOne ? "rot" : "blau";
-
-      let localStorageUser = JSON.parse(localStorage.getItem("user"));
+        localStorageUser.id === playerOne.id ? "blau" : "rot";
 
       currentPlayer = localStorageUser;
 
       await updatePlayerInfo();
       clearInterval(intervalId);
 
-      column.style.pointerEvents = "auto";
-      column.addEventListener("click", handleColumnClick);
+      columns.forEach((column) => {
+        column.style.pointerEvents = "auto";
+        column.addEventListener("click", handleColumnClick);
+      });
 
       await startGameTimer();
     }

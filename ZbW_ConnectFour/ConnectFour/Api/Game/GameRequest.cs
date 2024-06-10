@@ -10,4 +10,6 @@ public record GameRequest
 	public string? NewTurnForFrontendRowColumn { get; init; }
 
 	public bool? ManualTurnIsAllowed { get; init; }
+
+	public string? CurrentUserId{ get; init; }
 }

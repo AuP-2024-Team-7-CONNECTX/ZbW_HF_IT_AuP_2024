@@ -74,7 +74,7 @@ namespace ConnectFour.Controllers
 					NewTurnForFrontend = game.NewTurnForFrontend,
 					NewTurnForFrontendRowColumn = game.NewTurnForFrontendRowColumn,
 					GameMode = game.GameMode.ToString(),
-					ManualTurnIsAllowed = game.ManualTurnIsAllowed
+					ManualTurnIsAllowed = game.ManualTurnIsAllowed,
 				});
 
 				return Ok(gameResponses);
@@ -92,8 +92,6 @@ namespace ConnectFour.Controllers
 		{
 			try
 			{
-
-
 				var game = await _gameRepository.GetByIdAsync(id);
 				if (game == null)
 				{
@@ -139,7 +137,8 @@ namespace ConnectFour.Controllers
 					NewTurnForFrontend = gameFromMqttService != null ? gameFromMqttService.NewTurnForFrontend : game.NewTurnForFrontend,
 					NewTurnForFrontendRowColumn = gameFromMqttService != null ? gameFromMqttService.NewTurnForFrontendRowColumn : game.NewTurnForFrontendRowColumn,
 					GameMode = game.GameMode.ToString(),
-					ManualTurnIsAllowed = gameFromMqttService != null ? gameFromMqttService.ManualTurnIsAllowed : game.ManualTurnIsAllowed
+					ManualTurnIsAllowed = gameFromMqttService != null ? gameFromMqttService.ManualTurnIsAllowed : game.ManualTurnIsAllowed,
+
 				};
 
 				return Ok(gameResponse);
@@ -209,7 +208,8 @@ namespace ConnectFour.Controllers
 					StartingUserId = startingUserId,
 					NewTurnForFrontend = false,
 					NewTurnForFrontendRowColumn = null,
-					ManualTurnIsAllowed = true
+					ManualTurnIsAllowed = true,
+					CurrentUserId = startingUserId
 				};
 
 				game = await _gameHandlerService.CreateNewGame(game);
@@ -248,6 +248,7 @@ namespace ConnectFour.Controllers
 				game.NewTurnForFrontend = false;
 				game.NewTurnForFrontendRowColumn = null;
 
+				game.CurrentUserId = request.CurrentUserId;
 
 				if (game.State == GameState.Aborted)
 				{

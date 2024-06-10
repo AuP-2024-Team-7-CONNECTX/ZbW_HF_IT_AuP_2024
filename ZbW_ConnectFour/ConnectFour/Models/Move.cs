@@ -21,7 +21,7 @@ namespace ConnectFour.Models
         // Duration in seconds
         public float? Duration { get; set; }
      
-
+        public bool TurnWithAlgorithm { get; set; }
         public virtual Game Game { get; set; }
         public string GameId { get; set; }
 

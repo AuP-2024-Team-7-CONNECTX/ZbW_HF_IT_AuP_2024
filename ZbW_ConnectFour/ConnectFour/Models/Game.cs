@@ -17,6 +17,8 @@ namespace ConnectFour.Models
 
 		public string StartingUserId { get; set; }
 
+		public string? CurrentUserId { get; set; }
+
 		public string User2Id { get; set; }
 
 		public string Robot1Id { get; set; }
@@ -73,24 +75,56 @@ namespace ConnectFour.Models
 	public class GameField
 	{
 		[JsonPropertyName("1")]
-		public Dictionary<int, int> Column1 { get; set; } = new Dictionary<int, int>();
+		public List<int> Column1 { get; set; } = new List<int> { 0, 0, 0, 0, 0, 0 };
 
 		[JsonPropertyName("2")]
-		public Dictionary<int, int> Column2 { get; set; } = new Dictionary<int, int>();
+		public List<int> Column2 { get; set; } = new List<int> { 0, 0, 0, 0, 0, 0 };
 
 		[JsonPropertyName("3")]
-		public Dictionary<int, int> Column3 { get; set; } = new Dictionary<int, int>();
+		public List<int> Column3 { get; set; } = new List<int> { 0, 0, 0, 0, 0, 0 };
 
 		[JsonPropertyName("4")]
-		public Dictionary<int, int> Column4 { get; set; } = new Dictionary<int, int>();
+		public List<int> Column4 { get; set; } = new List<int> { 0, 0, 0, 0, 0, 0 };
 
 		[JsonPropertyName("5")]
-		public Dictionary<int, int> Column5 { get; set; } = new Dictionary<int, int>();
+		public List<int> Column5 { get; set; } = new List<int> { 0, 0, 0, 0, 0, 0 };
 
 		[JsonPropertyName("6")]
-		public Dictionary<int, int> Column6 { get; set; } = new Dictionary<int, int>();
+		public List<int> Column6 { get; set; } = new List<int> { 0, 0, 0, 0, 0, 0 };
 
 		[JsonPropertyName("7")]
-		public Dictionary<int, int> Column7 { get; set; } = new Dictionary<int, int>();
+		public List<int> Column7 { get; set; } = new List<int> { 0, 0, 0, 0, 0, 0 };
+
+		public Dictionary<int, List<int>> GetColumns()
+		{
+			return new Dictionary<int, List<int>>()
+		{
+			{ 1, Column1 },
+			{ 2, Column2 },
+			{ 3, Column3 },
+			{ 4, Column4 },
+			{ 5, Column5 },
+			{ 6, Column6 },
+			{ 7, Column7 }
+		};
+		}
+
+		public void UpdateColumn(int columnNumber, int player)
+		{
+			var columns = GetColumns();
+			if (columns.ContainsKey(columnNumber))
+			{
+				var column = columns[columnNumber];
+				for (int i = 0; i < column.Count; i++)
+				{
+					if (column[i] == 0)
+					{
+						column[i] = player;
+						break;
+					}
+				}
+			}
+		}
 	}
+
 }
