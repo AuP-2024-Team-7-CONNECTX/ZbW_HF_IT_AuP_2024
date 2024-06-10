@@ -1,5 +1,4 @@
-﻿using ConnectFour.GameControllers;
-using ConnectFour.Mqtt;
+﻿using ConnectFour.Mqtt;
 using ConnectFour.Repositories;
 using ConnectFour.Repositories.Implementations;
 using ConnectFour.Repositories.Interfaces;
@@ -78,7 +77,7 @@ namespace ConnectFour
 
 			var connectionString = configuration.GetConnectionString("ConnectFour");
 
-			Console.WriteLine(connectionString);
+			//Console.WriteLine(connectionString);
 			builder.Services.AddDbContext<GameDbContext>(options =>
 					options.UseSqlServer(connectionString).UseLazyLoadingProxies());
 
@@ -90,14 +89,12 @@ namespace ConnectFour
 			builder.Services.AddScoped<IRobotRepository, RobotRepository>();
 			builder.Services.AddScoped<IMoveRepository, MoveRepository>();
 			// Mqtt
-			builder.Services.AddSingleton<IMqttService, MqttService>();
 			builder.Services.AddScoped<IGameRepository, GameRepository>();
+			builder.Services.AddScoped<IMqttAndGameService, MqttAndGameService>();
 			// Mail
 			builder.Services.AddSingleton<IEmailSender>(new PostmarkEmailSender("8600a7c6-16a7-4c4f-938e-e144b29f51de", "nick.ponnadu.gmx.ch@zbw-online.ch"));
 
 			builder.Services.AddSingleton<ITokenService, TokenService>();
-
-			builder.Services.AddScoped<IGameHandlerService, GameHandlerService>();
 
 
 			builder.Services.AddCors(options =>

@@ -7,8 +7,7 @@ public record GameResponse
 	public string Id { get; init; }
 	public IEnumerable<UserResponse> Users { get; init; } = new List<UserResponse>();
 	public IEnumerable<RobotResponse> Robots { get; init; } = new List<RobotResponse>();
-	public string? CurrentMoveId { get; init; }
-	public UserResponse? WinnerUser { get; init; }
+		public UserResponse? WinnerUser { get; init; }
 	public RobotResponse? WinnerRobot { get; init; }
 	public GameState State { get; init; }
 	public decimal? TotalPointsPlayerOne { get; init; }

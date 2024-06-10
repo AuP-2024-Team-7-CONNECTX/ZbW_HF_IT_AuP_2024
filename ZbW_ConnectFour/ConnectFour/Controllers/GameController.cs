@@ -53,7 +53,7 @@ namespace ConnectFour.Controllers
 						Name = r.Name,
 						// Fill other properties as needed
 					}),
-					CurrentMoveId = game.CurrentMoveId,
+
 					WinnerUser = game.WinnerUser != null ? new UserResponse(
 						game.WinnerUser.Id,
 						game.WinnerUser.Name,
@@ -101,7 +101,7 @@ namespace ConnectFour.Controllers
 				}
 
 				var gameFromMqttService = _gameHandlerService.GetGameById(game.Id);
-			
+
 				var gameResponse = new GameResponse
 				{
 					Id = game.Id,
@@ -119,7 +119,6 @@ namespace ConnectFour.Controllers
 						Name = r.Name,
 						// Fill other properties as needed
 					}),
-					CurrentMoveId = game.CurrentMoveId,
 					WinnerUser = game.WinnerUser != null ? new UserResponse(
 						game.WinnerUser.Id,
 						game.WinnerUser.Name,
@@ -205,7 +204,6 @@ namespace ConnectFour.Controllers
 					Id = Guid.NewGuid().ToString(),
 					Users = Users,
 					Robots = robots,
-					CurrentMoveId = request.CurrentMoveId,
 					State = GameState.InProgress,
 					GameFieldJson = gameFieldJson,
 					StartingUserId = startingUserId,
@@ -245,6 +243,12 @@ namespace ConnectFour.Controllers
 				}
 
 				game.State = state;
+
+				game.OverrideDbGameForGet = false;
+				game.NewTurnForFrontend = false;
+				game.NewTurnForFrontendRowColumn = null;
+
+
 				if (game.State == GameState.Aborted)
 				{
 					await _gameHandlerService.AbortGame(game);
@@ -255,8 +259,7 @@ namespace ConnectFour.Controllers
 					await _gameHandlerService.EndGame(game);
 				}
 
-				game.CurrentMoveId = request.CurrentMoveId;
-
+				await _gameHandlerService.UpdateGame(game);
 				await _gameRepository.CreateOrUpdateAsync(game);
 
 

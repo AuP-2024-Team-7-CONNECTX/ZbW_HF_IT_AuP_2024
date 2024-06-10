@@ -17,15 +17,7 @@ namespace ConnectFour.Repositories.Implementations
 
         public async Task CreateOrUpdateAsync(Game entity)
         {
-            if (entity.CurrentMoveId != null)
-            {
-                var move = await _moveRepository.GetByIdAsync(entity.CurrentMoveId);
-
-                if (move == null)
-                {
-                    throw new ObjectNotFoundException($"Move mit id {entity.CurrentMoveId} konnte nicht gefunden werden");
-                }
-            }
+            
 			if (entity.Robots.Count() == 2)
 			{
 				if (string.IsNullOrEmpty(entity.Robot1Id))

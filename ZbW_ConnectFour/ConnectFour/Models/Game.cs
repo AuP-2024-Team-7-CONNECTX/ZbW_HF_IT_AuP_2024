@@ -15,7 +15,6 @@ namespace ConnectFour.Models
 
 		public string User1Id { get; set; }
 
-		[NotMapped]
 		public string StartingUserId { get; set; }
 
 		public string User2Id { get; set; }
@@ -23,8 +22,6 @@ namespace ConnectFour.Models
 		public string Robot1Id { get; set; }
 		public string Robot2Id { get; set; }
 
-		public virtual Move? CurrentMove { get; set; }
-		public string? CurrentMoveId { get; set; }
 		public virtual User? WinnerUser { get; set; }
 		public string? WinnerUserId { get; set; }
 		public virtual Robot? WinnerRobot { get; set; }
@@ -45,6 +42,8 @@ namespace ConnectFour.Models
 		[NotMapped]
 		public bool OverrideDbGameForGet { get; set; }
 
+		[NotMapped]
+		public bool TurnWithAlgorithm { get; set; }
 
 
 		// Spielfeld als JSON in der Datenbank speichern

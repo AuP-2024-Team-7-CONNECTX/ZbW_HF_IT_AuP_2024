@@ -169,6 +169,41 @@ async function createMove(moveRequest) {
   }
 }
 
+async function getLatestMoveForGame(game) {
+  try {
+    const response = await fetch(`${endpoint}/Move`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+
+      // Filter und Sortierung
+      let filteredMoves = result.sort(
+        (a, b) => new Date(b.insertedOn) - new Date(a.insertedOn)
+      );
+
+      if (filteredMoves.length > 0) {
+        const latestMove = filteredMoves[0];
+        console.log(latestMove);
+        return latestMove;
+      } else {
+        alert("Keine Züge gefunden.");
+      }
+    } else {
+      const error = await response.json();
+      alert("Fehler beim Erstellen des Zuges: " + error.message);
+    }
+  } catch (error) {
+    console.error("Fehler beim Erstellen des Zuges:", error.message);
+    alert("Ein Fehler ist aufgetreten: " + error.message);
+  }
+}
+
 async function getCurrentGame() {
   try {
     let gameId = localStorage.getItem("game-id");

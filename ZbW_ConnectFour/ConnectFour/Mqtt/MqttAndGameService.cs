@@ -238,7 +238,7 @@ namespace ConnectFour.Mqtt
 			{
 				if (game.ManualTurnIsAllowed)
 				{
-					if (!game.CurrentMove.Robot.ControlledByHuman)
+					if (!game.TurnWithAlgorithm)
 					{
 						var response = await SendTurnToRobot(game, payload);
 					}

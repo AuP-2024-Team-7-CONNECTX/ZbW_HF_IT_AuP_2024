@@ -44,7 +44,8 @@ namespace ConnectFour.Controllers
 					RobotId = move.RobotId,
 					MoveDetails = move.MoveDetails,
 					Duration = move.Duration,
-					GameId = move.GameId
+					GameId = move.GameId,
+					InsertedOn = move.InsertedOn
 				}).ToList();
 
 				return Ok(moveResponses);
@@ -77,7 +78,8 @@ namespace ConnectFour.Controllers
 					RobotId = move.RobotId,
 					MoveDetails = move.MoveDetails,
 					Duration = move.Duration,
-					GameId = move.GameId
+					GameId = move.GameId,
+					InsertedOn = move.InsertedOn
 				};
 
 				return Ok(moveResponse);
@@ -90,7 +92,7 @@ namespace ConnectFour.Controllers
 			}
 		}
 
-		
+
 		[HttpPost]
 		public async Task<ActionResult<MoveResponse>> Post([FromBody] MoveRequest moveRequest)
 		{
@@ -123,11 +125,10 @@ namespace ConnectFour.Controllers
 				};
 
 				await _moveRepository.CreateOrUpdateAsync(move);
-				game.CurrentMove = move;
 				await _gameRepository.CreateOrUpdateAsync(game);
 
 				_gameHandlerService.UpdateGame(game);
-				_gameHandlerService.ReceiveInput(game,move.MoveDetails, true);
+				_gameHandlerService.ReceiveInput(game, move.MoveDetails, true);
 
 				var moveResponse = new MoveResponse
 				{
@@ -136,7 +137,8 @@ namespace ConnectFour.Controllers
 					RobotId = move.Robot.Id,
 					MoveDetails = move.MoveDetails,
 					Duration = move.Duration,
-					GameId = move.Game.Id
+					GameId = move.Game.Id,
+					InsertedOn = move.InsertedOn
 				};
 
 				return CreatedAtAction(nameof(Get), new { id = move.Id }, new { Message = "Zug erfolgreich erstellt", success = true, data = moveResponse });

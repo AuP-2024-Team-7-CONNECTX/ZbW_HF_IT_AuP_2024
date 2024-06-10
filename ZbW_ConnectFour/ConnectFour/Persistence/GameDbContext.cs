@@ -60,12 +60,7 @@ public class GameDbContext : DbContext
 		   .HasForeignKey(g => g.WinnerRobotId)
 		   .IsRequired(false);
 
-		modelBuilder.Entity<Game>()
-			.HasOne(g => g.CurrentMove)
-			.WithOne()
-			.HasForeignKey<Game>(m => m.CurrentMoveId)
-			.IsRequired(false);
-
+	
 		// Konfigurieren Sie den Speichertyp für TotalPointsPlayerOne und TotalPointsPlayerTwo
 		modelBuilder.Entity<Game>()
 			.Property(g => g.TotalPointsUserOne)

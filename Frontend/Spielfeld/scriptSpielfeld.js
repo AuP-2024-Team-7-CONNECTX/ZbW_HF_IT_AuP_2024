@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const redSound = new Audio("../Sounds/red.m4a");
   const blueSound = new Audio("../Sounds/blue.m4a");
 
+  var intervalId = "";
+
   const abortButton = document.getElementById("abort-button");
   if (abortButton) {
     abortButton.addEventListener("click", abortGame);
@@ -15,18 +17,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     var gameRequest = {
       robotIds: [localStorageRobot.id, opponentRobot.id],
-      currentMoveId: null,
       state: "InProgress",
       gameMode: gameMode,
     };
 
     let localStorageUser = JSON.parse(localStorage.getItem("user"));
-    let localStorageGameCreator = JSON.parse(
-      localStorage.getItem("game-creator")
-    );
-
-    if (localStorageUser === localStorageGameCreator) {
-    }
 
     let game = await CreateNewGame(gameRequest);
 
@@ -35,12 +30,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const playerTwo = await getUserById(game.data.user2Id);
 
     let startingPlayer =
-      game.data.startingUserId === playerOne.Id ? playerOne : playerTwo;
+      game.data.startingUserId === playerOne.id ? playerOne : playerTwo;
     const robotOne = await getRobotById(game.data.robot1Id);
     const robotTwo = await getRobotById(game.data.robot2Id);
 
     if (startingPlayer.id !== localStorageUser.id) {
-      setInterval(RegisterNewIncomingTurnFromBackend, 2000);
+      intervalId = setInterval(RegisterNewIncomingTurnFromBackend, 2000);
     }
 
     return { playerOne, playerTwo, startingPlayer, robotOne, robotTwo };
@@ -80,11 +75,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function updatePlayerInfo() {
     currentPlayerTitle.textContent = `Spieler an der Reihe: ${
-      currentPlayer === playerOne ? playerOne.name : playerTwo.name
+      currentPlayer.id === playerOne.id ? playerOne.name : playerTwo.name
     }`;
     document.title = currentPlayerTitle.textContent;
-    updateTimeDisplay();
-    updateColumnEvents();
+    // updateTimeDisplay();
+
+    if (currentPlayer.id === startingPlayer.id) {
+      columns.forEach((column) => {
+        column.style.pointerEvents = "auto";
+        column.addEventListener("click", handleColumnClick);
+      });
+    }
   }
 
   function updateTimeDisplay() {
@@ -96,12 +97,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     blueInfoRemaining.textContent = blueRemaining;
   }
 
-  function startGameTimer() {
+  async function startGameTimer() {
     const startTime = Date.now();
     gameTimer = setInterval(() => {
       const currentTime = Date.now();
       const timeElapsed = (currentTime - startTime) / 1000;
-      if (currentPlayer === playerOne) {
+      if (currentPlayer.id === playerOne.id) {
         redInfoTimeMove.textContent = timeElapsed.toFixed(1);
       } else {
         blueInfoTimeMove.textContent = timeElapsed.toFixed(1);
@@ -109,14 +110,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, 100);
   }
 
-  function stopGameTimer() {
+  async function stopGameTimer() {
     clearInterval(gameTimer);
-    const timeElapsed = parseFloat(
-      currentPlayer === playerOne
+    var timeElapsed = parseFloat(
+      currentPlayer.id === playerOne.id
         ? redInfoTimeMove.textContent
         : blueInfoTimeMove.textContent
     );
-    if (currentPlayer === playerOne) {
+    if (currentPlayer.id === playerOne.id) {
       redTotalTime += timeElapsed;
       redRemaining--;
       redSound.play();
@@ -126,6 +127,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       blueSound.play();
     }
     updateTimeDisplay();
+    return timeElapsed;
   }
 
   function initializeColumn(column) {
@@ -145,7 +147,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     localStorage.removeItem("game-creator");
 
     let gameRequest = {
-      currentMoveId: null,
       state: "Aborted",
       gameMode: gameMode,
     };
@@ -155,23 +156,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "../Hauptmenu/hauptmenu.html";
   }
 
-  function showRestartButton() {
-    restartButton.style.display = "inline-block";
-    restartButton.addEventListener("click", handleRestartClick);
-    columns.forEach((column) => {
-      column.style.pointerEvents = "none";
-    });
-  }
-
-  function showNewOpponentButton() {
-    newOpponentButton.style.display = "inline-block";
-    newOpponentButton.addEventListener("click", handleNewOpponentClick);
-  }
-
-  function handleRestartClick() {
-    window.location.reload();
-  }
-
   async function handleColumnClick(event) {
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (currentUser.id !== currentPlayer.id) {
@@ -179,7 +163,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (!gameStarted) {
-      startGameTimer();
+      await startGameTimer();
       gameStarted = true;
     }
     const column = event.currentTarget;
@@ -193,18 +177,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     const emptyCell = cells[rowIndex];
 
     if (emptyCell) {
-      stopGameTimer();
-      emptyCell.classList.add(currentPlayer === playerOne ? "rot" : "blau");
+      let moveDuration = await stopGameTimer();
+      emptyCell.classList.add(
+        currentPlayer.id === playerOne.id ? "rot" : "blau"
+      );
       gameState[column.dataset.column][rowIndex] =
-        currentPlayer === playerOne ? "rot" : "blau";
+        currentPlayer.id === playerOne.id ? "rot" : "blau";
 
-      let robot = currentPlayer === playerOne ? robotOne : robotTwo;
+      let robot = currentPlayer.id === playerOne.id ? robotOne : robotTwo;
       let game = await getCurrentGame();
 
       let moveRequest = {
         RobotId: robot.id, // Ersetze durch die tatsächliche Roboter-ID
         MoveDetails: column.dataset.column, // Ersetze durch die tatsächlichen Bewegungsdetails
-        Duration: 10.5,
+        Duration: moveDuration,
         GameId: game.id, // Ersetze durch die tatsächliche Spiel-ID
       };
 
@@ -213,23 +199,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       let gameMode = localStorage.getItem("game-mode");
       let gameRequest = {
-        currentMoveId: move.data.id,
         state: "InProgress",
         gameMode: gameMode,
       };
 
       await UpdateGame(gameRequest);
-      updatePlayerInfo();
+      await updatePlayerInfo();
 
-      if (gameStarted) startGameTimer();
+      columns.forEach((column) => {
+        column.style.pointerEvents = "none";
+        column.removeEventListener("click", handleColumnClick);
+      });
+
+      intervalId = setInterval(RegisterNewIncomingTurnFromBackend, 2000);
     }
   }
 
   async function handleOpponentColumnClick(columnIndex) {
-    const currentUser = JSON.parse(localStorage.getItem("user"));
-
     if (!gameStarted) {
-      startGameTimer();
+      await startGameTimer();
       gameStarted = true;
     }
 
@@ -244,57 +232,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     const emptyCell = cells[rowIndex];
 
     if (emptyCell) {
-      stopGameTimer();
       emptyCell.classList.add(currentPlayer === playerOne ? "rot" : "blau");
       gameState[column.dataset.column][rowIndex] =
         currentPlayer === playerOne ? "rot" : "blau";
 
-      let robot = currentPlayer === playerOne ? robotOne : robotTwo;
+      let localStorageUser = JSON.parse(localStorage.getItem("user"));
 
-      let game = await getCurrentGame();
+      currentPlayer = localStorageUser;
 
-      let moveRequest = {
-        RobotId: robot.id, // Ersetze durch die tatsächliche Roboter-ID
-        MoveDetails: column.dataset.column, // Ersetze durch die tatsächlichen Bewegungsdetails
-        Duration: 10.5,
-        GameId: game.id, // Ersetze durch die tatsächliche Spiel-ID
-      };
+      await updatePlayerInfo();
+      clearInterval(intervalId);
 
-      await createMove(moveRequest);
-      currentPlayer = currentPlayer === playerOne ? playerTwo : currentPlayer;
+      column.style.pointerEvents = "auto";
+      column.addEventListener("click", handleColumnClick);
 
-      updatePlayerInfo();
-
-      if (gameStarted) startGameTimer();
+      await startGameTimer();
     }
-  }
-
-  function handleNewOpponentClick() {
-    window.location.href = "../Spielstart/spielstart.html";
-  }
-
-  function updateColumnEvents() {
-    const currentUser = JSON.parse(localStorage.getItem("user"));
-    columns.forEach((column) => {
-      if (currentUser.id === currentPlayer.id) {
-        column.style.pointerEvents = "auto";
-        column.addEventListener("click", handleColumnClick);
-      } else {
-        column.style.pointerEvents = "none";
-        column.removeEventListener("click", handleColumnClick);
-      }
-    });
   }
 
   async function initializeGame() {
     columns.forEach(initializeColumn);
     updateTimeDisplay();
     updatePlayerInfo();
-
-    // let localStorageUser = JSON.parse(localStorage.getItem("user"));
-    // if (currentPlayer !== localStorageUser) {
-    //   setInterval(RegisterNewIncomingTurnFromBackend, 2000);
-    // }
   }
 
   await initializeGame();
@@ -311,7 +270,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (game.newTurnForFrontend) {
-      await handleOpponentColumnClick(game.newTurnForFrontendRowColumn);
+      let localStorageUser = JSON.parse(localStorage.getItem("user"));
+      let move = await getLatestMoveForGame(game);
+
+      if (move.playerId !== localStorageUser.id) {
+        await handleOpponentColumnClick(game.newTurnForFrontendRowColumn);
+        await updateOpponentTime(move.duration);
+        const gameMode = localStorage.getItem("game-mode");
+        let gameRequest = {
+          state: "InProgress",
+          gameMode: gameMode,
+          newTurnForFrontend: false,
+          newTurnForFrontendRowColumn: null,
+          ManualTurnIsAllowed: false,
+        };
+
+        await UpdateGame(gameRequest);
+      }
     }
+  }
+
+  async function updateOpponentTime(moveDuration) {
+    clearInterval(gameTimer);
+
+    if (currentPlayer.id !== playerOne.id) {
+      redTotalTime += moveDuration;
+    } else {
+      blueTotalTime += moveDuration;
+    }
+    updateTimeDisplay();
   }
 });

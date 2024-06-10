@@ -7,5 +7,6 @@
     public float? Duration { get; init; }
     public string GameId { get; init; }
 
+    public DateTime? InsertedOn { get; init; }
     public MoveResponse() { }
 }
