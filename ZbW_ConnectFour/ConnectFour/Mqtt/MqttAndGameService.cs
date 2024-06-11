@@ -11,14 +11,14 @@ namespace ConnectFour.Mqtt
 	public class MqttAndGameService : IMqttAndGameService
 	{
 		private readonly ILogger<MqttAndGameService> _logger;
-	
+
 
 		private static readonly ConcurrentDictionary<string, Game> _games = new ConcurrentDictionary<string, Game>();
 
 		public MqttAndGameService(ILogger<MqttAndGameService> logger)
 		{
 			_logger = logger;
-			
+
 			InitializeClients();
 		}
 
@@ -53,14 +53,25 @@ namespace ConnectFour.Mqtt
 			var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
 			var currentGame = _games.Values.FirstOrDefault(g => g.State == GameState.InProgress);
 
-			if (currentGame != null)
+			try
 			{
-				currentGame = await ReceiveInput(currentGame, payload, false);
+				if (currentGame != null)
+				{
+					currentGame = await ReceiveInput(currentGame, payload, false);
+					Console.WriteLine($"Payload {payload} received and registered for {currentGame.Id}");
+				}
+				else
+				{
+					_logger.LogWarning("No game in progress found.");
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				_logger.LogWarning("No game in progress found.");
+				_logger.LogWarning("error on receiving and using Mqtt Message");
+
 			}
+
+
 		}
 
 		private IMqttClient GetClient(string brokerAddress, string brokerPort)
@@ -234,47 +245,106 @@ namespace ConnectFour.Mqtt
 
 		public async Task<Game> ReceiveInput(Game game, string payload, bool isFromFrontend)
 		{
-			if (isFromFrontend)
+			try
 			{
-				if (game.ManualTurnIsAllowed)
+				if (isFromFrontend)
 				{
-					if (!game.TurnWithAlgorithm)
+					if (game.ManualTurnIsAllowed)
 					{
-						var response = await SendTurnToRobot(game, payload);
+						int columnNumber;
+
+						if (game.TurnWithAlgorithm)
+						{
+							var ai = new ConnectFourAI();
+							var playerNumber = game.CurrentUserId == game.User1Id ? 1 : 2;
+
+							columnNumber = ai.GetBestMove(game.GameField, playerNumber);
+
+							game.GameField.UpdateColumn(columnNumber, playerNumber);
+							if (ai.CheckWin(game.GameField, playerNumber))
+							{
+								// Handle game win logic
+								game.State = GameState.Completed;
+								game.WinnerUserId = playerNumber == 1 ? game.User1Id : game.User2Id;
+							}
+
+						}
+						else
+						{
+							if (int.TryParse(payload, out columnNumber) && columnNumber >= 0 && columnNumber <= 6)
+							{
+								// 0 -> 1
+								columnNumber++;
+								var playerNumber = game.CurrentUserId == game.User1Id ? 1 : 2;
+								game.GameField.UpdateColumn(columnNumber, playerNumber);
+
+								var ai = new ConnectFourAI();
+								if (ai.CheckWin(game.GameField, playerNumber))
+								{
+									// Handle game win logic
+									game.State = GameState.Completed;
+									game.WinnerUserId = playerNumber == 1 ? game.User1Id : game.User2Id;
+
+								}
+							}
+						}
+
+						string payloadForRobot = columnNumber.ToString();
+
+						if (game.State == GameState.Completed)
+						{
+							await SendTurnToRobot(game, "e");
+						}
+						else
+						{
+							await SendTurnToRobot(game, payloadForRobot);
+						}
+
+
+						game.RobotIsReadyForNextTurn = false;
+						game.ManualTurnIsAllowed = false;
+						game.NewTurnForFrontend = false;
+						game.NewTurnForFrontendRowColumn = payload;
+						game.OverrideDbGameForGet = false;
+						game.TurnWithAlgorithm = false;
+
+						_games[game.Id] = game;
+					}
+				}
+				else
+				{
+					if (payload == "0")
+					{
+						game.RobotIsReadyForNextTurn = false;
+						game.ManualTurnIsAllowed = false;
+						game.OverrideDbGameForGet = true;
 					}
 
-					game.RobotIsReadyForNextTurn = false;
-					game.ManualTurnIsAllowed = false;
-					game.NewTurnForFrontend = false;
-					game.NewTurnForFrontendRowColumn = payload;
-					game.OverrideDbGameForGet = false;
+					if (payload == "1")
+					{
+						game.RobotIsReadyForNextTurn = true;
+						game.ManualTurnIsAllowed = true;
+						game.NewTurnForFrontend = true;
+						game.OverrideDbGameForGet = true;
+					}
 				}
+
+				_games[game.Id] = game;
+
+				return game;
 			}
-			else
+			catch (Exception e)
 			{
-				if (payload == "0")
-				{
-					game.RobotIsReadyForNextTurn = false;
-					game.ManualTurnIsAllowed = false;
-					game.OverrideDbGameForGet = true;
-				}
-
-				if (payload == "1")
-				{
-					game.RobotIsReadyForNextTurn = true;
-					game.ManualTurnIsAllowed = true;
-					game.NewTurnForFrontend = true;
-					game.OverrideDbGameForGet = true;
-				}
+				_logger.LogError($"Fehler beim Empfangen / Verschicken im Bezug auf Game / Mqtt: {e.Message}");
+				Console.WriteLine($"Fehler beim Empfangen / Verschicken im Bezug auf Game / Mqtt: {e.Message}");
+				throw new Exception($"Fehler beim Empfangen / Verschicken im Bezug auf Game / Mqtt: {e.Message}");
 			}
-
-			_games[game.Id] = game;
-
-			return game;
 		}
+
 
 		public async Task<bool> SendTurnToRobot(Game game, string payload)
 		{
+
 			var success1 = await PublishAsync(game.Robots[0].BrokerAddress, game.Robots[0].BrokerPort.ToString(), $"{game.Robots[0].BrokerTopic}/coordinate", payload);
 			var success2 = await PublishAsync(game.Robots[1].BrokerAddress, game.Robots[1].BrokerPort.ToString(), $"{game.Robots[1].BrokerTopic}/coordinate", payload);
 
@@ -306,12 +376,6 @@ namespace ConnectFour.Mqtt
 
 		private Game ChangeIsIngameState(Game game, bool isIngame, GameState gameState)
 		{
-			foreach (var robot in game.Robots)
-			{
-				robot.IsIngame = isIngame;
-				robot.CurrentUser.IsIngame = isIngame;
-			}
-
 			game.State = gameState;
 			return game;
 		}

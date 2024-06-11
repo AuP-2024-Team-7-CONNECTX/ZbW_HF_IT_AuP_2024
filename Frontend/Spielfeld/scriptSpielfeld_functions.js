@@ -124,26 +124,6 @@ async function GetKIUser2() {
   }
 }
 
-async function getCurrentGame() {
-  const response = await fetch(`${endpoint}/Game//${localStorageUser.id}`, {
-    method: "GET",
-    mode: "cors",
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-    if (data.success) {
-      await SetOpponentsForLocalStorage(data.senderId);
-      window.location.href = "../Spielfeld/spielfeld.html";
-    } else {
-      console.log(data.message);
-    }
-  } else {
-    const errorData = await response.json();
-    console.error("Error:", errorData.message);
-  }
-}
-
 async function createMove(moveRequest) {
   try {
     const response = await fetch(`${endpoint}/Move`, {
@@ -227,5 +207,66 @@ async function getCurrentGame() {
   } catch (error) {
     console.error("Fehler beim Laden des Spiels: ", error.message);
     // alert("Fehler beim Laden des Spiels: " + error.message);
+  }
+}
+
+async function UpdateRobot(robot) {
+  let robotRequest = {
+    currentUserId: robot.currentUserId,
+    isConnected: robot.isConnected,
+    isIngame: robot.isIngame,
+    color: robot.color,
+    name: robot.name,
+    brokerAddress: robot.brokerAddress,
+    brokerPort: String(robot.brokerPort),
+    brokerTopic: robot.brokerTopic,
+  };
+
+  try {
+    const response = await fetch(`${endpoint}/Robot/${robot.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(robotRequest),
+    });
+
+    if (response.ok) {
+      alert("Spiel abgebrochen");
+    } else {
+      const error = await response.json();
+      console.error("Fehler beim Aktualisieren des Roboters:", error.Message);
+      alert(`Fehler beim Aktualisieren des Roboters: ${error.Message}`);
+    }
+  } catch (error) {
+    console.error("Fehler:", error.Message);
+    alert(`Ein Fehler ist aufgetreten: ${error.Message}`);
+  }
+}
+
+async function DisconnectFromMqtt(robot) {
+  let mqttRequest = {
+    BrokerAddress: robot.brokerAddress,
+    Port: String(robot.brokerPort),
+    Topic: robot.brokerTopic,
+  };
+
+  const response = await fetch(`${endpoint}/MqttTest/MqttDisconnect`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    mode: "cors",
+    body: JSON.stringify(mqttRequest),
+  });
+
+  if (response.ok) {
+    const jsonResponse = await response.json();
+    console.log(jsonResponse.Message);
+  } else {
+    const errorResponse = await response.json();
+    alert(
+      `Fehler beim Trennen der Verbindung zu Mqtt-Broker: ${errorResponse.Message}`
+    );
   }
 }

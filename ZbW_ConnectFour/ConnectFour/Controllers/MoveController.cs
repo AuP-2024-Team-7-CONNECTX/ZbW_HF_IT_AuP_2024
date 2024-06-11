@@ -125,14 +125,21 @@ namespace ConnectFour.Controllers
 					TurnWithAlgorithm = moveRequest.TurnWithAlgorithm
 				};
 
+				// wenn frontend einen neuen zug spielt, muss das zuerst der Roboter empfangen
+				game.OverrideDbGameForGet = false;
+				game.NewTurnForFrontend = false;
+				game.NewTurnForFrontendRowColumn = null;
+
 				game.TurnWithAlgorithm = moveRequest.TurnWithAlgorithm;
 				game.CurrentUserId = move.User.Id;
+
+				_gameHandlerService.UpdateGame(game);
+				_gameHandlerService.ReceiveInput(game, move.MoveDetails, true);
 
 				await _moveRepository.CreateOrUpdateAsync(move);
 				await _gameRepository.CreateOrUpdateAsync(game);
 
-				_gameHandlerService.UpdateGame(game);
-				_gameHandlerService.ReceiveInput(game, move.MoveDetails, true);
+				
 
 				var moveResponse = new MoveResponse
 				{

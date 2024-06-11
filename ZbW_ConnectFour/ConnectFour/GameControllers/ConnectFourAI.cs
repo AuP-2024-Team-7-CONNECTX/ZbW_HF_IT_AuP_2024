@@ -81,11 +81,18 @@ public class ConnectFourAI
 	{
 		int score = 0;
 
-		// Check horizontal, vertical, and diagonal lines for a win or potential win
+		if (CheckWin(gameField, player))
+		{
+			return 1000;
+		}
 
-		// Implement the logic to evaluate the board state and return a score
-		// Positive score for player win/advantage, negative score for opponent win/advantage
-		// Example: return 1000 if player wins, -1000 if opponent wins, otherwise calculate potential scores
+		if (CheckWin(gameField, opponent))
+		{
+			return -1000;
+		}
+
+		// Additional evaluation logic can be added here
+		// for example, favoring moves that lead to potential wins
 
 		return score;
 	}
@@ -94,6 +101,72 @@ public class ConnectFourAI
 	{
 		var columns = gameField.GetColumns();
 		return columns.All(c => c.Value.All(cell => cell != 0));
+	}
+
+	public bool CheckWin(GameField gameField, int player)
+	{
+		var columns = gameField.GetColumns();
+		int rows = columns[1].Count;
+
+		// Convert columns to a 2D array for easier access
+		int[,] board = new int[7, rows];
+		for (int col = 1; col <= 7; col++)
+		{
+			for (int row = 0; row < rows; row++)
+			{
+				board[col - 1, row] = columns[col][row];
+			}
+		}
+
+		// Check horizontal win
+		for (int row = 0; row < rows; row++)
+		{
+			for (int col = 0; col < 4; col++)
+			{
+				if (board[col, row] == player && board[col + 1, row] == player && board[col + 2, row] == player && board[col + 3, row] == player)
+				{
+					return true;
+				}
+			}
+		}
+
+		// Check vertical win
+		for (int col = 0; col < 7; col++)
+		{
+			for (int row = 0; row < 3; row++)
+			{
+				if (board[col, row] == player && board[col, row + 1] == player && board[col, row + 2] == player && board[col, row + 3] == player)
+				{
+					return true;
+				}
+			}
+		}
+
+		// Check diagonal (positive slope) win
+		for (int col = 0; col < 4; col++)
+		{
+			for (int row = 0; row < 3; row++)
+			{
+				if (board[col, row] == player && board[col + 1, row + 1] == player && board[col + 2, row + 2] == player && board[col + 3, row + 3] == player)
+				{
+					return true;
+				}
+			}
+		}
+
+		// Check diagonal (negative slope) win
+		for (int col = 0; col < 4; col++)
+		{
+			for (int row = 3; row < 6; row++)
+			{
+				if (board[col, row] == player && board[col + 1, row - 1] == player && board[col + 2, row - 2] == player && board[col + 3, row - 3] == player)
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	private GameField CloneGameField(GameField original)

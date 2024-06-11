@@ -100,6 +100,11 @@ namespace ConnectFour.Controllers
 
 				var gameFromMqttService = _gameHandlerService.GetGameById(game.Id);
 
+				if (gameFromMqttService != null && gameFromMqttService.State == GameState.Completed)
+				{
+					var test = "test";
+				}
+
 				var gameResponse = new GameResponse
 				{
 					Id = game.Id,
@@ -131,7 +136,7 @@ namespace ConnectFour.Controllers
 						Name = game.WinnerRobot.Name,
 						// Fill other properties as needed
 					} : null,
-					State = game.State,
+					State = gameFromMqttService != null ? gameFromMqttService.State : game.State,
 					TotalPointsPlayerOne = game.TotalPointsUserOne,
 					TotalPointsPlayerTwo = game.TotalPointsUserTwo,
 					NewTurnForFrontend = gameFromMqttService != null ? gameFromMqttService.NewTurnForFrontend : game.NewTurnForFrontend,
@@ -244,25 +249,24 @@ namespace ConnectFour.Controllers
 
 				game.State = state;
 
-				game.OverrideDbGameForGet = false;
-				game.NewTurnForFrontend = false;
-				game.NewTurnForFrontendRowColumn = null;
+				//game.OverrideDbGameForGet = false;
+				//game.NewTurnForFrontend = false;
+				//game.NewTurnForFrontendRowColumn = null;
 
 				game.CurrentUserId = request.CurrentUserId;
 
-				if (game.State == GameState.Aborted)
-				{
-					await _gameHandlerService.AbortGame(game);
-				}
+				//if (game.State == GameState.Aborted)
+				//{
+				//	await _gameHandlerService.AbortGame(game);
+				//}
 
-				if (game.State == GameState.Completed)
-				{
-					await _gameHandlerService.EndGame(game);
-				}
+				//if (game.State == GameState.Completed)
+				//{
+				//	await _gameHandlerService.EndGame(game);
+				//}
 
 				await _gameHandlerService.UpdateGame(game);
 				await _gameRepository.CreateOrUpdateAsync(game);
-
 
 				return Ok(new { Message = "Spiel erfolgreich aktualisiert", success = true });
 			}

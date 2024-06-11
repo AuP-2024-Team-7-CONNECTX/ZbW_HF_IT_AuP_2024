@@ -136,25 +136,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  async function abortGame() {
-    let gameMode = localStorage.getItem("game-mode");
-    // Remove specific items from localStorage
-    localStorage.removeItem("opponent-user");
-    localStorage.removeItem("opponent-robot");
-    localStorage.removeItem("game-mode");
-    localStorage.removeItem("game-creator");
-
-    let gameRequest = {
-      state: "Aborted",
-      gameMode: gameMode,
-      currentUserId: null,
-    };
-
-    await UpdateGame(gameRequest);
-
-    window.location.href = "../Hauptmenu/hauptmenu.html";
-  }
-
   async function handleColumnClick(event) {
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (currentUser.id !== currentPlayer.id) {
@@ -267,11 +248,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let game = await getCurrentGame();
 
     if (game.state === 1) {
-      abortGame();
-    }
-
-    if (game.state === 0) {
-      // endGame();
+      await abortGame();
     }
 
     if (game.newTurnForFrontend) {
@@ -292,6 +269,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         await UpdateGame(gameRequest);
       }
+
+      if (game.state === 0) {
+        await endGame();
+      }
     }
   }
 
@@ -304,5 +285,61 @@ document.addEventListener("DOMContentLoaded", async () => {
       blueTotalTime += moveDuration;
     }
     updateTimeDisplay();
+  }
+
+  async function endGame() {
+    clearInterval(intervalId);
+    let gameMode = localStorage.getItem("game-mode");
+
+    let gameRequest = {
+      state: "Completed",
+      gameMode: gameMode,
+      currentUserId: null,
+    };
+
+    await UpdateGame(gameRequest);
+    let robot = JSON.parse(localStorage.getItem("robot"));
+    let robotToDisconnect = await getRobotById(robot.id);
+    robotToDisconnect.isConnected = false;
+    robotToDisconnect.currentUserId = null;
+    await DisconnectFromMqtt(robotToDisconnect);
+    await UpdateRobot(robotToDisconnect);
+    // Remove specific items from localStorage
+    // localStorage.removeItem("robot");
+    // localStorage.removeItem("opponent-user");
+    // localStorage.removeItem("opponent-robot");
+    // localStorage.removeItem("game-mode");
+    // localStorage.removeItem("game-creator");
+    // localStorage.removeItem("game-id");
+
+    window.location.href = "../Hauptmenu/hauptmenu.html";
+  }
+
+  async function abortGame() {
+    clearInterval(intervalId);
+
+    let gameMode = localStorage.getItem("game-mode");
+
+    let gameRequest = {
+      state: "Aborted",
+      gameMode: gameMode,
+      currentUserId: null,
+    };
+
+    await UpdateGame(gameRequest);
+    let robot = JSON.parse(localStorage.getItem("robot"));
+    let robotToDisconnect = await getRobotById(robot.id);
+    robotToDisconnect.isConnected = false;
+    robotToDisconnect.currentUserId = null;
+    await DisconnectFromMqtt(robotToDisconnect);
+    await UpdateRobot(robotToDisconnect);
+    // localStorage.removeItem("robot");
+    // localStorage.removeItem("opponent-user");
+    // localStorage.removeItem("opponent-robot");
+    // localStorage.removeItem("game-mode");
+    // localStorage.removeItem("game-creator");
+    // localStorage.removeItem("game-id");
+
+    window.location.href = "../Hauptmenu/hauptmenu.html";
   }
 });
