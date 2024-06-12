@@ -1,4 +1,6 @@
 ﻿using ConnectFour.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 public class ConnectFourAI
 {
@@ -183,5 +185,12 @@ public class ConnectFourAI
 		};
 
 		return newGameField;
+	}
+
+	public int GetMovesLeft(GameField gameField, int player)
+	{
+		var columns = gameField.GetColumns();
+		int movesPlayed = columns.Values.Sum(column => column.Count(cell => cell == player));
+		return 21 - movesPlayed;
 	}
 }

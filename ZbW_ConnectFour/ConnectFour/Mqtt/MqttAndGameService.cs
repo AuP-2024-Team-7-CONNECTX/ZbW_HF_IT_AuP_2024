@@ -266,6 +266,12 @@ namespace ConnectFour.Mqtt
 								// Handle game win logic
 								game.State = GameState.Completed;
 								game.WinnerUserId = playerNumber == 1 ? game.User1Id : game.User2Id;
+
+								int movesLeftForPlayer1 = ai.GetMovesLeft(game.GameField, 1);
+								int movesLeftForPlayer2 = ai.GetMovesLeft(game.GameField, 2);
+
+								game.TotalPointsUserOne = movesLeftForPlayer1;
+								game.TotalPointsUserTwo = movesLeftForPlayer1;
 							}
 
 						}
@@ -285,6 +291,11 @@ namespace ConnectFour.Mqtt
 									game.State = GameState.Completed;
 									game.WinnerUserId = playerNumber == 1 ? game.User1Id : game.User2Id;
 
+									int movesLeftForPlayer1 = ai.GetMovesLeft(game.GameField, 1);
+									
+									game.TotalPointsUserOne = (game.WinnerUserId == game.User1Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
+									game.TotalPointsUserTwo = (game.WinnerUserId == game.User2Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
+									
 								}
 							}
 						}

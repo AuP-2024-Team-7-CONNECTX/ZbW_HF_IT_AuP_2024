@@ -232,7 +232,6 @@ async function UpdateRobot(robot) {
     });
 
     if (response.ok) {
-      alert("Spiel abgebrochen");
     } else {
       const error = await response.json();
       console.error("Fehler beim Aktualisieren des Roboters:", error.Message);

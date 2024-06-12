@@ -139,6 +139,27 @@ async function displayRobots(robots) {
           connectButton.remove();
         }
       }
+    } else {
+      const disconnectButton = document.createElement("button");
+      disconnectButton.innerText = "Verbindung trennen";
+      disconnectButton.style.backgroundColor = "red";
+      disconnectButton.onclick = async () => {
+        let localStorageUser = JSON.parse(localStorage.getItem("user"));
+        if (
+          robot.currentUserId &&
+          robot.currentUserId === localStorageUser.id
+        ) {
+          localStorage.removeItem("robot");
+        }
+        robot.currentUserId = null;
+        robot.isConnected = false;
+
+        await DisconnectFromMqtt(robot);
+        await UpdateRobot(robot);
+      };
+      disconnectButton.classList.add("disconnect-button");
+
+      robotElement.appendChild(disconnectButton);
     }
 
     if (robot.isConnected && robot.currentUserId !== localStorageUser.id) {

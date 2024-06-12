@@ -136,10 +136,10 @@ namespace ConnectFour.Controllers
 				_gameHandlerService.UpdateGame(game);
 				_gameHandlerService.ReceiveInput(game, move.MoveDetails, true);
 
+
 				await _moveRepository.CreateOrUpdateAsync(move);
 				await _gameRepository.CreateOrUpdateAsync(game);
-
-				
+							
 
 				var moveResponse = new MoveResponse
 				{

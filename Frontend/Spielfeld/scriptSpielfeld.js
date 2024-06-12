@@ -269,10 +269,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         await UpdateGame(gameRequest);
       }
+    }
 
-      if (game.state === 0) {
-        await endGame();
-      }
+    if (game.state === 0) {
+      await endGame();
     }
   }
 
@@ -312,7 +312,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     // localStorage.removeItem("game-creator");
     // localStorage.removeItem("game-id");
 
-    window.location.href = "../Hauptmenu/hauptmenu.html";
+    let game = await getCurrentGame();
+    let winner = game.winnerUser.name;
+
+    // Show end game message
+    const endGameMessage = document.createElement("div");
+    endGameMessage.id = "end-game-message";
+    endGameMessage.innerHTML = `
+      <h1>Spiel beendet!</h1>
+      <p>Gewinner: ${winner}</p>
+      <button id="back-to-menu">Zurück zum Hauptmenü</button>
+    `;
+    document.body.appendChild(endGameMessage);
+
+    const backToMenuButton = document.getElementById("back-to-menu");
+    backToMenuButton.addEventListener("click", () => {
+      window.location.href = "../Hauptmenu/hauptmenu.html";
+    });
+
+    columns.forEach((column) => {
+      column.style.pointerEvents = "none";
+      column.removeEventListener("click", handleColumnClick);
+    });
   }
 
   async function abortGame() {
