@@ -17,5 +17,5 @@ public interface IMqttAndGameService
 	Task<bool> SendTurnToRobot(Game game, string payload);
 	void PlaceNewStoneFromAlgorithm(Game game, int column);
 	IEnumerable<Game> GetAllGames();
-	Game GetGameById(string id);
+	Task<Game> GetGameById(string id);
 }

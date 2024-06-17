@@ -291,6 +291,14 @@ function goToMainMenu() {
 }
 
 async function sendGameRequest(receiverId) {
+  let opponentUser = await getUserById(receiverId);
+
+  if (opponentUser.email.includes("KI_")) {
+    await SetOpponentsForLocalStorage(opponentUser.id);
+    await sleep(1500);
+    window.location.href = "../Spielfeld/spielfeld.html";
+  }
+
   let localStorageUser = JSON.parse(localStorage.getItem("user"));
   let request = {
     SenderId: localStorageUser.id,
@@ -484,5 +492,20 @@ async function SetOpponentsForLocalStorage(opponentUserId) {
     }
   } catch (error) {
     console.error("Error:", error.message);
+  }
+}
+
+async function getUserById(userId) {
+  const response = await fetch(`${endpoint}/User/${userId}`, {
+    method: "GET",
+    mode: "cors",
+  });
+
+  if (response.ok) {
+    const user = await response.json();
+    return user;
+  } else {
+    console.error("Failed to fetch user:", response.statusText);
+    alert("Fehler beim Ermitteln des Users");
   }
 }

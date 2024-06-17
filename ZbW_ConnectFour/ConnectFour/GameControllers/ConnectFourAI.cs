@@ -4,7 +4,7 @@ using System.Linq;
 
 public class ConnectFourAI
 {
-	private const int MaxDepth = 8;
+	private const int MaxDepth = 2;
 
 	public int GetBestMove(GameField gameField, int player)
 	{

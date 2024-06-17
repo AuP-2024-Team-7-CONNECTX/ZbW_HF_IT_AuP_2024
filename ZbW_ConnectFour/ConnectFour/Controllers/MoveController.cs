@@ -79,7 +79,8 @@ namespace ConnectFour.Controllers
 					MoveDetails = move.MoveDetails,
 					Duration = move.Duration,
 					GameId = move.GameId,
-					InsertedOn = move.InsertedOn
+					InsertedOn = move.InsertedOn,
+					TurnWithAlgorithm = move.TurnWithAlgorithm
 				};
 
 				return Ok(moveResponse);

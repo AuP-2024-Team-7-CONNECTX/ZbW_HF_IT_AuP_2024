@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const robotTwo = await getRobotById(game.data.robot2Id);
 
     if (startingPlayer.id !== localStorageUser.id) {
-      intervalId = setInterval(RegisterNewIncomingTurnFromBackend, 2000);
+      intervalId = setInterval(RegisterNewIncomingTurnFromBackend, 4000);
     }
 
     return { playerOne, playerTwo, startingPlayer, robotOne, robotTwo };
@@ -78,7 +78,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.title = currentPlayerTitle.textContent;
     // updateTimeDisplay();
 
-    if (currentPlayer.id === startingPlayer.id) {
+    if (
+      currentPlayer.id === startingPlayer.id &&
+      !currentPlayer.email.includes("KI_")
+    ) {
       columns.forEach((column) => {
         column.style.pointerEvents = "auto";
         column.addEventListener("click", handleColumnClick);
@@ -193,7 +196,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         column.removeEventListener("click", handleColumnClick);
       });
 
-      intervalId = setInterval(RegisterNewIncomingTurnFromBackend, 2000);
+      let opponentUser = JSON.parse(localStorage.getItem("opponent-user"));
+      if (opponentUser.email.includes("KI_")) {
+        let robot = opponentUser.id === playerOne.id ? robotOne : robotTwo;
+        let game = await getCurrentGame();
+
+        let moveRequest = {
+          RobotId: robot.id,
+          MoveDetails: "100",
+          Duration: parseFloat(5),
+          GameId: game.id,
+          TurnWithAlgorithm: true,
+        };
+
+        await createMove(moveRequest);
+      }
+      intervalId = setInterval(RegisterNewIncomingTurnFromBackend, 4000);
     }
   }
 
@@ -256,7 +274,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       let move = await getLatestMoveForGame(game);
 
       if (move.playerId !== localStorageUser.id) {
-        await handleOpponentColumnClick(game.newTurnForFrontendRowColumn);
+        await handleOpponentColumnClick(move.moveDetails);
         await updateOpponentTime(move.duration);
         const gameMode = localStorage.getItem("game-mode");
         let gameRequest = {
@@ -304,6 +322,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     robotToDisconnect.currentUserId = null;
     await DisconnectFromMqtt(robotToDisconnect);
     await UpdateRobot(robotToDisconnect);
+
+    let opponentUser = JSON.parse(localStorage.getItem("opponent-user"));
+    if (opponentUser.email.includes("KI_")) {
+      let opponentRobot = JSON.parse(localStorage.getItem("opponent-robot"));
+      let robotToDisconnect = await getRobotById(opponentRobot.id);
+      robotToDisconnect.isConnected = false;
+      robotToDisconnect.currentUserId = null;
+      await DisconnectFromMqtt(robotToDisconnect);
+      await UpdateRobot(robotToDisconnect);
+    }
     // Remove specific items from localStorage
     // localStorage.removeItem("robot");
     // localStorage.removeItem("opponent-user");

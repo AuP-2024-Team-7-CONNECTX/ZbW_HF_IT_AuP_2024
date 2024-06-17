@@ -42,11 +42,12 @@ namespace ConnectFour.Mqtt
 			return _games.Values;
 		}
 
-		public Game GetGameById(string id)
+		public Task<Game> GetGameById(string id)
 		{
 			_games.TryGetValue(id, out var game);
-			return game;
+			return Task.FromResult(game);
 		}
+
 
 		private async Task HandleApplicationMessageReceived(MqttApplicationMessageReceivedEventArgs e)
 		{
@@ -292,10 +293,10 @@ namespace ConnectFour.Mqtt
 									game.WinnerUserId = playerNumber == 1 ? game.User1Id : game.User2Id;
 
 									int movesLeftForPlayer1 = ai.GetMovesLeft(game.GameField, 1);
-									
+
 									game.TotalPointsUserOne = (game.WinnerUserId == game.User1Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
 									game.TotalPointsUserTwo = (game.WinnerUserId == game.User2Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
-									
+
 								}
 							}
 						}
@@ -331,13 +332,15 @@ namespace ConnectFour.Mqtt
 						game.OverrideDbGameForGet = true;
 					}
 
-					if (payload == "1")
+					if (payload == "1" && game.NewTurnForFrontendRowColumn != null)
 					{
 						game.RobotIsReadyForNextTurn = true;
 						game.ManualTurnIsAllowed = true;
 						game.NewTurnForFrontend = true;
 						game.OverrideDbGameForGet = true;
 					}
+
+
 				}
 
 				_games[game.Id] = game;

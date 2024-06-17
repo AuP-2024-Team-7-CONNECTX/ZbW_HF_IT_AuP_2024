@@ -16,45 +16,15 @@
     <script defer src="scriptBestenliste.js"></script>
     <script src="../localStorage.js"></script>
     <link rel="stylesheet" href="../localStorage.css" />
+    <script src="../config.js"></script>
   </head>
   <body>
     <div id="user-info"></div>
     <section>
       <div class="bestenliste-box">
         <h2>Bestenliste</h2>
-        <ul class="bestenliste">
-          <!-- Beispiel-Einträge -->
-          <li>
-            Spielername 1 - Gewonnene Spiele: 55 - Gespielte Zeit: 5 h 6 min
-          </li>
-          <li>
-            Spielername 2 - Gewonnene Spiele: 50 - Gespielte Zeit: 4 h 45 min
-          </li>
-          <li>
-            Spielername 3 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min
-          </li>
-          <li>
-            Spielername 4 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min
-          </li>
-          <li>
-            Spielername 5 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min
-          </li>
-          <li>
-            Spielername 6 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min
-          </li>
-          <li>
-            Spielername 7 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min
-          </li>
-          <li>
-            Spielername 8 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min
-          </li>
-          <li>
-            Spielername 9 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min
-          </li>
-          <li>
-            Spielername 10 - Gewonnene Spiele: 45 - Gespielte Zeit: 4 h 30 min
-          </li>
-          <!-- Fügen Sie hier weitere Spieler hinzu -->
+        <ul class="bestenliste" id="bestenliste">
+          <!-- Dynamically populated list -->
         </ul>
         <div class="menu-option">
           <button
@@ -63,9 +33,9 @@
             type="button"
             onclick="goToMainMenu()"
           >
-            <span class="icon"
-              ><ion-icon name="arrow-back-outline"></ion-icon
-            ></span>
+            <span class="icon">
+              <ion-icon name="arrow-back-outline"></ion-icon>
+            </span>
             Zurück zum Hauptmenü
           </button>
         </div>

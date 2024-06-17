@@ -98,7 +98,7 @@ namespace ConnectFour.Controllers
 					return Ok(new { Message = "Spiel nicht gefunden.", success = false });
 				}
 
-				var gameFromMqttService = _gameHandlerService.GetGameById(game.Id);
+				var gameFromMqttService = await _gameHandlerService.GetGameById(game.Id);
 
 				if (gameFromMqttService != null && gameFromMqttService.State == GameState.Completed)
 				{
@@ -186,7 +186,7 @@ namespace ConnectFour.Controllers
 
 				var Users = robots.Select(r => r.CurrentUser).ToList();
 
-				if (request.GameMode != "UserVsUser" && Users.Count() != 2)
+				if (request.GameMode != "PlayerVsPlayer" && Users.Count() != 2)
 				{
 					throw new Exception("Zu viele/wenige Benutzer in der Liste. Spiel konnte nicht erstellt werden.");
 				}
@@ -202,6 +202,10 @@ namespace ConnectFour.Controllers
 				var random = new Random();
 
 				var startingUserId = random.Next(2) == 0 ? Users[0].Id : Users[1].Id;
+				if (Users.Any(u => u.Email.Contains("KI_")) && request.GameMode != "PlayerVsPlayer")
+				{
+					startingUserId = Users.FirstOrDefault(u => !u.Email.Contains("KI_")).Id;
+				}
 
 				var game = new Game
 				{
@@ -248,22 +252,7 @@ namespace ConnectFour.Controllers
 				}
 
 				game.State = state;
-
-				//game.OverrideDbGameForGet = false;
-				//game.NewTurnForFrontend = false;
-				//game.NewTurnForFrontendRowColumn = null;
-
 				game.CurrentUserId = request.CurrentUserId;
-
-				//if (game.State == GameState.Aborted)
-				//{
-				//	await _gameHandlerService.AbortGame(game);
-				//}
-
-				//if (game.State == GameState.Completed)
-				//{
-				//	await _gameHandlerService.EndGame(game);
-				//}
 
 				await _gameHandlerService.UpdateGame(game);
 				await _gameRepository.CreateOrUpdateAsync(game);
