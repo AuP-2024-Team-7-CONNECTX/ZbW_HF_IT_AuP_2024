@@ -28,10 +28,10 @@ async function displayGames(games) {
   for (const game of games) {
     if (game.state === 0) {
       // Only list games with status 0
-      const user1 = await getUserByIdOrNull(game.users[0].id);
-      const user2 = await getUserByIdOrNull(game.users[1].id);
-      const robot1 = await getRobotById(game.robots[0].id);
-      const robot2 = await getRobotById(game.robots[1].id);
+      const user1 = await getUserByIdOrNull(game.user1Id);
+      const user2 = await getUserByIdOrNull(game.user2Id);
+      const robot1 = await getRobotById(game.robot1Id);
+      const robot2 = await getRobotById(game.robot2Id);
 
       let winnerName = "";
       let winnerPoints = 0;

@@ -35,10 +35,15 @@ namespace ConnectFour.Controllers
 		{
 			try
 			{
-				var games = await _gameRepository.GetAllAsync();
+				var allGames = await _gameRepository.GetAllAsync();
+				var games = allGames.Where(g => g.State ==  GameState.Completed);
 				var gameResponses = games.Select(game => new GameResponse
 				{
 					Id = game.Id,
+					User1Id = game.User1Id,
+					User2Id = game.User2Id,
+					Robot1Id = game.Robot1Id,
+					Robot2Id = game.Robot2Id,
 					Users = game.Users.Select(u => new UserResponse(
 						u.Id,
 						u.Name,
