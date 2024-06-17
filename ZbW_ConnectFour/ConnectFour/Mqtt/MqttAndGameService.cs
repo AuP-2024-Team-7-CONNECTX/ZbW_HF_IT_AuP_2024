@@ -244,6 +244,7 @@ namespace ConnectFour.Mqtt
 			return game;
 		}
 
+
 		public async Task<Game> ReceiveInput(Game game, string payload, bool isFromFrontend)
 		{
 			try
@@ -260,8 +261,12 @@ namespace ConnectFour.Mqtt
 							var playerNumber = game.CurrentUserId == game.User1Id ? 1 : 2;
 
 							columnNumber = ai.GetBestMove(game.GameField, playerNumber);
-
+							payload = (columnNumber - 1).ToString();
+							
 							game.GameField.UpdateColumn(columnNumber, playerNumber);
+
+							game.TurnColumnFromKI = columnNumber;
+
 							if (ai.CheckWin(game.GameField, playerNumber))
 							{
 								// Handle game win logic

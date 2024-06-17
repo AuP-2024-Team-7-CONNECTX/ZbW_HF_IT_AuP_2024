@@ -129,14 +129,25 @@ namespace ConnectFour.Controllers
 				// wenn frontend einen neuen zug spielt, muss das zuerst der Roboter empfangen
 				game.OverrideDbGameForGet = false;
 				game.NewTurnForFrontend = false;
-				game.NewTurnForFrontendRowColumn = null;
+				game.NewTurnForFrontendRowColumn = "test";
 
-				game.TurnWithAlgorithm = moveRequest.TurnWithAlgorithm;
+				if (moveRequest.TurnWithAlgorithm)
+				{
+					game.TurnWithAlgorithm = moveRequest.TurnWithAlgorithm;
+					game.ManualTurnIsAllowed = moveRequest.TurnWithAlgorithm;
+				}
+				
 				game.CurrentUserId = move.User.Id;
 
 				_gameHandlerService.UpdateGame(game);
-				_gameHandlerService.ReceiveInput(game, move.MoveDetails, true);
+				await _gameHandlerService.ReceiveInput(game, move.MoveDetails, true);
 
+				if (moveRequest.TurnWithAlgorithm)
+				{
+					move.MoveDetails = game.TurnColumnFromKI.ToString();
+					Thread.Sleep(1500);
+
+				}
 
 				await _moveRepository.CreateOrUpdateAsync(move);
 				await _gameRepository.CreateOrUpdateAsync(game);

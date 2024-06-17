@@ -47,6 +47,9 @@ namespace ConnectFour.Models
 		[NotMapped]
 		public bool TurnWithAlgorithm { get; set; }
 
+		[NotMapped]
+		public int TurnColumnFromKI { get; set; }
+
 
 		// Spielfeld als JSON in der Datenbank speichern
 		public string GameFieldJson

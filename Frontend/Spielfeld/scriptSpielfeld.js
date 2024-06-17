@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       let opponentUser = JSON.parse(localStorage.getItem("opponent-user"));
-      if (opponentUser.email.includes("KI_")) {
+      if (opponentUser.email.includes("KI_") && gameMode !== "PlayerVsPlayer") {
         let robot = opponentUser.id === playerOne.id ? robotOne : robotTwo;
         let game = await getCurrentGame();
 
@@ -282,7 +282,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           gameMode: gameMode,
           newTurnForFrontend: false,
           newTurnForFrontendRowColumn: null,
-          ManualTurnIsAllowed: false,
+          ManualTurnIsAllowed: gameMode === "PlayerVsPlayer" ? false : true,
         };
 
         await UpdateGame(gameRequest);
@@ -333,12 +333,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       await UpdateRobot(robotToDisconnect);
     }
     // Remove specific items from localStorage
-    // localStorage.removeItem("robot");
-    // localStorage.removeItem("opponent-user");
-    // localStorage.removeItem("opponent-robot");
-    // localStorage.removeItem("game-mode");
-    // localStorage.removeItem("game-creator");
-    // localStorage.removeItem("game-id");
+    localStorage.removeItem("robot");
+    localStorage.removeItem("opponent-user");
+    localStorage.removeItem("opponent-robot");
+    localStorage.removeItem("game-mode");
+    localStorage.removeItem("game-creator");
+    localStorage.removeItem("game-id");
 
     let game = await getCurrentGame();
     let winner = game.winnerUser.name;
@@ -382,12 +382,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     robotToDisconnect.currentUserId = null;
     await DisconnectFromMqtt(robotToDisconnect);
     await UpdateRobot(robotToDisconnect);
-    // localStorage.removeItem("robot");
-    // localStorage.removeItem("opponent-user");
-    // localStorage.removeItem("opponent-robot");
-    // localStorage.removeItem("game-mode");
-    // localStorage.removeItem("game-creator");
-    // localStorage.removeItem("game-id");
+    localStorage.removeItem("robot");
+    localStorage.removeItem("opponent-user");
+    localStorage.removeItem("opponent-robot");
+    localStorage.removeItem("game-mode");
+    localStorage.removeItem("game-creator");
+    localStorage.removeItem("game-id");
 
     window.location.href = "../Hauptmenu/hauptmenu.html";
   }
