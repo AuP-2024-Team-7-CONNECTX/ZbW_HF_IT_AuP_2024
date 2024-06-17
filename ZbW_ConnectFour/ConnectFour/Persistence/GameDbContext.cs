@@ -1,6 +1,8 @@
 ﻿using ConnectFour.Interfaces;
 using ConnectFour.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 public class GameDbContext : DbContext
 {
@@ -94,14 +96,31 @@ public class GameDbContext : DbContext
 
 		#endregion
 
+		var hashPw1 = HashPassword("KI");
 		// Initialdaten hinzufügen
 		modelBuilder.Entity<User>().HasData(
-			new User { Id = Guid.NewGuid().ToString(), Email = "KI (Terminator)",Authenticated=true,IsIngame=false,Name="KI (Terminator)",Password="KI1" },
-			new User { Id = Guid.NewGuid().ToString(), Email = "KI (Agent Smith)",Authenticated=true,IsIngame=false,Name="KI (Agent Smith)",Password="KI2" }
+			new User { Id = Guid.NewGuid().ToString(), Email = "KI_Terminator@ConnectX.ch",Authenticated=true,IsIngame=false,Name= "KI_Terminator@ConnectX.ch", Password= hashPw1 },
+			new User { Id = Guid.NewGuid().ToString(), Email = "KI_AgentSmith@ConnectX.ch", Authenticated=true,IsIngame=false,Name= "KI_AgentSmith@ConnectX.ch", Password= hashPw1 }
 			
 		);
 
 
 	}
 
+	public static string HashPassword(string password)
+	{
+		using (SHA256 sha256 = SHA256.Create())
+		{
+			// Convert the input string to a byte array and compute the hash.
+			byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+			// Convert the byte array to a hex string.
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < bytes.Length; i++)
+			{
+				builder.Append(bytes[i].ToString("x2"));
+			}
+			return builder.ToString();
+		}
+	}
 }
