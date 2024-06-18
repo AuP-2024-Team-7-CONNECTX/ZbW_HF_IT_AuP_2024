@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  function updateTimeDisplay() {
+  async function updateTimeDisplay() {
     redInfoTimeMove.textContent = redTotalTime.toFixed(1);
     blueInfoTimeMove.textContent = blueTotalTime.toFixed(1);
     redInfoTotalTime.textContent = redTotalTime.toFixed(1);
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       blueRemaining--;
       blueSound.play();
     }
-    updateTimeDisplay();
+    await updateTimeDisplay();
     return timeElapsed;
   }
 
@@ -256,8 +256,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function initializeGame() {
     columns.forEach(initializeColumn);
-    updateTimeDisplay();
-    updatePlayerInfo();
+    await updateTimeDisplay();
+    await updatePlayerInfo();
   }
 
   await initializeGame();
@@ -276,6 +276,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (move.playerId !== localStorageUser.id) {
         await handleOpponentColumnClick(move.moveDetails);
         await updateOpponentTime(move.duration);
+        let localStorageUser = JSON.parse(localStorage.getItem("user"));
+        currentPlayer = localStorageUser;
+        await startGameTimer();
+
         const gameMode = localStorage.getItem("game-mode");
         let gameRequest = {
           state: "InProgress",
@@ -302,7 +306,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
       blueTotalTime += moveDuration;
     }
-    updateTimeDisplay();
+    await updateTimeDisplay();
   }
 
   async function endGame() {
