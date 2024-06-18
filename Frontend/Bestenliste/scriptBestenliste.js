@@ -25,9 +25,10 @@ async function displayGames(games) {
   const bestenlisteElement = document.getElementById("bestenliste");
   bestenlisteElement.innerHTML = ""; // Clear existing entries
 
+  // Process games and calculate winner points
+  const processedGames = [];
   for (const game of games) {
     if (game.state === 0) {
-      // Only list games with status 0
       const user1 = await getUserByIdOrNull(game.user1Id);
       const user2 = await getUserByIdOrNull(game.user2Id);
       const robot1 = await getRobotById(game.robot1Id);
@@ -50,14 +51,32 @@ async function displayGames(games) {
             : game.totalPointsUserTwo;
       }
 
-      const listItem = document.createElement("li");
-      listItem.innerHTML = `${user1?.name ?? "Unknown User"} & ${
-        robot1?.name ?? "Unknown Robot"
-      } vs.<br>${user2?.name ?? "Unknown User"} & ${
-        robot2?.name ?? "Unknown Robot"
-      }<br>Winner: ${winnerName} with ${winnerPoints} points (Remaining turns left)`;
-      bestenlisteElement.appendChild(listItem);
+      processedGames.push({
+        user1Name: user1?.name ?? "Unknown User",
+        user2Name: user2?.name ?? "Unknown User",
+        robot1Name: robot1?.name ?? "Unknown Robot",
+        robot2Name: robot2?.name ?? "Unknown Robot",
+        winnerName,
+        winnerPoints,
+      });
     }
+  }
+
+  // Sort games by winnerPoints in descending order
+  processedGames.sort((a, b) => b.winnerPoints - a.winnerPoints);
+
+  // Display sorted games with ranking
+  for (let i = 0; i < processedGames.length; i++) {
+    const game = processedGames[i];
+    const listItem = document.createElement("li");
+    listItem.innerHTML = `<span class="ranking">${i + 1}</span><br> ${
+      game.user1Name
+    } & ${game.robot1Name} vs.<br>${game.user2Name} & ${
+      game.robot2Name
+    }<br>Winner: ${game.winnerName} with ${
+      game.winnerPoints
+    } points (Remaining turns left)`;
+    bestenlisteElement.appendChild(listItem);
   }
 }
 
