@@ -15,6 +15,8 @@ namespace ConnectFour.Mqtt
 
 		private static readonly ConcurrentDictionary<string, Game> _games = new ConcurrentDictionary<string, Game>();
 
+		private static readonly ConcurrentDictionary<string, bool> _brokersReady = new ConcurrentDictionary<string, bool>();
+
 		public MqttAndGameService(ILogger<MqttAndGameService> logger)
 		{
 			_logger = logger;
@@ -35,6 +37,14 @@ namespace ConnectFour.Mqtt
 				MqttClientHolder.MqttClient2 = new MqttFactory().CreateMqttClient();
 				MqttClientHolder.MqttClient2.ApplicationMessageReceivedAsync += HandleApplicationMessageReceived;
 			}
+
+			// Namen der beiden Clients
+			string client1 = "Client1";
+			string client2 = "Client2";
+
+			// Beide Clients mit false als booleschen Wert in das Dictionary eintragen
+			_brokersReady.TryAdd("Client1", false);
+			_brokersReady.TryAdd("Client2", false);
 		}
 
 		public IEnumerable<Game> GetAllGames()
@@ -54,24 +64,59 @@ namespace ConnectFour.Mqtt
 			var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
 			var currentGame = _games.Values.FirstOrDefault(g => g.State == GameState.InProgress);
 
-			try
+
+			if (e.ClientId == MqttClientHolder.MqttClient1.Options.ClientId)
 			{
-				if (currentGame != null)
+				bool brokerReady = false;
+				if (payload == "1")
 				{
-					currentGame = await ReceiveInput(currentGame, payload, false);
-					Console.WriteLine($"Payload {payload} received and registered for {currentGame.Id}");
+					brokerReady = true;
 				}
-				else
-				{
-					_logger.LogWarning("No game in progress found.");
-				}
-			}
-			catch (Exception ex)
-			{
-				_logger.LogWarning("error on receiving and using Mqtt Message");
+				_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => brokerReady);
 
 			}
 
+			if (e.ClientId == MqttClientHolder.MqttClient2.Options.ClientId)
+			{
+				bool brokerReady = false;
+				if (payload == "1")
+				{
+					brokerReady = true;
+				}
+				_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => brokerReady);
+
+			}
+
+
+			if (currentGame.GameMode == GameMode.PlayerVsPlayer)
+			{
+				if (_brokersReady["Client1"] && _brokersReady["Client2"])
+				{
+
+					try
+					{
+						if (currentGame != null)
+						{
+							currentGame = await ReceiveInput(currentGame, payload, false);
+							Console.WriteLine($"Payload {payload} received and registered for {currentGame.Id}");
+
+							_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
+							_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => false);
+
+						}
+						else
+						{
+							_logger.LogWarning("No game in progress found.");
+						}
+					}
+					catch (Exception ex)
+					{
+						_logger.LogWarning("error on receiving and using Mqtt Message");
+
+					}
+				}
+
+			}
 
 		}
 
@@ -262,7 +307,7 @@ namespace ConnectFour.Mqtt
 
 							columnNumber = ai.GetBestMove(game.GameField, playerNumber);
 							payload = (columnNumber - 1).ToString();
-							
+
 							game.GameField.UpdateColumn(columnNumber, playerNumber);
 
 							game.TurnColumnFromKI = columnNumber;
