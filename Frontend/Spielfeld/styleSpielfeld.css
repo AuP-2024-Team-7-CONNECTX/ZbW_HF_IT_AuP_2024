@@ -198,3 +198,18 @@ body {
     height: 50px;
   }
 }
+#back-to-menu {
+  padding: 10px 20px; /* Adjusted padding for better size */
+  font-size: 18px; /* Adjusted font size for readability */
+  color: #ffffff; /* White text color */
+  background-color: #d32f2f; /* Dark red background */
+  border: none;
+  border-radius: 10px; /* Smooth border radius */
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+}
+
+#back-to-menu:hover {
+  background-color: #b71c1c; /* Darker red for hover effect */
+}

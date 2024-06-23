@@ -269,6 +269,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       await abortGame();
     }
 
+    let localStorageUser = JSON.parse(localStorage.getItem("user"));
+    if (game.winnerUser && game.winnerUser.id === localStorageUser.id) {
+      await endGame();
+    }
+
+    if (game.winnerUser && game.winnerUser.id !== localStorageUser.id) {
+      let move = await getLatestMoveForGame(game);
+      await handleOpponentColumnClick(move.moveDetails);
+      await updateOpponentTime(move.duration);
+      let localStorageUser = JSON.parse(localStorage.getItem("user"));
+      currentPlayer = localStorageUser;
+
+      await endGame();
+    }
+
     if (game.newTurnForFrontend) {
       let localStorageUser = JSON.parse(localStorage.getItem("user"));
       let move = await getLatestMoveForGame(game);
@@ -280,26 +295,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentPlayer = localStorageUser;
         await startGameTimer();
 
-        if (game.state === 0 || game.winnerUser) {
-          await endGame();
-        } else {
-          const gameMode = localStorage.getItem("game-mode");
-          let gameRequest = {
-            state: game.state == "Completed" ? "Completed" : "InProgress",
-            gameMode: gameMode,
-            newTurnForFrontend: false,
-            newTurnForFrontendRowColumn: null,
-            ManualTurnIsAllowed: gameMode === "PlayerVsPlayer" ? false : true,
-          };
+        const gameMode = localStorage.getItem("game-mode");
+        let gameRequest = {
+          state: game.state === "Completed" ? "Completed" : "InProgress",
+          gameMode: gameMode,
+          newTurnForFrontend: false,
+          newTurnForFrontendRowColumn: null,
+          ManualTurnIsAllowed: gameMode === "PlayerVsPlayer" ? false : true,
+        };
 
-          await UpdateGame(gameRequest);
-        }
+        await UpdateGame(gameRequest);
       }
-    }
-
-    let localStorageUser = JSON.parse(localStorage.getItem("user"));
-    if (game.winnerUser && game.winnerUser.id === localStorageUser.id) {
-      await endGame();
     }
   }
 
@@ -318,13 +324,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     clearInterval(intervalId);
     let gameMode = localStorage.getItem("game-mode");
 
-    // let gameRequest = {
-    //   state: "Completed",
-    //   gameMode: gameMode,
-    //   currentUserId: null,
-    // };
+    let gameRequest = {
+      state: "Completed",
+      gameMode: gameMode,
+      currentUserId: null,
+    };
 
-    // await UpdateGame(gameRequest);
+    await UpdateGame(gameRequest);
 
     // Remove specific items from localStorage
 

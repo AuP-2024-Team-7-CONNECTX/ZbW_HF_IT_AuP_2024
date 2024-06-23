@@ -144,7 +144,7 @@ namespace ConnectFour.Controllers
 						Name = game.WinnerRobot.Name,
 						// Fill other properties as needed
 					} : null,
-					State = gameState,
+					State = gameStateNew,
 					TotalPointsPlayerOne = game.TotalPointsUserOne,
 					TotalPointsPlayerTwo = game.TotalPointsUserTwo,
 					NewTurnForFrontend = gameFromMqttService != null ? gameFromMqttService.NewTurnForFrontend : game.NewTurnForFrontend,

@@ -351,9 +351,24 @@ namespace ConnectFour.Mqtt
 				{
 					if (payload == "0")
 					{
+						if (clientId == MqttClientHolder.MqttClient1.Options.ClientId)
+						{
+							bool brokerReady = false;
+							_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => brokerReady);
+
+						}
+
+						if (clientId == MqttClientHolder.MqttClient2.Options.ClientId)
+						{
+							bool brokerReady = false;
+							_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => brokerReady);
+
+						}
 						game.RobotIsReadyForNextTurn = false;
 						game.ManualTurnIsAllowed = false;
 						game.OverrideDbGameForGet = true;
+						game.NewTurnForFrontend = false;
+
 					}
 
 					if (payload == "1" && game.NewTurnForFrontendRowColumn != null)
