@@ -336,16 +336,16 @@ namespace ConnectFour.Mqtt
 							await SendTurnToRobot(game, payloadForRobot);
 						}
 
-
-						game.RobotIsReadyForNextTurn = false;
-						game.ManualTurnIsAllowed = false;
-						game.NewTurnForFrontend = false;
-						game.NewTurnForFrontendRowColumn = payload;
-						game.OverrideDbGameForGet = false;
-						game.TurnWithAlgorithm = false;
-
-						_games[game.Id] = game;
 					}
+
+					game.RobotIsReadyForNextTurn = false;
+					game.ManualTurnIsAllowed = false;
+					game.NewTurnForFrontend = false;
+					game.NewTurnForFrontendRowColumn = payload;
+					game.OverrideDbGameForGet = false;
+					game.TurnWithAlgorithm = false;
+
+					_games[game.Id] = game;
 				}
 				else
 				{
@@ -385,16 +385,20 @@ namespace ConnectFour.Mqtt
 
 						}
 
-						if (clientId == MqttClientHolder.MqttClient2.Options.ClientId)
+						if (game.GameMode == GameMode.PlayerVsPlayer)
 						{
-							bool brokerReady = false;
-							if (payload == "1")
+							if (clientId == MqttClientHolder.MqttClient2.Options.ClientId)
 							{
-								brokerReady = true;
-							}
-							_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => brokerReady);
+								bool brokerReady = false;
+								if (payload == "1")
+								{
+									brokerReady = true;
+								}
+								_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => brokerReady);
 
+							}
 						}
+
 
 						if (game.GameMode == GameMode.PlayerVsPlayer)
 						{
@@ -408,6 +412,21 @@ namespace ConnectFour.Mqtt
 
 								_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
 								_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => false);
+
+							}
+						}
+
+						if (game.GameMode == GameMode.PlayerVsRobot)
+						{
+							if (_brokersReady["Client1"])
+							{
+
+								game.RobotIsReadyForNextTurn = true;
+								game.ManualTurnIsAllowed = true;
+								game.NewTurnForFrontend = true;
+								game.OverrideDbGameForGet = true;
+
+								_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
 
 							}
 						}
@@ -432,8 +451,15 @@ namespace ConnectFour.Mqtt
 		{
 
 			var success1 = await PublishAsync(game.Robots[0].BrokerAddress, game.Robots[0].BrokerPort.ToString(), $"{game.Robots[0].BrokerTopic}/coordinate", payload);
-			var success2 = await PublishAsync(game.Robots[1].BrokerAddress, game.Robots[1].BrokerPort.ToString(), $"{game.Robots[1].BrokerTopic}/coordinate", payload);
-
+			var success2 = false;
+			if (game.GameMode == GameMode.PlayerVsPlayer)
+			{
+				success2 = await PublishAsync(game.Robots[1].BrokerAddress, game.Robots[1].BrokerPort.ToString(), $"{game.Robots[1].BrokerTopic}/coordinate", payload);
+			}
+			else
+			{
+				success1 = true;
+			}
 			return success1 && success2;
 		}
 
@@ -445,19 +471,29 @@ namespace ConnectFour.Mqtt
 		private void SetUpUsersAndRobots(Game game)
 		{
 			game.Robots[0].ControlledByHuman = !game.Robots[0].CurrentUser.Name.Contains("KI");
-			game.Robots[1].ControlledByHuman = !game.Robots[1].CurrentUser.Name.Contains("KI");
+			if (game.GameMode == GameMode.PlayerVsPlayer)
+			{
+				game.Robots[1].ControlledByHuman = !game.Robots[1].CurrentUser.Name.Contains("KI");
+
+			}
 		}
 
 		private async Task ConnectWithMqtt(Game game)
 		{
 			await SubscribeAsync(game.Robots[0].BrokerAddress, game.Robots[0].BrokerPort.ToString(), $"{game.Robots[0].BrokerTopic}/feedback");
-			await SubscribeAsync(game.Robots[1].BrokerAddress, game.Robots[1].BrokerPort.ToString(), $"{game.Robots[1].BrokerTopic}/feedback");
+			if (game.GameMode == GameMode.PlayerVsPlayer)
+			{
+				await SubscribeAsync(game.Robots[1].BrokerAddress, game.Robots[1].BrokerPort.ToString(), $"{game.Robots[1].BrokerTopic}/feedback");
+			}
 		}
 
 		private async Task DisconnectFromMqtt(Game game)
 		{
 			await UnsubscribeAsync(game.Robots[0].BrokerAddress, game.Robots[0].BrokerPort.ToString(), $"{game.Robots[0].BrokerTopic}/feedback");
-			await UnsubscribeAsync(game.Robots[1].BrokerAddress, game.Robots[1].BrokerPort.ToString(), $"{game.Robots[1].BrokerTopic}/feedback");
+			if (game.GameMode == GameMode.PlayerVsPlayer)
+			{
+				await UnsubscribeAsync(game.Robots[1].BrokerAddress, game.Robots[1].BrokerPort.ToString(), $"{game.Robots[1].BrokerTopic}/feedback");
+			}
 		}
 
 		private Game ChangeIsIngameState(Game game, bool isIngame, GameState gameState)

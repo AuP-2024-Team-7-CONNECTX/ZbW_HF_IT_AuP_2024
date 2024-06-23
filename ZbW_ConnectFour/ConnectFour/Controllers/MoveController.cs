@@ -115,12 +115,15 @@ namespace ConnectFour.Controllers
 					return StatusCode(404, _responseJson);
 				}
 
+				var kiUser = game.Users.FirstOrDefault(u => u.Name == "KI_Terminator@ConnectX.ch");
+
+
 				var move = new Move()
 				{
 					Id = Guid.NewGuid().ToString(),
 					Robot = robot,
 					Game = game,
-					User = robot!.CurrentUser,
+					User = !moveRequest.TurnWithAlgorithm ? robot!.CurrentUser : kiUser,
 					Duration = moveRequest.Duration,
 					MoveDetails = moveRequest.MoveDetails,
 					TurnWithAlgorithm = moveRequest.TurnWithAlgorithm

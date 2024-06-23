@@ -187,13 +187,21 @@ namespace ConnectFour.Controllers
 				var listRobots = allRobots.ToList();
 				var robots = listRobots.Where(r => request.RobotIds.Contains(r.Id)).ToList();
 
-				if (robots.Count() != 2)
+				if (request.GameMode == "PlayerVsPlayer" && robots.Count() != 2)
 				{
 					throw new Exception("Zu viele/wenige Roboter in der Liste. Spiel konnte nicht erstellt werden.");
 				}
 
+				
+
 				var Users = robots.Select(r => r.CurrentUser).ToList();
 
+				if (request.GameMode == "PlayerVsRobot")
+				{
+					var allUsers = await _userRepository.GetAllAsync();
+					var kiUserTerminator = allUsers.First(u => u.Name == "KI_Terminator@ConnectX.ch");
+					Users.Add(kiUserTerminator);
+				}
 				if (request.GameMode != "PlayerVsPlayer" && Users.Count() != 2)
 				{
 					throw new Exception("Zu viele/wenige Benutzer in der Liste. Spiel konnte nicht erstellt werden.");
@@ -215,6 +223,13 @@ namespace ConnectFour.Controllers
 					startingUserId = Users.FirstOrDefault(u => !u.Email.Contains("KI_")).Id;
 				}
 
+				var gameMode = GameMode.PlayerVsPlayer;
+
+				if (request.GameMode == "PlayerVsRobot")
+				{
+					gameMode = GameMode.PlayerVsRobot;
+				}
+
 				var game = new Game
 				{
 					Id = Guid.NewGuid().ToString(),
@@ -226,7 +241,8 @@ namespace ConnectFour.Controllers
 					NewTurnForFrontend = false,
 					NewTurnForFrontendRowColumn = null,
 					ManualTurnIsAllowed = true,
-					CurrentUserId = startingUserId
+					CurrentUserId = startingUserId,
+					GameMode = gameMode
 				};
 
 				game = await _gameHandlerService.CreateNewGame(game);

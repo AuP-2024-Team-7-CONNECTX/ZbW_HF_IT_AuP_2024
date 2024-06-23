@@ -1,6 +1,15 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const localStorageUser = JSON.parse(localStorage.getItem("user"));
   const localStorageRobot = JSON.parse(localStorage.getItem("robot"));
+
+  const gameMode = localStorage.getItem("game-mode");
+
+  if (gameMode !== "PlayerVsPlayer") {
+    var kiUser = await GetKIUser1();
+    localStorage.setItem("opponent-user", JSON.stringify(kiUser));
+    await sleep(1500);
+    window.location.href = "../Spielfeld/spielfeld.html";
+  }
 
   if (!localStorageRobot) {
     alert("Kein Roboter verbunden. Bitte Roboter in der Verwaltung auswählen!");
@@ -507,5 +516,27 @@ async function getUserById(userId) {
   } else {
     console.error("Failed to fetch user:", response.statusText);
     alert("Fehler beim Ermitteln des Users");
+  }
+}
+
+async function GetKIUser1() {
+  try {
+    const response = await fetch(`${endpoint}/User`, {
+      // Setze hier deinen API-Endpunkt ein
+      method: "GET",
+      mode: "cors",
+    });
+
+    if (response.ok) {
+      const users = await response.json();
+      const user = users.find(
+        (user) => user.email === "KI_Terminator@ConnectX.ch"
+      );
+      return user;
+    } else {
+      console.error("Failed to fetch KI-user:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error:", error.message);
   }
 }

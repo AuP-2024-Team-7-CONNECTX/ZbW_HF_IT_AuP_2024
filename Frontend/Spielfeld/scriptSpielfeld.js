@@ -15,11 +15,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const opponentRobot = JSON.parse(localStorage.getItem("opponent-robot"));
     const gameMode = localStorage.getItem("game-mode");
 
-    var gameRequest = {
-      robotIds: [localStorageRobot.id, opponentRobot.id],
-      state: "InProgress",
-      gameMode: gameMode,
-    };
+    if (gameMode === "PlayerVsPlayer") {
+      var gameRequest = {
+        robotIds: [localStorageRobot.id, opponentRobot.id],
+        state: "InProgress",
+        gameMode: gameMode,
+      };
+    } else {
+      var gameRequest = {
+        robotIds: [localStorageRobot.id],
+        state: "InProgress",
+        gameMode: gameMode,
+      };
+    }
 
     let localStorageUser = JSON.parse(localStorage.getItem("user"));
 
@@ -32,7 +40,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     let startingPlayer =
       game.data.startingUserId === playerOne.id ? playerOne : playerTwo;
     const robotOne = await getRobotById(game.data.robot1Id);
-    const robotTwo = await getRobotById(game.data.robot2Id);
+    const robotTwo =
+      gameMode === "PlayerVsPlayer"
+        ? await getRobotById(game.data.robot2Id)
+        : robotOne;
 
     if (startingPlayer.id !== localStorageUser.id) {
       intervalId = setInterval(RegisterNewIncomingTurnFromBackend, 4000);
