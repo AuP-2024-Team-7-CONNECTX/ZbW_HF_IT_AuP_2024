@@ -188,9 +188,9 @@ namespace ConnectFour.Controllers
 
 			var verificationUrl = $"https://connectx.mon3y.ch/Bestatigung/bestatigung.html?email={Uri.EscapeDataString(email)}";
 
-			var emailBody = $"<html><body>Please confirm your account by <a href='{verificationUrl}'>clicking here</a>.</body></html>";
+			var emailBody = $"<html><body>To play the best ConnectFour Game ever, please verify your account by <a href='{verificationUrl}'>clicking here</a>.</body></html>";
 
-			var emailResult = await _emailService.SendEmailAsync(user.Email, "Confirm Your Email", emailBody);
+			var emailResult = await _emailService.SendEmailAsync(user.Email, "ConnectFour - Confirm Your Email", emailBody);
 			if (emailResult)
 			{
 				_logger.LogInformation("Verification email sent successfully.");
