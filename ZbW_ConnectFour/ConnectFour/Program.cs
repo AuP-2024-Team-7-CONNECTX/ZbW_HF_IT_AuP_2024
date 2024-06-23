@@ -157,7 +157,7 @@ namespace ConnectFour
 					var connected = context.Database.CanConnect();
 					if (connected)
 					{
-						context.Database.EnsureDeleted(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
+						//context.Database.EnsureDeleted(); // Prüft, ob die DB existiert, und erstellt sie, falls nicht
 						logger.LogInformation("Datenbank wurde erfolgreich verbunden!");
 					}
 
