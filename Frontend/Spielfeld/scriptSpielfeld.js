@@ -280,20 +280,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentPlayer = localStorageUser;
         await startGameTimer();
 
-        const gameMode = localStorage.getItem("game-mode");
-        let gameRequest = {
-          state: "InProgress",
-          gameMode: gameMode,
-          newTurnForFrontend: false,
-          newTurnForFrontendRowColumn: null,
-          ManualTurnIsAllowed: gameMode === "PlayerVsPlayer" ? false : true,
-        };
+        if (game.state === 0 || game.winnerUser) {
+          await endGame();
+        } else {
+          const gameMode = localStorage.getItem("game-mode");
+          let gameRequest = {
+            state: game.state == "Completed" ? "Completed" : "InProgress",
+            gameMode: gameMode,
+            newTurnForFrontend: false,
+            newTurnForFrontendRowColumn: null,
+            ManualTurnIsAllowed: gameMode === "PlayerVsPlayer" ? false : true,
+          };
 
-        await UpdateGame(gameRequest);
+          await UpdateGame(gameRequest);
+        }
       }
     }
 
-    if (game.state === 0) {
+    let localStorageUser = JSON.parse(localStorage.getItem("user"));
+    if (game.winnerUser && game.winnerUser.id === localStorageUser.id) {
       await endGame();
     }
   }
@@ -313,59 +318,61 @@ document.addEventListener("DOMContentLoaded", async () => {
     clearInterval(intervalId);
     let gameMode = localStorage.getItem("game-mode");
 
-    let gameRequest = {
-      state: "Completed",
-      gameMode: gameMode,
-      currentUserId: null,
-    };
+    // let gameRequest = {
+    //   state: "Completed",
+    //   gameMode: gameMode,
+    //   currentUserId: null,
+    // };
 
-    await UpdateGame(gameRequest);
-    let robot = JSON.parse(localStorage.getItem("robot"));
-    let robotToDisconnect = await getRobotById(robot.id);
-    robotToDisconnect.isConnected = false;
-    robotToDisconnect.currentUserId = null;
-    await DisconnectFromMqtt(robotToDisconnect);
-    await UpdateRobot(robotToDisconnect);
+    // await UpdateGame(gameRequest);
 
-    let opponentUser = JSON.parse(localStorage.getItem("opponent-user"));
-    if (opponentUser.email.includes("KI_")) {
-      let opponentRobot = JSON.parse(localStorage.getItem("opponent-robot"));
-      let robotToDisconnect = await getRobotById(opponentRobot.id);
-      robotToDisconnect.isConnected = false;
-      robotToDisconnect.currentUserId = null;
-      await DisconnectFromMqtt(robotToDisconnect);
-      await UpdateRobot(robotToDisconnect);
-    }
     // Remove specific items from localStorage
-    localStorage.removeItem("robot");
-    localStorage.removeItem("opponent-user");
-    localStorage.removeItem("opponent-robot");
-    localStorage.removeItem("game-mode");
-    localStorage.removeItem("game-creator");
-    localStorage.removeItem("game-id");
 
     let game = await getCurrentGame();
     let winner = game.winnerUser.name;
-
     // Show end game message
     const endGameMessage = document.createElement("div");
     endGameMessage.id = "end-game-message";
     endGameMessage.innerHTML = `
-      <h1>Spiel beendet!</h1>
-      <p>Gewinner: ${winner}</p>
-      <button id="back-to-menu">Zurück zum Hauptmenü</button>
-    `;
+  <h1>Spiel beendet!</h1>
+  <p>Gewinner: ${winner}</p>
+  <button id="back-to-menu">Zurück zum Hauptmenü</button>
+`;
     document.body.appendChild(endGameMessage);
 
     const backToMenuButton = document.getElementById("back-to-menu");
-    backToMenuButton.addEventListener("click", () => {
+    backToMenuButton.addEventListener("click", async () => {
       window.location.href = "../Hauptmenu/hauptmenu.html";
+
+      let robot = JSON.parse(localStorage.getItem("robot"));
+      let robotToDisconnect = await getRobotById(robot.id);
+      robotToDisconnect.isConnected = false;
+      robotToDisconnect.currentUserId = null;
+      await DisconnectFromMqtt(robotToDisconnect);
+      await UpdateRobot(robotToDisconnect);
+
+      let opponentUser = JSON.parse(localStorage.getItem("opponent-user"));
+      if (opponentUser.email.includes("KI_")) {
+        let opponentRobot = JSON.parse(localStorage.getItem("opponent-robot"));
+        let robotToDisconnect = await getRobotById(opponentRobot.id);
+        robotToDisconnect.isConnected = false;
+        robotToDisconnect.currentUserId = null;
+        await DisconnectFromMqtt(robotToDisconnect);
+        await UpdateRobot(robotToDisconnect);
+      }
     });
 
     columns.forEach((column) => {
       column.style.pointerEvents = "none";
       column.removeEventListener("click", handleColumnClick);
     });
+
+    localStorage.removeItem("robot");
+    localStorage.removeItem("opponent-user");
+    localStorage.removeItem("opponent-robot");
+    localStorage.removeItem("game-mode");
+    localStorage.removeItem("game-creator");
+    localStorage.removeItem("game-id");
   }
 
   async function abortGame() {

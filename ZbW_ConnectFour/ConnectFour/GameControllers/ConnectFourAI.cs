@@ -135,7 +135,7 @@ public class ConnectFourAI
 		// Check vertical win
 		for (int col = 0; col < 7; col++)
 		{
-			for (int row = 0; row < 3; row++)
+			for (int row = 0; row < rows - 3; row++)
 			{
 				if (board[col, row] == player && board[col, row + 1] == player && board[col, row + 2] == player && board[col, row + 3] == player)
 				{
@@ -147,7 +147,7 @@ public class ConnectFourAI
 		// Check diagonal (positive slope) win
 		for (int col = 0; col < 4; col++)
 		{
-			for (int row = 0; row < 3; row++)
+			for (int row = 0; row < rows - 3; row++)
 			{
 				if (board[col, row] == player && board[col + 1, row + 1] == player && board[col + 2, row + 2] == player && board[col + 3, row + 3] == player)
 				{
@@ -159,7 +159,7 @@ public class ConnectFourAI
 		// Check diagonal (negative slope) win
 		for (int col = 0; col < 4; col++)
 		{
-			for (int row = 3; row < 6; row++)
+			for (int row = 3; row < rows; row++)
 			{
 				if (board[col, row] == player && board[col + 1, row - 1] == player && board[col + 2, row - 2] == player && board[col + 3, row - 3] == player)
 				{
@@ -170,6 +170,7 @@ public class ConnectFourAI
 
 		return false;
 	}
+
 
 	private GameField CloneGameField(GameField original)
 	{

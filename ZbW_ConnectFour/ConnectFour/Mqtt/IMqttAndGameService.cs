@@ -13,7 +13,7 @@ public interface IMqttAndGameService
 	Task<Game> StartGame(Game game);
 	Task<Game> EndGame(Game game);
 	Task<Game> AbortGame(Game game);
-	Task<Game> ReceiveInput(Game game, string payload, bool isFromFrontend);
+	Task<Game> ReceiveInput(Game game, string payload, bool isFromFrontend,string clientId);
 	Task<bool> SendTurnToRobot(Game game, string payload);
 	void PlaceNewStoneFromAlgorithm(Game game, int column);
 	IEnumerable<Game> GetAllGames();

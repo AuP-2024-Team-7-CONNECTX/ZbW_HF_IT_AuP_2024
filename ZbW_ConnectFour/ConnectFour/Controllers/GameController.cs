@@ -105,10 +105,13 @@ namespace ConnectFour.Controllers
 
 				var gameFromMqttService = await _gameHandlerService.GetGameById(game.Id);
 
-				if (gameFromMqttService != null && gameFromMqttService.State == GameState.Completed)
-				{
-					var test = "test";
-				}
+				//if (gameFromMqttService != null && gameFromMqttService.State == GameState.Completed)
+				//{
+				//	var test = "test";
+				//}
+				var gameState = gameFromMqttService != null ? gameFromMqttService.State : game.State;
+
+				var gameStateNew = game.State == GameState.Completed ? GameState.Completed : gameState;
 
 				var gameResponse = new GameResponse
 				{
@@ -141,7 +144,7 @@ namespace ConnectFour.Controllers
 						Name = game.WinnerRobot.Name,
 						// Fill other properties as needed
 					} : null,
-					State = gameFromMqttService != null ? gameFromMqttService.State : game.State,
+					State = gameState,
 					TotalPointsPlayerOne = game.TotalPointsUserOne,
 					TotalPointsPlayerTwo = game.TotalPointsUserTwo,
 					NewTurnForFrontend = gameFromMqttService != null ? gameFromMqttService.NewTurnForFrontend : game.NewTurnForFrontend,

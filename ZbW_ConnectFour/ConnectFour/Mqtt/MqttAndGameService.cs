@@ -64,59 +64,27 @@ namespace ConnectFour.Mqtt
 			var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
 			var currentGame = _games.Values.FirstOrDefault(g => g.State == GameState.InProgress);
 
+			var clientId = e.ClientId;
 
-			if (e.ClientId == MqttClientHolder.MqttClient1.Options.ClientId)
+			try
 			{
-				bool brokerReady = false;
-				if (payload == "1")
+				if (currentGame != null)
 				{
-					brokerReady = true;
+					currentGame = await ReceiveInput(currentGame, payload, false, clientId);
+					Console.WriteLine($"Payload {payload} received and registered for {currentGame.Id}");
+
 				}
-				_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => brokerReady);
+				else
+				{
+					_logger.LogWarning("No game in progress found.");
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogWarning("error on receiving and using Mqtt Message");
 
 			}
 
-			if (e.ClientId == MqttClientHolder.MqttClient2.Options.ClientId)
-			{
-				bool brokerReady = false;
-				if (payload == "1")
-				{
-					brokerReady = true;
-				}
-				_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => brokerReady);
-
-			}
-
-
-			if (currentGame.GameMode == GameMode.PlayerVsPlayer)
-			{
-				if (_brokersReady["Client1"] && _brokersReady["Client2"])
-				{
-
-					try
-					{
-						if (currentGame != null)
-						{
-							currentGame = await ReceiveInput(currentGame, payload, false);
-							Console.WriteLine($"Payload {payload} received and registered for {currentGame.Id}");
-
-							_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
-							_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => false);
-
-						}
-						else
-						{
-							_logger.LogWarning("No game in progress found.");
-						}
-					}
-					catch (Exception ex)
-					{
-						_logger.LogWarning("error on receiving and using Mqtt Message");
-
-					}
-				}
-
-			}
 
 		}
 
@@ -274,7 +242,7 @@ namespace ConnectFour.Mqtt
 		public async Task<Game> EndGame(Game game)
 		{
 			game = ChangeIsIngameState(game, false, GameState.Completed);
-			await DisconnectFromMqtt(game);
+			//await DisconnectFromMqtt(game);
 			_games[game.Id] = game;
 
 			return game;
@@ -283,35 +251,65 @@ namespace ConnectFour.Mqtt
 		public async Task<Game> AbortGame(Game game)
 		{
 			game = ChangeIsIngameState(game, false, GameState.Aborted);
-			await DisconnectFromMqtt(game);
+			//await DisconnectFromMqtt(game);
 			_games[game.Id] = game;
 
 			return game;
 		}
 
 
-		public async Task<Game> ReceiveInput(Game game, string payload, bool isFromFrontend)
+		public async Task<Game> ReceiveInput(Game game, string payload, bool isFromFrontend, string clientId)
 		{
+
+
 			try
 			{
 				if (isFromFrontend)
 				{
-					if (game.ManualTurnIsAllowed)
+					if (game.State == GameState.Completed)
 					{
-						int columnNumber;
+						throw new InvalidOperationException("Spiel wurde bereits beendet. Es werden keine Züge mehr akzeptiert!");
+					}
+					//if (game.ManualTurnIsAllowed)
+					//{
+					int columnNumber;
 
-						if (game.TurnWithAlgorithm)
+					if (game.TurnWithAlgorithm)
+					{
+						var ai = new ConnectFourAI();
+						var playerNumber = game.CurrentUserId == game.User1Id ? 1 : 2;
+
+						columnNumber = ai.GetBestMove(game.GameField, playerNumber);
+						payload = (columnNumber - 1).ToString();
+
+						game.GameField.UpdateColumn(columnNumber, playerNumber);
+
+						game.TurnColumnFromKI = columnNumber;
+
+						if (ai.CheckWin(game.GameField, playerNumber))
 						{
-							var ai = new ConnectFourAI();
+							// Handle game win logic
+							game.State = GameState.Completed;
+							game.WinnerUserId = playerNumber == 1 ? game.User1Id : game.User2Id;
+
+							int movesLeftForPlayer1 = ai.GetMovesLeft(game.GameField, 1);
+							int movesLeftForPlayer2 = ai.GetMovesLeft(game.GameField, 2);
+
+							game.TotalPointsUserOne = (game.WinnerUserId == game.User1Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
+							game.TotalPointsUserTwo = (game.WinnerUserId == game.User2Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
+						}
+
+					}
+					else
+					{
+						if (int.TryParse(payload, out columnNumber) && columnNumber >= 0 && columnNumber <= 6)
+						{
+							// 0 -> 1
+							columnNumber++;
 							var playerNumber = game.CurrentUserId == game.User1Id ? 1 : 2;
-
-							columnNumber = ai.GetBestMove(game.GameField, playerNumber);
-							payload = (columnNumber - 1).ToString();
-
 							game.GameField.UpdateColumn(columnNumber, playerNumber);
 
-							game.TurnColumnFromKI = columnNumber;
-
+							var ai = new ConnectFourAI();
 							if (ai.CheckWin(game.GameField, playerNumber))
 							{
 								// Handle game win logic
@@ -319,37 +317,13 @@ namespace ConnectFour.Mqtt
 								game.WinnerUserId = playerNumber == 1 ? game.User1Id : game.User2Id;
 
 								int movesLeftForPlayer1 = ai.GetMovesLeft(game.GameField, 1);
-								int movesLeftForPlayer2 = ai.GetMovesLeft(game.GameField, 2);
 
-								game.TotalPointsUserOne = movesLeftForPlayer1;
-								game.TotalPointsUserTwo = movesLeftForPlayer1;
-							}
+								game.TotalPointsUserOne = (game.WinnerUserId == game.User1Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
+								game.TotalPointsUserTwo = (game.WinnerUserId == game.User2Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
 
-						}
-						else
-						{
-							if (int.TryParse(payload, out columnNumber) && columnNumber >= 0 && columnNumber <= 6)
-							{
-								// 0 -> 1
-								columnNumber++;
-								var playerNumber = game.CurrentUserId == game.User1Id ? 1 : 2;
-								game.GameField.UpdateColumn(columnNumber, playerNumber);
-
-								var ai = new ConnectFourAI();
-								if (ai.CheckWin(game.GameField, playerNumber))
-								{
-									// Handle game win logic
-									game.State = GameState.Completed;
-									game.WinnerUserId = playerNumber == 1 ? game.User1Id : game.User2Id;
-
-									int movesLeftForPlayer1 = ai.GetMovesLeft(game.GameField, 1);
-
-									game.TotalPointsUserOne = (game.WinnerUserId == game.User1Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
-									game.TotalPointsUserTwo = (game.WinnerUserId == game.User2Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
-
-								}
 							}
 						}
+						//}
 
 						string payloadForRobot = columnNumber.ToString();
 
@@ -384,12 +358,45 @@ namespace ConnectFour.Mqtt
 
 					if (payload == "1" && game.NewTurnForFrontendRowColumn != null)
 					{
-						game.RobotIsReadyForNextTurn = true;
-						game.ManualTurnIsAllowed = true;
-						game.NewTurnForFrontend = true;
-						game.OverrideDbGameForGet = true;
-					}
 
+						if (clientId == MqttClientHolder.MqttClient1.Options.ClientId)
+						{
+							bool brokerReady = false;
+							if (payload == "1")
+							{
+								brokerReady = true;
+							}
+							_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => brokerReady);
+
+						}
+
+						if (clientId == MqttClientHolder.MqttClient2.Options.ClientId)
+						{
+							bool brokerReady = false;
+							if (payload == "1")
+							{
+								brokerReady = true;
+							}
+							_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => brokerReady);
+
+						}
+
+						if (game.GameMode == GameMode.PlayerVsPlayer)
+						{
+							if (_brokersReady["Client1"] && _brokersReady["Client2"])
+							{
+
+								game.RobotIsReadyForNextTurn = true;
+								game.ManualTurnIsAllowed = true;
+								game.NewTurnForFrontend = true;
+								game.OverrideDbGameForGet = true;
+
+								_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
+								_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => false);
+
+							}
+						}
+					}
 
 				}
 

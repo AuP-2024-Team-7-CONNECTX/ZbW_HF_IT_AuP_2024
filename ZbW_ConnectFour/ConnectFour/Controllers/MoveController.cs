@@ -140,7 +140,7 @@ namespace ConnectFour.Controllers
 				game.CurrentUserId = move.User.Id;
 
 				_gameHandlerService.UpdateGame(game);
-				await _gameHandlerService.ReceiveInput(game, move.MoveDetails, true);
+				game = await _gameHandlerService.ReceiveInput(game, move.MoveDetails, true,"blub");
 
 				if (moveRequest.TurnWithAlgorithm)
 				{
