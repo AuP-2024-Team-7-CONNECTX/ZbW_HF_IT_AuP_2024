@@ -147,7 +147,8 @@ namespace ConnectFour.Controllers
 
 				if (moveRequest.TurnWithAlgorithm)
 				{
-					move.MoveDetails = game.TurnColumnFromKI.ToString();
+					move.MoveDetails = (game.TurnColumnFromKI - 1).ToString();
+
 					Thread.Sleep(1500);
 
 				}
