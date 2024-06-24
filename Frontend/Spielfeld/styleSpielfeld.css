@@ -73,6 +73,17 @@ body {
   border-radius: 10px;
 }
 
+.robot-move-text {
+  font-size: 2em;
+  color: #ffffff; /* White text color */
+  text-align: center;
+  margin-bottom: 20px;
+  background: rgba(211, 47, 47, 0.9); /* Red background */
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+}
+
 .game-container {
   display: grid;
   grid-template-columns: repeat(7, 80px);
@@ -198,6 +209,7 @@ body {
     height: 50px;
   }
 }
+
 #back-to-menu {
   padding: 10px 20px; /* Adjusted padding for better size */
   font-size: 18px; /* Adjusted font size for readability */

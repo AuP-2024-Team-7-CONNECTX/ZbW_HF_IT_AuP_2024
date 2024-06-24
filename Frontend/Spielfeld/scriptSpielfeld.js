@@ -155,6 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (currentUser.id !== currentPlayer.id) {
       return;
     }
+    displayRobotMoveText("Roboter platziert Stein...");
 
     if (!gameStarted) {
       await startGameTimer();
@@ -222,11 +223,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         await createMove(moveRequest);
       }
+      // Text "Roboter platziert Stein..." anzeigen
       intervalId = setInterval(RegisterNewIncomingTurnFromBackend, 4000);
     }
   }
 
   async function handleOpponentColumnClick(columnIndex) {
+    // Text entfernen
+    displayRobotMoveText("");
+
     let localStorageUser = JSON.parse(localStorage.getItem("user"));
 
     if (!gameStarted) {
@@ -418,5 +423,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     localStorage.removeItem("game-id");
 
     window.location.href = "../Hauptmenu/hauptmenu.html";
+  }
+
+  function displayRobotMoveText(message) {
+    const robotMoveText = document.getElementById("robot-move-text");
+    if (robotMoveText) {
+      robotMoveText.textContent = message;
+    } else {
+      const newText = document.createElement("div");
+      newText.id = "robot-move-text";
+      newText.textContent = message;
+      newText.style.position = "absolute";
+      newText.style.top = "10px";
+      newText.style.width = "100%";
+      newText.style.textAlign = "center";
+      newText.style.backgroundColor = "#ffffff";
+      newText.style.padding = "10px";
+      newText.style.border = "2px solid #000000";
+      newText.style.borderRadius = "5px";
+      newText.style.zIndex = "1000";
+      document.body.appendChild(newText);
+    }
   }
 });
