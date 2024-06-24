@@ -297,6 +297,14 @@ namespace ConnectFour.Mqtt
 
 							game.TotalPointsUserOne = (game.WinnerUserId == game.User1Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
 							game.TotalPointsUserTwo = (game.WinnerUserId == game.User2Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
+
+							await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
+
+							Thread.Sleep(8000);
+
+							await SendTurnToRobot(game, "e");
+
+
 						}
 
 					}
@@ -358,7 +366,7 @@ namespace ConnectFour.Mqtt
 
 						}
 
-						if (clientId == MqttClientHolder.MqttClient2.Options.ClientId)
+						if (game.GameMode == GameMode.PlayerVsPlayer && clientId == MqttClientHolder.MqttClient2.Options.ClientId)
 						{
 							bool brokerReady = false;
 							_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => brokerReady);
@@ -427,6 +435,16 @@ namespace ConnectFour.Mqtt
 								game.OverrideDbGameForGet = true;
 
 								_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
+
+								Thread.Sleep(1500);
+								if (game.State == GameState.Completed)
+								{
+									await SendTurnToRobot(game, "e");
+								}
+								else
+								{
+									await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
+								}
 
 							}
 						}

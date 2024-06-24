@@ -107,7 +107,7 @@ async function getRobotById(robotId) {
     return robot;
   } else {
     console.error("Failed to fetch Robot:", response.statusText);
-    alert("Fehler beim Ermitteln des Roboters");
+    // alert("Fehler beim Ermitteln des Roboters");
     return null;
   }
 }
