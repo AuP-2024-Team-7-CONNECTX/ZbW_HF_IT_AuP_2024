@@ -258,15 +258,33 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       currentPlayer = localStorageUser;
 
-      await updatePlayerInfo();
-      clearInterval(intervalId);
+      let gameMode = localStorage.getItem("game-mode");
+      if (gameMode === "PlayerVsRobot") {
+        displayRobotMoveText("Roboter platziert Stein...");
 
-      columns.forEach((column) => {
-        column.style.pointerEvents = "auto";
-        column.addEventListener("click", handleColumnClick);
-      });
+        setTimeout(async () => {
+          // Markieren Sie diese Funktion als async
+          await updatePlayerInfo();
+          clearInterval(intervalId);
+          displayRobotMoveText("");
+          columns.forEach((column) => {
+            column.style.pointerEvents = "auto";
+            column.addEventListener("click", handleColumnClick);
+          });
 
-      await startGameTimer();
+          await startGameTimer();
+        }, 10000);
+      } else {
+        await updatePlayerInfo();
+        clearInterval(intervalId);
+
+        columns.forEach((column) => {
+          column.style.pointerEvents = "auto";
+          column.addEventListener("click", handleColumnClick);
+        });
+
+        await startGameTimer();
+      }
     }
   }
 
