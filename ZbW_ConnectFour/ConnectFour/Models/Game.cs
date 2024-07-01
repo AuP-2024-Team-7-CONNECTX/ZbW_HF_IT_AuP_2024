@@ -49,6 +49,9 @@ namespace ConnectFour.Models
 
 		[NotMapped]
 		public int TurnColumnFromKI { get; set; }
+		[NotMapped]
+
+		public bool SendFeedbackAfterPayloadReceiveAllowed { get; set; }
 
 
 		// Spielfeld als JSON in der Datenbank speichern

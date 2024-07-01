@@ -20,6 +20,8 @@ namespace ConnectFour.Mqtt
 		private static int countReadyBroker1;
 		private static int countReadyBroker2;
 
+		
+
 		public MqttAndGameService(ILogger<MqttAndGameService> logger)
 		{
 			_logger = logger;
@@ -288,6 +290,7 @@ namespace ConnectFour.Mqtt
 						game.GameField.UpdateColumn(columnNumber, playerNumber);
 
 						game.TurnColumnFromKI = columnNumber;
+						game.SendFeedbackAfterPayloadReceiveAllowed = true;
 
 						if (ai.CheckWin(game.GameField, playerNumber))
 						{
@@ -452,7 +455,12 @@ namespace ConnectFour.Mqtt
 								}
 								else
 								{
-									await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
+									if (game.SendFeedbackAfterPayloadReceiveAllowed)
+									{
+										await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
+										game.SendFeedbackAfterPayloadReceiveAllowed = false;
+									}
+									
 									countReadyBroker1 = 0;
 									countReadyBroker2 = 0;
 								}
