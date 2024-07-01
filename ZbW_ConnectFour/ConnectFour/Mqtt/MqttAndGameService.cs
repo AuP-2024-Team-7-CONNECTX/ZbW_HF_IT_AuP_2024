@@ -20,7 +20,7 @@ namespace ConnectFour.Mqtt
 		private static int countReadyBroker1;
 		private static int countReadyBroker2;
 
-		
+
 
 		public MqttAndGameService(ILogger<MqttAndGameService> logger)
 		{
@@ -428,7 +428,7 @@ namespace ConnectFour.Mqtt
 								_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
 								_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => false);
 
-								countReadyBroker1 = 0; 
+								countReadyBroker1 = 0;
 								countReadyBroker2 = 0;
 							}
 						}
@@ -444,11 +444,13 @@ namespace ConnectFour.Mqtt
 								game.OverrideDbGameForGet = true;
 
 								_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
-								
 
-								Thread.Sleep(1500);
+
 								if (game.State == GameState.Completed)
 								{
+									Console.WriteLine($"send KI-turn to Robot");
+									await Task.Delay(2300); // Asynchrones Warten für 2 Sekunden
+
 									await SendTurnToRobot(game, "e");
 									countReadyBroker1 = 0;
 									countReadyBroker2 = 0;
@@ -456,11 +458,13 @@ namespace ConnectFour.Mqtt
 								else
 								{
 									if (game.SendFeedbackAfterPayloadReceiveAllowed)
+										Console.WriteLine($"send KI-turn to Robot");
 									{
+										await Task.Delay(2300); // Asynchrones Warten für 2 Sekunden
 										await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
 										game.SendFeedbackAfterPayloadReceiveAllowed = false;
 									}
-									
+
 									countReadyBroker1 = 0;
 									countReadyBroker2 = 0;
 								}
