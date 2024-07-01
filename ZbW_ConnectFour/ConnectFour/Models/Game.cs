@@ -52,7 +52,9 @@ namespace ConnectFour.Models
 		[NotMapped]
 
 		public bool SendFeedbackAfterPayloadReceiveAllowed { get; set; }
+		[NotMapped]
 
+		public bool LastTurnReady { get; set; }
 
 		// Spielfeld als JSON in der Datenbank speichern
 		public string GameFieldJson

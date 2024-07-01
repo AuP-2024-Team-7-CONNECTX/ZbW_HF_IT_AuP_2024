@@ -17,6 +17,10 @@ namespace ConnectFour.Mqtt
 
 		private static readonly ConcurrentDictionary<string, bool> _brokersReady = new ConcurrentDictionary<string, bool>();
 
+		private static Game? CurrentGame;
+
+		private static string CurrentGameId;
+
 		private static int countReadyBroker1;
 		private static int countReadyBroker2;
 
@@ -67,8 +71,7 @@ namespace ConnectFour.Mqtt
 		private async Task HandleApplicationMessageReceived(MqttApplicationMessageReceivedEventArgs e)
 		{
 			var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
-			var currentGame = _games.Values.FirstOrDefault(g => g.State == GameState.InProgress);
-
+			var currentGame = await GetGameById(CurrentGameId);
 			var clientId = e.ClientId;
 
 			try
@@ -225,7 +228,8 @@ namespace ConnectFour.Mqtt
 		{
 			SetUpUsersAndRobots(game);
 			_games[game.Id] = game;
-
+			CurrentGameId = game.Id;
+			//CurrentGame = game;
 			return game;
 		}
 
@@ -239,6 +243,7 @@ namespace ConnectFour.Mqtt
 		public async Task<Game> StartGame(Game game)
 		{
 			_games[game.Id] = game;
+			CurrentGameId = game.Id;
 			await ConnectWithMqtt(game);
 
 			return game;
@@ -249,7 +254,7 @@ namespace ConnectFour.Mqtt
 			game = ChangeIsIngameState(game, false, GameState.Completed);
 			//await DisconnectFromMqtt(game);
 			_games[game.Id] = game;
-
+			CurrentGameId = string.Empty;
 			return game;
 		}
 
@@ -304,12 +309,6 @@ namespace ConnectFour.Mqtt
 							game.TotalPointsUserOne = (game.WinnerUserId == game.User1Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
 							game.TotalPointsUserTwo = (game.WinnerUserId == game.User2Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
 
-							Task.Delay(1500);
-							await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
-
-							Thread.Sleep(8000);
-
-							await SendTurnToRobot(game, "e");
 
 
 						}
@@ -344,7 +343,7 @@ namespace ConnectFour.Mqtt
 
 						if (game.State == GameState.Completed)
 						{
-							await SendTurnToRobot(game, "e");
+							//await SendTurnToRobot(game, "e");
 						}
 						else
 						{
@@ -443,23 +442,40 @@ namespace ConnectFour.Mqtt
 								game.ManualTurnIsAllowed = true;
 								game.NewTurnForFrontend = true;
 								game.OverrideDbGameForGet = true;
+								game.LastTurnReady = false;
 
 								_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
 
 
 								if (game.State == GameState.Completed)
 								{
-									Console.WriteLine($"send KI-turn to Robot");
-									Thread.Sleep(2000);
 
+									//if (game.LastTurnReady)
+									//{
+									//	Thread.Sleep(2000);
+
+									//	Console.WriteLine($"game completed. send KI-turn to Robot");
+									//	await SendTurnToRobot(game, "e");
+									//	CurrentGame = null;
+									//}
+									//else
+									//{
+									Thread.Sleep(2000);
+									Console.WriteLine($"send KI-turn to Robot");
+									await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
+									Thread.Sleep(30000);
 									await SendTurnToRobot(game, "e");
+									//}
+
 									countReadyBroker1 = 0;
 									countReadyBroker2 = 0;
+
+									game.LastTurnReady = true;
 								}
 								else
 								{
 									if (game.SendFeedbackAfterPayloadReceiveAllowed)
-																		{
+									{
 										Console.WriteLine($"send KI-turn to Robot");
 										Thread.Sleep(2000);
 										await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
