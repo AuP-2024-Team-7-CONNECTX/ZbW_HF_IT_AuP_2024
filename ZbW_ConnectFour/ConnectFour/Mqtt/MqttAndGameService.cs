@@ -304,6 +304,7 @@ namespace ConnectFour.Mqtt
 							game.TotalPointsUserOne = (game.WinnerUserId == game.User1Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
 							game.TotalPointsUserTwo = (game.WinnerUserId == game.User2Id) ? movesLeftForPlayer1 + 1 : movesLeftForPlayer1;
 
+							Task.Delay(1500);
 							await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
 
 							Thread.Sleep(8000);
@@ -449,7 +450,7 @@ namespace ConnectFour.Mqtt
 								if (game.State == GameState.Completed)
 								{
 									Console.WriteLine($"send KI-turn to Robot");
-									await Task.Delay(2300); // Asynchrones Warten für 2 Sekunden
+									Thread.Sleep(2000);
 
 									await SendTurnToRobot(game, "e");
 									countReadyBroker1 = 0;
@@ -458,9 +459,9 @@ namespace ConnectFour.Mqtt
 								else
 								{
 									if (game.SendFeedbackAfterPayloadReceiveAllowed)
+																		{
 										Console.WriteLine($"send KI-turn to Robot");
-									{
-										await Task.Delay(2300); // Asynchrones Warten für 2 Sekunden
+										Thread.Sleep(2000);
 										await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
 										game.SendFeedbackAfterPayloadReceiveAllowed = false;
 									}
