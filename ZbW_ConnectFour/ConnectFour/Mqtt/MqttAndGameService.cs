@@ -17,6 +17,9 @@ namespace ConnectFour.Mqtt
 
 		private static readonly ConcurrentDictionary<string, bool> _brokersReady = new ConcurrentDictionary<string, bool>();
 
+		private static int countReadyBroker1;
+		private static int countReadyBroker2;
+
 		public MqttAndGameService(ILogger<MqttAndGameService> logger)
 		{
 			_logger = logger;
@@ -390,7 +393,7 @@ namespace ConnectFour.Mqtt
 								brokerReady = true;
 							}
 							_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => brokerReady);
-
+							countReadyBroker1++;
 						}
 
 						if (game.GameMode == GameMode.PlayerVsPlayer)
@@ -403,6 +406,7 @@ namespace ConnectFour.Mqtt
 									brokerReady = true;
 								}
 								_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => brokerReady);
+								countReadyBroker2++;
 
 							}
 						}
@@ -410,7 +414,7 @@ namespace ConnectFour.Mqtt
 
 						if (game.GameMode == GameMode.PlayerVsPlayer)
 						{
-							if (_brokersReady["Client1"] && _brokersReady["Client2"])
+							if (_brokersReady["Client1"] && _brokersReady["Client2"] && countReadyBroker1 == 1 && countReadyBroker2 == 1)
 							{
 
 								game.RobotIsReadyForNextTurn = true;
@@ -421,12 +425,14 @@ namespace ConnectFour.Mqtt
 								_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
 								_brokersReady.AddOrUpdate("Client2", false, (key, oldValue) => false);
 
+								countReadyBroker1 = 0; 
+								countReadyBroker2 = 0;
 							}
 						}
 
 						if (game.GameMode == GameMode.PlayerVsRobot)
 						{
-							if (_brokersReady["Client1"])
+							if (_brokersReady["Client1"] && countReadyBroker1 == 1)
 							{
 
 								game.RobotIsReadyForNextTurn = true;
@@ -435,15 +441,20 @@ namespace ConnectFour.Mqtt
 								game.OverrideDbGameForGet = true;
 
 								_brokersReady.AddOrUpdate("Client1", false, (key, oldValue) => false);
+								
 
 								Thread.Sleep(1500);
 								if (game.State == GameState.Completed)
 								{
 									await SendTurnToRobot(game, "e");
+									countReadyBroker1 = 0;
+									countReadyBroker2 = 0;
 								}
 								else
 								{
 									await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
+									countReadyBroker1 = 0;
+									countReadyBroker2 = 0;
 								}
 
 							}

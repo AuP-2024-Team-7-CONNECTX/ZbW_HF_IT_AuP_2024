@@ -273,7 +273,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           });
 
           await startGameTimer();
-        }, 10000);
+        }, 5);
       } else {
         await updatePlayerInfo();
         clearInterval(intervalId);
