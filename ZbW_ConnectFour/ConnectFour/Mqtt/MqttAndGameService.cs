@@ -462,8 +462,8 @@ namespace ConnectFour.Mqtt
 									//{
 									Thread.Sleep(2000);
 									Console.WriteLine($"send KI-turn to Robot");
-									await SendTurnToRobot(game, game.TurnColumnFromKI.ToString());
-									Thread.Sleep(30000);
+									await SendTurnToRobot(game, "1");
+									Thread.Sleep(20000);
 									await SendTurnToRobot(game, "e");
 									//}
 
