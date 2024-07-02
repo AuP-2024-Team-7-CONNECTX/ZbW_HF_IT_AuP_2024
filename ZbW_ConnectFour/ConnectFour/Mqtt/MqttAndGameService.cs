@@ -461,7 +461,7 @@ namespace ConnectFour.Mqtt
 									//else
 									//{
 									Thread.Sleep(2000);
-									Console.WriteLine($"send KI-turn to Robot");
+									Console.WriteLine($"send KI-turn to Robot: {DateTime.Now}");
 									await SendTurnToRobot(game, "1");
 									Thread.Sleep(20000);
 									await SendTurnToRobot(game, "e");
