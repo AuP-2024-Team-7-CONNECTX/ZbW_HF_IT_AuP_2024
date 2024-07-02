@@ -460,12 +460,13 @@ namespace ConnectFour.Mqtt
 									//}
 									//else
 									//{
-									Thread.Sleep(2000);
+									Thread.Sleep(4000);
 									Console.WriteLine($"send KI-turn to Robot: {DateTime.Now}");
 									await SendTurnToRobot(game, "1");
 									Thread.Sleep(20000);
 									await SendTurnToRobot(game, "e");
 									//}
+									await MqttClientHolder.MqttClient1.DisconnectAsync();
 
 									countReadyBroker1 = 0;
 									countReadyBroker2 = 0;
